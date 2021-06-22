@@ -1,0 +1,5 @@
+set -a
+MAILSERVER="https://MAILURL"
+DJANGO_SETTINGS_MODULE="economee.settings"
+AUTH_USER_MODEL = "economeeApi.User"
+set +a

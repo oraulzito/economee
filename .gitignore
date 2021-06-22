@@ -1,0 +1,6 @@
+/lib/
+/.idea/
+/venv/
+/bin/
+pyvenv.cfg
+manage.py
