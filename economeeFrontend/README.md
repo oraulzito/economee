@@ -1,6 +1,10 @@
-# Economee
+# Economee Frontend
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.11.
+
+## Project Initialization
+
+With [NPM](https://www.npmjs.com/) installed, type `npm i` in the economeeFrontend folder, the libraries of the application will be installed.
 
 ## Development server
 
@@ -8,7 +12,8 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng g c component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.<br>
+Run `ng g af store-name` to generate a store for data. (For more info [Akita Angular](https://datorama.github.io/akita/docs/angular/architecture)) 
 
 ## Build
 

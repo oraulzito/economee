@@ -1,49 +1,26 @@
-# Heroku Django Starter Template
+# Econome 
 
-An utterly fantastic project starter template for Django 2.0.
-
-## Features
-
-- Production-ready configuration for Static Files, Database Settings, Gunicorn, etc.
-- Enhancements to Django's static file serving functionality via WhiteNoise.
-- Latest Python 3.6 runtime environment.
+The guide bellow will hell you to initialize the application
 
 ## How to Use
 
 To use this project, follow these steps:
 
-1. Create your working environment.
-2. Install Django (`$ pipenv install django`)
-3. Create a new project using this template
+1. Create your working environment: [venv](https://docs.python.org/3/library/venv.html)  <br> <br>
+2. Activate the virtual environment:<br>
+   2.1 Windows: Via CMD, access "**env folder**/Scripts" and type:<br> 
+   `"activate"`<br>
+   \* **(env name)** will appear before the path way in CMD <br> <br>
 
-## Creating Your Project
+3. Install requirements.txt by going to the project root and typing:<br> 
+   `"python3 -m pip install -r requirements.txt"`<br> <br>
+   
+4. Create the "economee" database in Oracle. <br> <br>
 
-Using this template to create a new Django app is easy::
+5. With the database created, import the migrations to the database by typing:<br>
+   `"python3 manage.py migrate".`<br> <br>
 
-    $ django-admin.py startproject --template=https://github.com/heroku/heroku-django-template/archive/master.zip --name=Procfile helloworld
-
-(If this doesn't work on windows, replace `django-admin.py` with `django-admin`)
-
-You can replace ``helloworld`` with your desired project name.
-
-## Deployment to Heroku
-
-    $ git init
-    $ git add -A
-    $ git commit -m "Initial commit"
-
-    $ heroku create
-    $ git push heroku master
-
-    $ heroku run python manage.py migrate
-
-See also, a [ready-made application](https://github.com/heroku/python-getting-started), ready to deploy.
-
-
-## License: MIT
-
-## Further Reading
-
-- [Gunicorn](https://warehouse.python.org/project/gunicorn/)
-- [WhiteNoise](https://warehouse.python.org/project/whitenoise/)
-- [dj-database-url](https://warehouse.python.org/project/dj-database-url/)
+6. Run the project by typing:<br>
+   `"python manage.py runserver"`<br> <br>
+   
+7. The localhost:\<port> will deploy the application.
