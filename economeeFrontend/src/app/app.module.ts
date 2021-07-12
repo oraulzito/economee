@@ -22,8 +22,6 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { GraphicsPanelComponent } from './components/graphics-panel/graphics-panel.component';
 import { ReleasesPanelComponent } from './components/releases-panel/releases-panel.component';
 import { ReleasesCardComponent } from './components/releases-card/releases-card.component';
-import { PizzaGraphicComponent } from './components/pizza-graphic/pizza-graphic.component';
-import { TimelineGraphicComponent } from './components/timeline-graphic/timeline-graphic.component';
 import { GraphicTimelineComponent } from './components/graphic-timeline/graphic-timeline.component';
 import { GraphicPizzaComponent } from './components/graphic-pizza/graphic-pizza.component';
 import { HeaderComponent } from './dashboard/dashboard-desktop/header/header.component';
@@ -46,8 +44,6 @@ registerLocaleData(en);
     GraphicsPanelComponent,
     ReleasesPanelComponent,
     ReleasesCardComponent,
-    PizzaGraphicComponent,
-    TimelineGraphicComponent,
     GraphicTimelineComponent,
     GraphicPizzaComponent,
     HeaderComponent,

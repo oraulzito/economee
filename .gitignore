@@ -2,5 +2,5 @@
 /.idea/
 /venv/
 /bin/
+/env/
 pyvenv.cfg
-manage.py

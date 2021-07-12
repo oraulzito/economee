@@ -80,12 +80,12 @@ WSGI_APPLICATION = 'economee.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'economee',
-        'USER': 'postgres',
-        'PASSWORD': 'p1ll0wm3',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'xe',
+        'USER': 'tads_lbd12',
+        'PASSWORD': '123456',
+        'HOST': 'oracle.canoas.ifrs.edu.br',
+        'PORT': '1521',
     }
 }
 

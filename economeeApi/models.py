@@ -3,7 +3,7 @@ from django.db import models
 from django.utils.timezone import now
 from partial_date import PartialDateField
 
-from economeeBackend import settings
+from economee import settings
 
 
 # Create your models here.
