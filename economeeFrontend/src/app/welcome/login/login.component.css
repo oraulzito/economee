@@ -1,0 +1,12 @@
+.space-align-container {
+  display: flex;
+  align-item: flex-start;
+  flex-wrap: wrap;
+}
+.space-align-block {
+  margin: 8px 4px;
+  border: 1px solid #40a9ff;
+  padding: 4px;
+  flex: none;
+}
+

@@ -35,22 +35,6 @@ registerLocaleData(en);
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    SignupComponent,
-    LandpageComponent,
-    DashboardDesktopComponent,
-    DashboardMobileComponent,
-    ProfileComponent,
-    GraphicsPanelComponent,
-    ReleasesPanelComponent,
-    ReleasesCardComponent,
-    GraphicTimelineComponent,
-    GraphicPizzaComponent,
-    HeaderComponent,
-    FooterComponent,
-    DashboardConfigurationComponent,
-    CardsComponent,
-    AccountComponent
   ],
   imports: [
     BrowserModule,
