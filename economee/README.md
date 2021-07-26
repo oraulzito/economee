@@ -20,11 +20,14 @@ To use this project, follow these steps:
    
 5. With the database created, import the migrations to the database by typing:<br>
    `python3 manage.py migrate`<br> <br>
+   
+6. Up the currencies list, available file in:<br>
+   `/documentation/currencies.sql`<br> <br>
 
-6. If no errors occur, create the super user (use the name admin) by typing:<br>
+7. If no errors occur, create the super user (use the name admin) by typing:<br>
    `python manage.py createsuperuser`<br> <br>
    
-7. Run the project by typing:<br>
+8. Run the project by typing:<br>
    `python manage.py runserver`<br> <br>
    
-8. The `localhost:\<port>\admin` will deploy the application.
+9. The `localhost:\<port>\admin` will deploy the application.
