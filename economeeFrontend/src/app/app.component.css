@@ -9,7 +9,7 @@
 nz-layout {
   background-color: #235C47 !important;
   background-image: url("src/assets/background.svg");
-  background-size: cover;
+  background-size: auto auto;
   background-repeat: no-repeat;
 }
 
@@ -18,3 +18,8 @@ nz-layout {
     rotation: 90deg;
   }
 }
+
+:host ::ng-deep .card-border {
+  border-radius: 5%;
+}
+

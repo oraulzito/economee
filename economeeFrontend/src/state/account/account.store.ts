@@ -5,7 +5,7 @@ import { Account } from './account.model';
 export interface AccountState extends EntityState<Account> {}
 
 @Injectable({ providedIn: 'root' })
-@StoreConfig({ name: 'account' })
+@StoreConfig({ name: 'id_account' })
 export class AccountStore extends EntityStore<AccountState> {
 
   constructor() {

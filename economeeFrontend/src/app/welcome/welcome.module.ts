@@ -9,11 +9,14 @@ import {LoginComponent} from './login/login.component';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzLayoutModule} from 'ng-zorro-antd/layout';
-import {NzButtonModule} from "ng-zorro-antd/button";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NzCardModule} from "ng-zorro-antd/card";
-import {NzCheckboxModule} from "ng-zorro-antd/checkbox";
-import {NzSpaceModule} from "ng-zorro-antd/space";
+import {NzButtonModule} from 'ng-zorro-antd/button';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {NzCardModule} from 'ng-zorro-antd/card';
+import {NzCheckboxModule} from 'ng-zorro-antd/checkbox';
+import {NzSpaceModule} from 'ng-zorro-antd/space';
+import {ForgetPasswordComponent} from './forget-password/forget-password.component';
+import {CommonModule} from '@angular/common';
+import {NzSelectModule} from 'ng-zorro-antd/select';
 
 
 @NgModule({
@@ -27,13 +30,16 @@ import {NzSpaceModule} from "ng-zorro-antd/space";
     FormsModule,
     NzCheckboxModule,
     ReactiveFormsModule,
-    NzSpaceModule
+    NzSpaceModule,
+    NzSelectModule,
+    CommonModule
   ],
   declarations: [
     WelcomeComponent,
     LandpageComponent,
     SignupComponent,
     LoginComponent,
+    ForgetPasswordComponent,
   ],
   exports: [WelcomeComponent]
 })

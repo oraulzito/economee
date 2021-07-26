@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
-
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  selector: 'app-forget-password',
+  templateUrl: './forget-password.component.html',
+  styleUrls: ['./forget-password.component.css']
 })
-export class LoginComponent implements OnInit {
+export class ForgetPasswordComponent implements OnInit {
   validateForm: FormGroup;
 
   constructor(private fb: FormBuilder) {
@@ -16,12 +15,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      remember: [true]
+      email: [null, [Validators.required]]
     });
   }
 
+  // TODO check if the typed email exists
   submitForm(): void {
     for (const i in this.validateForm.controls) {
       if (this.validateForm.controls.hasOwnProperty(i)) {
@@ -30,5 +28,4 @@ export class LoginComponent implements OnInit {
       }
     }
   }
-
 }
