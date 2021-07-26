@@ -8,6 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'photo', 'dob', 'first_name', 'last_name', 'gender', 'password']
+        # TODO review if this don't make password changes unavailable
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -18,7 +19,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['id', 'account_name', 'total_available', 'currency', 'is_main_account', 'owner']
+        fields = ['id', 'name', 'currency', 'is_main_account', 'id_user']
 
 
 class BalanceSerializer(serializers.HyperlinkedModelSerializer):
@@ -26,7 +27,7 @@ class BalanceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Balance
-        fields = ['id', 'balance_month_year', 'total_income', 'total_expense', 'account']
+        fields = ['id', 'date_reference', 'id_account']
 
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,13 +35,13 @@ class CardSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Card
-        fields = ['id', 'card_name', 'card_credit', 'card_credit_spent', 'card_pay_date', 'account']
+        fields = ['id', 'name', 'credit', 'credit_spent', 'pay_date', 'id_account']
 
 
 class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ReleaseCategory
-        fields = ['category_name', 'id']
+        fields = ['name', 'id']
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,7 +49,7 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Invoice
-        fields = ['id', 'total', 'invoice_month_year', 'is_invoice_paid', 'card']
+        fields = ['id', 'total', 'date_reference', 'is_paid', 'id_card']
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -57,5 +58,5 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Release
         fields = [
-            'id', 'description', 'value', 'date_release', 'repeat_times', 'repeat_date', 'repeat_times',
-            'is_release_paid', 'release_type', 'release_category', 'invoice_id', 'balance_id']
+            'id', 'description', 'value', 'date_release', 'repeat_times', 'date_repeat', 'repeat_times',
+            'is_release_paid', 'type', 'category']

@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
@@ -29,8 +30,8 @@ class UserView(viewsets.ModelViewSet):
         return User.objects.filter(id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
-        global response
-        if request.data.get('password') == request.data.get('password'):
+        # global response
+        if request.data.get('password') == request.data.get('repeat_password'):
             user = User.objects.create(
                 email=request.data.get('email'),
                 password=make_password(request.data.get('password')),
@@ -43,15 +44,12 @@ class UserView(viewsets.ModelViewSet):
             )
             account = Account.objects.create(
                 account_name=request.data.get('account_name'),
-                total_available=float(request.data.get('total_available')),
                 currency=request.data.get('currency'),
                 is_main_account=True,
                 owner=user,
             )
             Balance.objects.create(
                 balance_month_year=PartialDate(date.today(), precision=PartialDate.MONTH),
-                total_expense=0,
-                total_income=float(request.data.get('total_available')),
                 account_id=account.id
             )
 
@@ -155,14 +153,14 @@ class ReleaseView(viewsets.ModelViewSet):
         n = 0
         total = int(request.data.get('repeat_times'))
 
-        repeat_date = datetime.strptime(request.data.get('repeat_date'), '%Y-%m-%d').date()
+        repeat_date = datetime.strptime(request.data.get('date_repeat'), '%Y-%m-%d').date()
         repeat_date = repeat_date.replace(day=1)
 
         while n < total:
             precision_date = PartialDate(repeat_date + relativedelta(months=+n), precision=PartialDate.MONTH)
 
             invoice = Invoice()
-            # If it's an card release
+            # If it's an id_card release
             if request.data.get('card_id') is not None:
                 invoice = \
                     Invoice.objects.filter(card_id=int(request.data.get('card_id')),
@@ -170,7 +168,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 card = Card.objects.filter(id=int(request.data.get('card_id'))).first()
                 # if invoice does not exist
                 if invoice is None:
-                    if (repeat_date - card.card_pay_date).days < 11:
+                    if (repeat_date - card.pay_date).days < 11:
                         repeat_date = repeat_date + relativedelta(months=+ 1)
                         precision_date = PartialDate(repeat_date, precision=PartialDate.MONTH)
 
@@ -220,7 +218,7 @@ class ReleaseView(viewsets.ModelViewSet):
             repeat_date=date_release + relativedelta(months=+p[2]),
             repeat_times=int(request.data.get('repeat_times')),
             installment_number=p[2],
-            release_type=request.data.get('release_type'),
+            release_type=request.data.get('type'),
             is_release_paid=is_release_paid,
             release_category_id=int(request.data.get('release_category_id'))) for p in params]
         Release.objects.bulk_create(releases)
