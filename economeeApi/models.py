@@ -99,9 +99,13 @@ class Release(models.Model):
     is_release_paid = models.BooleanField(default=False)
     category = models.ForeignKey(ReleaseCategory, on_delete=models.DO_NOTHING)
 
+    # TODO study this idea
+    # Projection release will not be used on the 'oficial' sum of the balance, it will be used only in simulation on month expenses
+    PROJECTION_RELEASE = 'PR'
     EXPENSE_RELEASE = 'ER'
     INCOME_RELEASE = 'IR'
     RELEASE_CHOICES = [
+        (PROJECTION_RELEASE, "Projection"),
         (EXPENSE_RELEASE, "Expense"),
         (INCOME_RELEASE, "Income"),
     ]
