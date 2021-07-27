@@ -14,6 +14,7 @@ from .serializers import *
 
 
 # Create your views here.
+# TODO test CRUD
 class UserView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = UserSerializer
@@ -57,6 +58,8 @@ class UserView(viewsets.ModelViewSet):
             return HttpResponse(response, content_type="application/json")
 
 
+# TODO test CRUD
+# TODO lock delete action if it's the main account or the only account of the user.
 class AccountView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = AccountSerializer
@@ -73,6 +76,7 @@ class AccountView(viewsets.ModelViewSet):
         return Account.objects.filter(owner=self.request.user).all()
 
 
+# TODO test CRUD
 class BalanceView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = BalanceSerializer
@@ -85,10 +89,12 @@ class BalanceView(viewsets.ModelViewSet):
             permission_classes = [IsObjOwner, IsAuthenticated]
         return [permission() for permission in permission_classes]
 
+    # FIXME get only the balance of the required month
     def get_queryset(self):
-        return Balance.objects.filter(account__owner=self.request.user).all()
+        return Balance.objects.filter(account_id_user=self.request.user).all()
 
 
+# TODO test CRUD
 class CardView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = CardSerializer
@@ -105,6 +111,7 @@ class CardView(viewsets.ModelViewSet):
         return Card.objects.filter(account__owner=self.request.user)
 
 
+# TODO test CRUD
 class ReleaseCategoryView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = ReleaseCategorySerializer
@@ -146,6 +153,7 @@ class ReleaseView(viewsets.ModelViewSet):
 
         return Release.objects.filter(balance__in=balance).all()
 
+    # FIXME
     def create(self, request, *args, **kwargs):
         balances = []
         installments = []
@@ -157,24 +165,27 @@ class ReleaseView(viewsets.ModelViewSet):
         repeat_date = repeat_date.replace(day=1)
 
         while n < total:
+            # credit card shopping releases will be released only in the next month after the shopping
             precision_date = PartialDate(repeat_date + relativedelta(months=+n), precision=PartialDate.MONTH)
 
             invoice = Invoice()
             # If it's an id_card release
-            if request.data.get('card_id') is not None:
+            if request.data.get('id_card') is not None:
                 invoice = \
-                    Invoice.objects.filter(card_id=int(request.data.get('card_id')),
+                    Invoice.objects.filter(card_id=int(request.data.get('id_card')),
                                            invoice_month_year=precision_date).first()
-                card = Card.objects.filter(id=int(request.data.get('card_id'))).first()
+                # FIXME if the card don't exist send a 400 error
+                card = Card.objects.filter(id=int(request.data.get('id_card'))).first()
                 # if invoice does not exist
                 if invoice is None:
-                    if (repeat_date - card.pay_date).days < 11:
+                    # if the purchase is done in the last billing day of the month the release will be done only in the next next month
+                    if (repeat_date - card.pay_date).days < 10:
                         repeat_date = repeat_date + relativedelta(months=+ 1)
                         precision_date = PartialDate(repeat_date, precision=PartialDate.MONTH)
 
                     invoice = Invoice.objects.create(
                         invoice_month_year=precision_date,
-                        card_id=int(request.data.get('card_id')),
+                        card_id=int(request.data.get('id_card')),
                         total=float(request.data.get('value')),
                         is_invoice_paid=False
                     )
@@ -182,7 +193,7 @@ class ReleaseView(viewsets.ModelViewSet):
                     invoice.total = invoice.total + float(request.data.get('value'))
                     invoice.save()
 
-            balance = Balance.objects.filter(account_id=int(request.data.get('account_id')),
+            balance = Balance.objects.filter(account_id=int(request.data.get('id_account')),
                                              balance_month_year=precision_date).first()
             # If balance does not exist
             if balance is None:
@@ -193,6 +204,7 @@ class ReleaseView(viewsets.ModelViewSet):
                     account_id=int(request.data.get('account_id'))
                 )
             else:
+                # FIXME add the earned value or the expense value
                 balance.total_expense = balance.total_expense + float(request.data.get('value'))
                 balance.save()
 
@@ -226,6 +238,7 @@ class ReleaseView(viewsets.ModelViewSet):
         return HttpResponse(releases, content_type="application/json")
 
 
+# TODO test CRUD
 class InvoiceView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = InvoiceSerializer
