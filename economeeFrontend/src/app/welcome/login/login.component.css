@@ -1,12 +1,4 @@
-.space-align-container {
-  display: flex;
-  align-item: flex-start;
-  flex-wrap: wrap;
+.card-login {
+  max-width: 300px;
+  width: 100vw;
 }
-.space-align-block {
-  margin: 8px 4px;
-  border: 1px solid #40a9ff;
-  padding: 4px;
-  flex: none;
-}
-

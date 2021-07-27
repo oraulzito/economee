@@ -1,1 +1,99 @@
-<p>signup works!</p>
+<h3><a class="text-white" href="/">Economee</a></h3>
+<nz-card class="card-border card-cadastro" nzTitle="É hora de melhorar seu gerenciamento financeiro. Bem vindo!">
+  <div class="float-end"><span class="text-muted">Passo {{actualStep}} de 3</span></div>
+  <br>
+  <div [ngSwitch]="actualStep">
+    <form *ngSwitchCase="1" [formGroup]="validateForm1" class="login-form" nz-form>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira seu nome!">
+          <nz-input-group nzPrefixIcon="user">
+            <input formControlName="password" nz-input placeholder="Nome" type="password"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira seu sobrenome!">
+          <nz-input-group nzPrefixIcon="user">
+            <input formControlName="password" nz-input placeholder="Sobrenome" type="password"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira sua data de nascimento!">
+          <nz-input-group>
+            <input formControlName="dob" nz-input placeholder="Data de nascimento" type="date"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira seu genêro!">
+          <nz-select nzSuffixIcon="user">
+            <nz-option nzLabel="Masculino" nzValue="m"></nz-option>
+            <nz-option nzLabel="Feminino" nzValue="f"></nz-option>
+            <nz-option nzLabel="Outro" nzValue="o"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+    <form *ngSwitchCase="2" [formGroup]="validateForm2" class="login-form" nz-form>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira seu email!">
+          <nz-input-group nzPrefixIcon="mail">
+            <input formControlName="email" nz-input placeholder="Email" type="text"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira sua senha!">
+          <nz-input-group nzPrefixIcon="lock">
+            <input formControlName="password" nz-input placeholder="Senha" type="password"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="As senhas não conferem!">
+          <nz-input-group nzPrefixIcon="lock">
+            <input formControlName="password" nz-input placeholder="Repita sua Senha" type="password"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control>
+          <nz-input-group nzPrefixIcon="file-image">
+            <input formControlName="photo" nz-input placeholder="Avatar" type="file"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+
+    <form *ngSwitchCase="3" [formGroup]="validateForm3" class="login-form" nz-form>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="Insira o nome da sua conta!">
+          <nz-input-group nzPrefixIcon="bank">
+            <input formControlName="email" nz-input placeholder="Email" type="text"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <!-- TODO get currencies form backend -->
+        <nz-form-control nzErrorTip="Insira a moeda do seu país!">
+          <nz-input-group nzPrefixIcon="dollar">
+            <input formControlName="password" nz-input placeholder="Senha" type="te"/>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </div>
+  <div>
+    <div class="text-center">
+      <button *ngIf="actualStep != 1" class="login-form-button login-form-margin" nz-button nzType="text">Anterior
+      </button>
+    </div>
+    <div class="text-center">
+      <button *ngIf="actualStep != 3" class="login-form-button login-form-margin" nz-button nzType="primary">Próximo
+      </button>
+    </div>
+  </div>
+</nz-card>
+

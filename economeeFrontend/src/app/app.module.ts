@@ -29,6 +29,7 @@ import { FooterComponent } from './dashboard/dashboard-mobile/footer/footer.comp
 import { DashboardConfigurationComponent } from './dashboard/dashboard-configuration/dashboard-configuration.component';
 import { CardsComponent } from './dashboard/dashboard-configuration/cards/cards.component';
 import { AccountComponent } from './dashboard/dashboard-configuration/account/account.component';
+import {NzGridModule} from "ng-zorro-antd/grid";
 
 registerLocaleData(en);
 
@@ -44,7 +45,8 @@ registerLocaleData(en);
     AppRoutingModule,
     IconsProviderModule,
     NzLayoutModule,
-    NzMenuModule
+    NzMenuModule,
+    NzGridModule
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
