@@ -36,8 +36,10 @@ class Account(models.Model):
     # TODO make currency an ENUM
     currency = models.CharField(max_length=2)
     is_main_account = models.BooleanField(default=False)
+    total_available = models.FloatField()
+    # Owner attribute according to the class diagram
     id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
-
+    
     REQUIRED_FIELDS = ['name', 'id_user', 'currency']
 
     def __str__(self):
@@ -45,9 +47,11 @@ class Account(models.Model):
 
 
 class Balance(models.Model):
+    # Month reference, expected format MM/YYYY
     date_reference = PartialDateField()
     id_account = models.ForeignKey(Account, on_delete=models.CASCADE)
-
+    total_income = models.FloatField()
+    total_expense = models.FloatField()
     REQUIRED_FIELDS = ['date_reference', 'id_account']
 
     def __str__(self):
@@ -69,6 +73,7 @@ class Card(models.Model):
 
 class ReleaseCategory(models.Model):
     name = models.CharField(max_length=24)
+    # Owner according to class diagram
     id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
 
     REQUIRED_FIELDS = ['name', 'id_user']
@@ -82,7 +87,7 @@ class Invoice(models.Model):
     id_card = models.ForeignKey(Card, on_delete=models.CASCADE)
     # TODO send a notification in the pay_date of the card, confirming if it's paid
     is_paid = models.BooleanField(default=False)
-
+    total = models.FloatField()
     REQUIRED_FIELDS = ['date_reference', 'id_card', 'is_paid']
 
     def __str__(self):
