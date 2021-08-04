@@ -8,13 +8,14 @@ import {Component, Input, OnInit} from '@angular/core';
 export class ReleasesCardComponent implements OnInit {
 
   @Input() title;
-  @Input() sm;
-  @Input() md;
-  @Input() xl;
+  // @Input() sm;
+  // @Input() md;
+  // @Input() xl;
 
   constructor() {
   }
 
+  // tslint:disable-next-line:typedef
   ngOnInit() {
   }
 

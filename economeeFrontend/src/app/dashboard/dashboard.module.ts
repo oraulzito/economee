@@ -7,10 +7,11 @@ import {HeaderComponent} from "./dashboard-desktop/header/header.component";
 import {ReleasesCardComponent} from "../components/releases-card/releases-card.component";
 import {NzCardModule} from "ng-zorro-antd/card";
 import {NzGridModule} from "ng-zorro-antd/grid";
+import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
 
 
 @NgModule({
-  imports: [DashboardRoutingModule, NzCardModule, NzGridModule],
+    imports: [DashboardRoutingModule, NzCardModule, NzGridModule, NzDatePickerModule],
   declarations: [DashboardComponent, HeaderComponent, ReleasesCardComponent],
   exports: [DashboardComponent]
 })
