@@ -1,0 +1,26 @@
+/*:host ::ng-deep*/
+nz-card {
+  width: 85vw;
+  height: 85vh;
+  border-radius: 16px 16px 0px 0px;
+}
+
+:host ::ng-deep .ant-card-head {
+  border-radius: 16px;
+  box-shadow: 0px 4px 0px lightgrey ;
+}
+
+:host ::ng-deep .ant-card-head-title {
+  font-size: 25px;
+  color: #235C47;
+  font-weight: bold;
+}
+
+:host ::ng-deep .ant-btn-primary {
+  background-color: #29949D;
+  border: none;
+}
+
+:host ::ng-deep .ant-btn-text {
+  margin-right: 5vw;
+}

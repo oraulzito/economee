@@ -1,12 +1,14 @@
-<nz-card style="width: 100%;" nzTitle="Card title" [nzExtra]="extraTemplate">
+<nz-card nzTitle="Economee" [nzExtra]="extraTemplate">
     <nz-card-tab>
       <nz-tabset nzSize="large" [(nzSelectedIndex)]="index1">
-        <nz-tab nzTitle="tab1"></nz-tab>
-        <nz-tab nzTitle="tab2"></nz-tab>
+        <nz-tab nzTitle="Descrição"></nz-tab>
+        <nz-tab nzTitle="Funções"></nz-tab>
+        <nz-tab nzTitle="Sobre nós"></nz-tab>
       </nz-tabset>
     </nz-card-tab>
     content{{ index1 }}
 </nz-card>
 <ng-template #extraTemplate>
-  <a>More</a>
+  <button nz-button nzType="text">Login</button>
+  <button nz-button nzType="primary">Cadastre-se</button>
 </ng-template>
