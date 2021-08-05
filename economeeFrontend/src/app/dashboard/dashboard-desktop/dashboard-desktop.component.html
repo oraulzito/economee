@@ -1,1 +1,9 @@
-<p>dashboard-desktop works!</p>
+<div class="h-100 vw-85">
+  <app-header></app-header>
+  <hr class="text-white w-100">
+  <div class="w-100" nz-row>
+    <app-releases-card class="p-3" [nzMd]="12" [nzSm]="24" [nzXl]="7" [title]="'Releases'" nz-col></app-releases-card>
+    <app-releases-card class="p-3" [nzMd]="12" [nzSm]="24" [nzXl]="7" [title]="'Card Releases'" nz-col></app-releases-card>
+    <app-releases-card class="p-3" [nzMd]="24" [nzSm]="24" [nzXl]="10" [title]="'My Planning'" nz-col></app-releases-card>
+  </div>
+</div>

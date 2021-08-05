@@ -8,11 +8,14 @@ import {ReleasesCardComponent} from "../components/releases-card/releases-card.c
 import {NzCardModule} from "ng-zorro-antd/card";
 import {NzGridModule} from "ng-zorro-antd/grid";
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
+import {DashboardMobileComponent} from "./dashboard-mobile/dashboard-mobile.component";
+import {DashboardDesktopComponent} from "./dashboard-desktop/dashboard-desktop.component";
+import {CommonModule} from "@angular/common";
 
 
 @NgModule({
-    imports: [DashboardRoutingModule, NzCardModule, NzGridModule, NzDatePickerModule],
-  declarations: [DashboardComponent, HeaderComponent, ReleasesCardComponent],
+  imports: [DashboardRoutingModule, NzCardModule, NzGridModule, NzDatePickerModule, CommonModule],
+  declarations: [DashboardComponent, HeaderComponent, ReleasesCardComponent, DashboardMobileComponent, DashboardDesktopComponent],
   exports: [DashboardComponent]
 })
 export class DashboardModule { }

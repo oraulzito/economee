@@ -13,6 +13,7 @@ nz-layout {
   background-repeat: no-repeat;
 }
 
+
 @media only screen and (orientation: portrait) {
   nz-layout {
     rotation: 90deg;
@@ -21,5 +22,9 @@ nz-layout {
 
 :host ::ng-deep .card-border {
   border-radius: 5%;
+}
+
+:host ::ng-deep .vw-85 {
+  width: 85vw !important;
 }
 

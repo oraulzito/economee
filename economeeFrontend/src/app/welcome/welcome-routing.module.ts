@@ -5,13 +5,10 @@ import {SignupComponent} from './signup/signup.component';
 import {ForgetPasswordComponent} from './forget-password/forget-password.component';
 
 const routes: Routes = [
-  // TODO in sprint 4
-  // {path: '', component: LandpageComponent},
-  {path: '', component: LoginComponent},
+  {path: '', pathMatch: 'full', redirectTo: 'login'},
   {path: 'login', component: LoginComponent},
-  {path: 'cadastro', component: SignupComponent},
-  // TODO in sprint 4
-  {path: 'esqueciasenha', component: ForgetPasswordComponent},
+  {path: 'signIn', component: SignupComponent},
+  {path: 'forgetPassword', component: ForgetPasswordComponent},
 ];
 
 @NgModule({

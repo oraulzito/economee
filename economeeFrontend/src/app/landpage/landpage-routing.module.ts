@@ -4,8 +4,8 @@ import { LandpageComponent } from './landpage.component';
 
 const routes: Routes = [
   {path: '', component: LandpageComponent},
-  {path: 'funtions', component: LandpageComponent},
-  {path: 'aboutUS', component: LandpageComponent}
+  {path: 'functions', component: LandpageComponent},
+  {path: 'aboutUs', component: LandpageComponent}
 ];
 
 @NgModule({

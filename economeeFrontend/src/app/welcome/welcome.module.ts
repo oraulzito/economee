@@ -15,7 +15,6 @@ import {ForgetPasswordComponent} from './forget-password/forget-password.compone
 import {CommonModule} from '@angular/common';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 
-
 @NgModule({
   imports: [
     WelcomeRoutingModule,
@@ -38,5 +37,6 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
   ],
   exports: []
 })
+
 export class WelcomeModule {
 }
