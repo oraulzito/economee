@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 
 import {WelcomeRoutingModule} from './welcome-routing.module';
-import {LandpageComponent} from './landpage/landpage.component';
 import {SignupComponent} from './signup/signup.component';
 import {LoginComponent} from './login/login.component';
 import {NzInputModule} from 'ng-zorro-antd/input';
@@ -33,7 +32,6 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
     CommonModule
   ],
   declarations: [
-    LandpageComponent,
     SignupComponent,
     LoginComponent,
     ForgetPasswordComponent,

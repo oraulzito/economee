@@ -6,6 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./landpage.component.css']
 })
 export class LandpageComponent implements OnInit {
+  index1 = 0;
 
   constructor() { }
 
@@ -13,3 +14,4 @@ export class LandpageComponent implements OnInit {
   }
 
 }
+

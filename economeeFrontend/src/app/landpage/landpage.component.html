@@ -1,0 +1,12 @@
+<nz-card style="width: 100%;" nzTitle="Card title" [nzExtra]="extraTemplate">
+    <nz-card-tab>
+      <nz-tabset nzSize="large" [(nzSelectedIndex)]="index1">
+        <nz-tab nzTitle="tab1"></nz-tab>
+        <nz-tab nzTitle="tab2"></nz-tab>
+      </nz-tabset>
+    </nz-card-tab>
+    content{{ index1 }}
+</nz-card>
+<ng-template #extraTemplate>
+  <a>More</a>
+</ng-template>
