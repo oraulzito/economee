@@ -3,9 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 import { LandpageComponent } from './landpage.component';
 
 const routes: Routes = [
-  {path: '', component: LandpageComponent},
-  {path: 'functions', component: LandpageComponent},
-  {path: 'aboutUs', component: LandpageComponent}
+  {path: '', component: LandpageComponent}
 ];
 
 @NgModule({
