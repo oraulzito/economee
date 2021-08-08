@@ -7,7 +7,7 @@ The guide bellow will hell you to initialize the application
 To use this project, follow these steps:
 
 1. Create your working environment ([venv](https://docs.python.org/3/library/venv.html)).  <br> <br>
-   
+
 2. Activate the virtual environment:<br>
    2.1 Windows: Via CMD, type:<br> 
    `env folder/Scripts/activate`<br>
