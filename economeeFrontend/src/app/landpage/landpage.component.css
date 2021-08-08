@@ -46,6 +46,10 @@ nz-card {
   margin: 5vw;
 }
 
+#landpageContent3{
+  margin-top: 6vh;
+}
+
 #images {
   height: 30vh;
 }
@@ -61,7 +65,7 @@ nz-card {
   border-radius: 50%;
 }
 
-#images, #images div, #names, #names h3{
+#images, #images div, #names, #aboutUs{
   display: flex;
 }
 
@@ -69,13 +73,20 @@ nz-card {
   justify-content: center;
 }
 
-#names h3{
-  margin-right: 25vw;
-}
-
-#names div{
+#names div {
   font-size: 36px;
   width: 33%;
   text-align: center;
   font-weight: 500;
 }
+
+#aboutUs {
+  justify-content: center;
+}
+
+#aboutUs div {
+  width: 33%;
+  margin-top: 2vh;
+}
+
+
