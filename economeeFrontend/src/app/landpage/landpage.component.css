@@ -50,22 +50,26 @@ nz-card {
   margin-top: 6vh;
 }
 
-#images {
+.images {
   height: 30vh;
 }
 
-#images div {
+.images div, .aboutUs div img{
   height: 20vh;
   width: 20vw;
   margin: 5vw;
   justify-content: center;
 }
 
-#images div img {
+.aboutUs div img {
+  width: unset;
+}
+
+.images div img, .aboutUs div img {
   border-radius: 50%;
 }
 
-#images, #images div, #names, #aboutUs{
+.images, .images div, #names, .aboutUs{
   display: flex;
 }
 
@@ -80,13 +84,11 @@ nz-card {
   font-weight: 500;
 }
 
-#aboutUs {
+.aboutUs {
   justify-content: center;
 }
 
-#aboutUs div {
+.aboutUs div {
   width: 33%;
   margin-top: 2vh;
 }
-
-
