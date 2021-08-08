@@ -37,21 +37,24 @@ class UserView(viewsets.ModelViewSet):
                 email=request.data.get('email'),
                 password=make_password(request.data.get('password')),
                 username=request.data.get('username'),
-                first_name=request.data.get('firstName'),
-                last_name=request.data.get('lastName'),
+                first_name=request.data.get('first_name'),
+                last_name=request.data.get('last_name'),
                 dob=request.data.get('dob'),
                 photo=request.data.get('photo'),
                 gender=request.data.get('gender'),
             )
             account = Account.objects.create(
-                account_name=request.data.get('account_name'),
+                name=request.data.get('account_name'),
                 currency=request.data.get('currency'),
+                total_available=request.data.get('total_available'),
                 is_main_account=True,
-                owner=user,
+                id_user=user,
             )
             Balance.objects.create(
-                balance_month_year=PartialDate(date.today(), precision=PartialDate.MONTH),
-                account_id=account.id
+                date_reference=PartialDate(date.today(), precision=PartialDate.MONTH),
+                total_expense=0.0,
+                total_income=0.0,
+                id_account=account
             )
 
             response = Token.objects.get_or_create(user=user)
@@ -72,6 +75,7 @@ class AccountView(viewsets.ModelViewSet):
             permission_classes = [IsAccountOwner, IsAuthenticated]
         return [permission() for permission in permission_classes]
 
+# FIXME Adjust return, remove boolean flag when http code 200
     def get_queryset(self):
         return Account.objects.filter(owner=self.request.user).all()
 
@@ -253,3 +257,5 @@ class InvoiceView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Invoice.objects.filter(card__account__owner=self.request.user).all()
+
+
