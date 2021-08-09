@@ -75,7 +75,7 @@ class AccountView(viewsets.ModelViewSet):
             permission_classes = [IsAccountOwner, IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-# FIXME Adjust return, remove boolean flag when http code 200
+    # FIXME Adjust return, remove boolean flag when http code 200
     def get_queryset(self):
         return Account.objects.filter(owner=self.request.user).all()
 
@@ -259,3 +259,14 @@ class InvoiceView(viewsets.ModelViewSet):
         return Invoice.objects.filter(card__account__owner=self.request.user).all()
 
 
+class CurrencyView(viewsets.ModelViewSet):
+    serializer_class = CurrencySerializer
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        return Currency.objects.all()

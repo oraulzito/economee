@@ -60,3 +60,9 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'id', 'description', 'value', 'date_release', 'repeat_times', 'date_repeat', 'repeat_times',
             'is_release_paid', 'type', 'category']
+
+
+class CurrencySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Currency
+        fields = ['country', 'currency', 'code', 'symbol']

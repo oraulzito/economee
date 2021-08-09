@@ -39,7 +39,7 @@ class Account(models.Model):
     total_available = models.FloatField()
     # Owner attribute according to the class diagram
     id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
-    
+
     REQUIRED_FIELDS = ['name', 'id_user', 'currency']
 
     def __str__(self):
@@ -142,6 +142,16 @@ class BalanceRelease(models.Model):
     id_release = models.ForeignKey(Release, on_delete=models.CASCADE)
 
     REQUIRED_FIELDS = ['id_balance', 'id_release']
+
+    def __str__(self):
+        return '{}'.format(self)
+
+
+class Currency(models.Model):
+    country = models.CharField(max_length=100)
+    currency = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
+    symbol = models.CharField(max_length=100)
 
     def __str__(self):
         return '{}'.format(self)
