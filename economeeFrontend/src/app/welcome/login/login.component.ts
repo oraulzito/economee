@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {SessionService} from '../../../state/session/session.service';
 
 
 @Component({
@@ -10,24 +11,35 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 export class LoginComponent implements OnInit {
   validateForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private sessionService: SessionService
+  ) {
 
   }
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      email: [null, [Validators.required]],
+      username: [null, [Validators.required]],
       password: [null, [Validators.required]],
-      remember: [true]
+      // remember: [true]
     });
   }
 
   submitForm(): void {
-    for (const i in this.validateForm.controls) {
-      if (this.validateForm.controls.hasOwnProperty(i)) {
-        this.validateForm.controls[i].markAsDirty();
-        this.validateForm.controls[i].updateValueAndValidity();
-      }
+    if (this.validateForm.valid) {
+      this.sessionService.login(this.validateForm.value).subscribe(
+        (r) => {
+          //TODO redirect to dashboard
+          console.log(r);
+        },
+        (e) => {
+          //Todo show on screen the error, and not by alert
+          alert('Um erro aconteceu: ' + e);
+        },
+        () => {
+        }
+      );
     }
   }
 
