@@ -1,5 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {CurrencyService} from '../../../state/currency/currency.service';
+import {CurrencyQuery} from '../../../state/currency/currency.query';
+import {Currency} from '../../../state/currency/currency.model';
 
 @Component({
   selector: 'app-signup',
@@ -10,78 +13,40 @@ export class SignupComponent implements OnInit {
 
   actualStep = 1;
   sumbitted = false;
-
-  validateForm1: FormGroup;
-  validateForm2: FormGroup;
-  validateForm3: FormGroup;
+  currencies: Currency[];
 
   form = new FormGroup({
-    personalDetails: new FormGroup({
-      name: new FormControl('', [Validators.required]),
-      lastName: new FormControl('', [Validators.required]),
-      dob: new FormControl('', [Validators.required]),
-      gender: new FormControl(null, [Validators.required])
-    }),
-    signUpDetails: new FormGroup({
-      email: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required]),
-      repeatPassword: new FormControl('', [Validators.required]),
-      photo: new FormControl(null, [Validators.required])
-    }),
-    accountDetails: new FormGroup({
-      name: new FormControl('', Validators.required),
-      currency: new FormControl('', [Validators.required, Validators.email]),
-    }),
+    // personal info
+    first_name: new FormControl('', [Validators.required]),
+    last_name: new FormControl('', [Validators.required]),
+    dob: new FormControl('', [Validators.required]),
+    gender: new FormControl(null, [Validators.required]),
+    // profile info
+    username: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required]),
+    password: new FormControl('', [Validators.required]),
+    repeat_password: new FormControl('', [Validators.required]),
+    photo: new FormControl(null, [Validators.required]),
+    // account details
+    account_name: new FormControl('', Validators.required),
+    currency: new FormControl('', [Validators.required, Validators.email]),
   });
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private currencyService: CurrencyService,
+    private currencyQuery: CurrencyQuery
+  ) {
 
-  }
-
-  currentGroup(): FormGroup {
-    return this.getGroupAt(this.actualStep);
   }
 
   ngOnInit(): void {
-    this.validateForm1 = this.fb.group({
-      email: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      remember: [true]
-    });
-  }
+    // FIXME change it to query selection after the get
+    this.currencyService.get().subscribe(
+      c => this.currencies = c
+    );
 
-  isStepValid = (index: number): boolean => {
-    return this.getGroupAt(index).valid;
-  }
-
-  shouldValidate = (): boolean => {
-    return this.sumbitted === true;
-  }
-
-  steps = [
-    {
-      label: 'Informações pessoais',
-      isValid: this.isStepValid,
-      validate: this.shouldValidate,
-    },
-    {
-      label: 'Informações da Conta',
-      isValid: this.isStepValid,
-      validate: this.shouldValidate,
-    },
-    {
-      label: 'Informações da Conta Bancária1',
-      isValid: this.isStepValid,
-      validate: this.shouldValidate,
-    },
-  ];
-
-  next(): void {
-    this.actualStep += 1;
-  }
-
-  prev(): void {
-    this.actualStep -= 1;
+    console.log(this.currencies);
   }
 
   submit(): void {
@@ -89,20 +54,8 @@ export class SignupComponent implements OnInit {
 
     if (!this.form.valid) {
       this.form.markAllAsTouched();
-      this.validateForm1.valid;
-      this.validateForm2.valid;
-      this.validateForm3.valid;
     }
 
     console.log('Submitted data', this.form.value);
   }
-
-  getGroupAt(index: number): FormGroup {
-    const groups = Object.keys(this.form.controls).map((groupName) =>
-      this.form.get(groupName)
-    ) as FormGroup[];
-
-    return groups[index];
-  }
-
 }
