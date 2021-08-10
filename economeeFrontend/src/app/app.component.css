@@ -8,7 +8,7 @@
 
 nz-layout {
   background-color: #235C47 !important;
-  background-image: url("src/assets/background.svg");
+  background-image: url("../assets/background.svg");
   background-size: auto auto;
   background-repeat: no-repeat;
 }
@@ -21,7 +21,14 @@ nz-layout {
 }
 
 :host ::ng-deep .card-border {
-  border-radius: 5%;
+  border-radius: 16px;
+}
+
+:host ::ng-deep .vh-45 {
+  height: 45vw !important;
+}
+:host ::ng-deep .vh-50 {
+  height: 50vw !important;
 }
 
 :host ::ng-deep .vw-85 {

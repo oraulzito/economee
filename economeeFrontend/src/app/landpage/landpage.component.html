@@ -1,34 +1,43 @@
-<nz-card nzTitle="Economee" [nzExtra]="extraTemplate">
-    <nz-card-tab>
-      <nz-tabset nzSize="large" [(nzSelectedIndex)]="index">
-        <nz-tab nzTitle="Descrição"></nz-tab>
-        <nz-tab nzTitle="Funções"></nz-tab>
-        <nz-tab nzTitle="Sobre nós"></nz-tab>
-      </nz-tabset>
-    </nz-card-tab>
-   <main id="landpageContent" *ngIf="index === 0">
-      <h1>Economme: Você no controle do seu dinheiro!</h1>
-      <p>Planeje seus gastos e seu dinheiro de um jeito prático e simples, tudo em um só lugar. <br>Uma vida financeira organizada nunca foi tão fácil.</p>
-    </main>
-  <main id="landpageContent2" *ngIf="index === 1">
+<nz-card [nzExtra]="extraTemplate" nzTitle="Economee">
+  <nz-card-tab>
+    <nz-tabset [(nzSelectedIndex)]="index" nzSize="large">
+      <nz-tab nzTitle="Descrição"></nz-tab>
+      <nz-tab nzTitle="Funções"></nz-tab>
+      <nz-tab nzTitle="Sobre nós"></nz-tab>
+    </nz-tabset>
+  </nz-card-tab>
+  <main *ngIf="index === 0" id="landpageContent">
+    <h1>Economme: Você no controle do seu dinheiro!</h1>
+    <p>Planeje seus gastos e seu dinheiro de um jeito prático e simples, tudo em um só lugar. <br>Uma vida financeira
+      organizada nunca foi tão fácil.</p>
+  </main>
+  <main *ngIf="index === 1" id="landpageContent2">
     <div class="images">
       <div>
         <img src="../../assets/business.jpg">
       </div>
       <div>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed, scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl urna, sit amet faucibus ante scelerisque sed.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed,
+        scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl
+        urna, sit amet faucibus ante scelerisque sed.
       </div>
       <div>
         <img src="../../assets/business.jpg">
       </div>
     </div>
     <div class="aboutUs">
-      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed, scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl urna, sit amet faucibus ante scelerisque sed.</div>
+      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed,
+        scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl
+        urna, sit amet faucibus ante scelerisque sed.
+      </div>
       <div><img src="../../assets/business.jpg"></div>
-      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed, scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl urna, sit amet faucibus ante scelerisque sed.</div>
+      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed,
+        scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl
+        urna, sit amet faucibus ante scelerisque sed.
+      </div>
     </div>
   </main>
-  <main id="landpageContent3" *ngIf="index === 2">
+  <main *ngIf="index === 2" id="landpageContent3">
     <div class="images">
       <div>
         <img src="../../assets/gabriel.jpg">
@@ -46,13 +55,22 @@
       <div>Thiago</div>
     </div>
     <div class="aboutUs">
-      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed, scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl urna, sit amet faucibus ante scelerisque sed.</div>
-      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed, scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl urna, sit amet faucibus ante scelerisque sed.</div>
-      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed, scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl urna, sit amet faucibus ante scelerisque sed.</div>
+      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed,
+        scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl
+        urna, sit amet faucibus ante scelerisque sed.
+      </div>
+      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed,
+        scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl
+        urna, sit amet faucibus ante scelerisque sed.
+      </div>
+      <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin sit amet purus posuere, scelerisque nibh sed,
+        scelerisque odio. Nam a aliquam sapien. Vestibulum egestas risus sit amet ornare euismod. Nulla malesuada nisl
+        urna, sit amet faucibus ante scelerisque sed.
+      </div>
     </div>
   </main>
 </nz-card>
 <ng-template #extraTemplate>
-  <button nz-button nzType="text">Login</button>
-  <button nz-button nzType="primary">Cadastre-se</button>
+  <button nz-button nzType="text"><a class="text-decoration-none" href="/welcome/login">Login</a></button>
+  <button nz-button nzType="primary"><a class="text-decoration-none" href="/welcome/signIn">Cadastre-se</a></button>
 </ng-template>
