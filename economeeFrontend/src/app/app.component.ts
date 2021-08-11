@@ -1,10 +1,42 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
+import {UiStore} from '../state/ui/ui.store';
+import {Subscription} from 'rxjs';
+import {SessionQuery} from "../state/session/session.query";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   isCollapsed = false;
+  event$: Subscription;
+
+  constructor(
+    private router: Router,
+    private uiStore: UiStore,
+    private sessionQuery: SessionQuery
+  ) {
+    this.event$
+      = this.router.events
+      .subscribe(
+        (event) => {
+          console.log(event);
+          if (event instanceof NavigationStart || event instanceof NavigationEnd || event instanceof NavigationError) {
+            this.uiStore.update({url: event.url});
+          }
+        });
+  }
+
+  // tslint:disable-next-line:typedef
+  ngOnInit() {
+    console.log(JSON.stringify(this.sessionQuery.isLoggedIn$));
+
+  }
+
+  // tslint:disable-next-line:typedef
+  ngOnDestroy() {
+    this.event$.unsubscribe();
+  }
 }

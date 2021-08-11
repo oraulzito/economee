@@ -15,6 +15,9 @@
       </nz-form-control>
     </nz-form-item>
     <div class="login-form-margin" nz-row>
+      <div [nzSpan]="24" nz-col>
+        <span class="bg-danger text-white text-center" *ngIf="error">As credenciais informadas não estão corretas!</span>
+      </div>
       <div [nzSpan]="12" nz-col>
         <!--        TODO-->
         <!--        <label formControlName="remember" nz-checkbox>-->

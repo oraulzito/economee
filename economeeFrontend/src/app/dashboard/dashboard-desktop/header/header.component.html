@@ -6,5 +6,17 @@
     <nz-date-picker class="text-white" nzBorderless nzFormat="monthFormat" nzMode="month"></nz-date-picker>
   </div>
   <div nz-col nzSm="6">
+    <button [nzDropdownMenu]="menu2" nz-button nz-dropdown nzPlacement="bottomRight">
+      <i nz-icon nzType="user"></i>
+    </button>
   </div>
+  <nz-dropdown-menu #menu2="nzDropdownMenu">
+    <ul nz-menu>
+      <li nz-menu-item>menu2 1st menu item</li>
+      <li nz-menu-item>menu2 2nd menu item</li>
+      <li (click)="logout()" class="btn-danger text-white" nz-menu-item>
+        Logout
+      </li>
+    </ul>
+  </nz-dropdown-menu>
 </div>

@@ -4,10 +4,5 @@ export interface Ui {
   screenWidth: number;
   screenHeight: number;
   pageLocation: string;
-}
-
-export function createUi(params: Partial<Ui>) {
-  return {
-
-  } as Ui;
+  url: string;
 }

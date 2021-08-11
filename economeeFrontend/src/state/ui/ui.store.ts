@@ -14,6 +14,7 @@ export class UiStore extends Store<UiState> {
     super({
       id: 1,
       mobile: false,
+      ui: '',
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
     });

@@ -4,6 +4,7 @@ import {SessionState, SessionStore} from './session.store';
 
 @Injectable({providedIn: 'root'})
 export class SessionQuery extends Query<SessionState> {
+  isLoggedIn$ = this.select(state => state.token !== '');
 
   constructor(protected store: SessionStore) {
     super(store);

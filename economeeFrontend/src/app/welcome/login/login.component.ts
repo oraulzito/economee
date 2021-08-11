@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SessionService} from '../../../state/session/session.service';
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -10,10 +11,12 @@ import {SessionService} from '../../../state/session/session.service';
 })
 export class LoginComponent implements OnInit {
   validateForm: FormGroup;
+  error = false;
 
   constructor(
     private fb: FormBuilder,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private router: Router,
   ) {
 
   }
@@ -30,12 +33,10 @@ export class LoginComponent implements OnInit {
     if (this.validateForm.valid) {
       this.sessionService.login(this.validateForm.value).subscribe(
         (r) => {
-          //TODO redirect to dashboard
-          console.log(r);
+          this.router.navigate(['dashboard']);
         },
         (e) => {
-          //Todo show on screen the error, and not by alert
-          alert('Um erro aconteceu: ' + e);
+          this.error = true;
         },
         () => {
         }
