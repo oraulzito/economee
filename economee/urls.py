@@ -13,15 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
-from django.contrib import admin
 from django.conf.urls import include
+from django.contrib import admin
 from django.urls import path
+
 from economeeApi.urls import router
-from rest_framework.authtoken import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)),
-    path('api/v1/login', views.obtain_auth_token),
+    path('api/', include(router.urls)),
+    path('auth/', include('dj_rest_auth.urls')),
 ]

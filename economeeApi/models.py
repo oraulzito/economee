@@ -31,16 +31,25 @@ class User(AbstractUser):
         return '{}'.format(self.username)
 
 
+class Currency(models.Model):
+    country = models.CharField(max_length=100)
+    currency = models.CharField(max_length=100)
+    code = models.CharField(max_length=100)
+    symbol = models.CharField(max_length=100)
+
+    def __str__(self):
+        return '{}'.format(self)
+
+
 class Account(models.Model):
     name = models.CharField(max_length=24)
-    # TODO make currency an ENUM
-    currency = models.CharField(max_length=2)
     is_main_account = models.BooleanField(default=False)
-    total_available = models.FloatField()
+    total_available = models.FloatField(default=0.0)
     # Owner attribute according to the class diagram
-    id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['name', 'id_user', 'currency']
+    REQUIRED_FIELDS = ['name', 'is_main_account', 'currency']
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -49,10 +58,10 @@ class Account(models.Model):
 class Balance(models.Model):
     # Month reference, expected format MM/YYYY
     date_reference = PartialDateField()
-    id_account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    total_income = models.FloatField()
-    total_expense = models.FloatField()
-    REQUIRED_FIELDS = ['date_reference', 'id_account']
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    total_income = models.FloatField(default=0.0)
+    total_expense = models.FloatField(default=0.0)
+    REQUIRED_FIELDS = ['date_reference', 'account']
 
     def __str__(self):
         return '{}'.format(self.date_reference)
@@ -60,23 +69,23 @@ class Balance(models.Model):
 
 class Card(models.Model):
     name = models.CharField(max_length=24)
-    credit = models.FloatField()
-    credit_spent = models.FloatField()
+    credit = models.FloatField(default=0.0)
+    credit_spent = models.FloatField(default=0.0)
     pay_date = PartialDateField()
-    id_account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['name', 'credit', 'credit_spent', 'pay_date', 'id_account']
+    REQUIRED_FIELDS = ['name', 'credit', 'credit_spent', 'pay_date', 'account']
 
     def __str__(self):
         return '{}'.format(self.name)
 
 
 class ReleaseCategory(models.Model):
-    name = models.CharField(max_length=24)
+    name = models.CharField(max_length=124)
     # Owner according to class diagram
-    id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
 
-    REQUIRED_FIELDS = ['name', 'id_user']
+    REQUIRED_FIELDS = ['name', 'user']
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -84,11 +93,11 @@ class ReleaseCategory(models.Model):
 
 class Invoice(models.Model):
     date_reference = PartialDateField()
-    id_card = models.ForeignKey(Card, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE)
     # TODO send a notification in the pay_date of the card, confirming if it's paid
     is_paid = models.BooleanField(default=False)
-    total = models.FloatField()
-    REQUIRED_FIELDS = ['date_reference', 'id_card', 'is_paid']
+    total = models.FloatField(default=0.0)
+    REQUIRED_FIELDS = ['date_reference', 'card', 'is_paid']
 
     def __str__(self):
         return '{}'.format(self.date_reference)
@@ -128,30 +137,20 @@ class Release(models.Model):
 
 
 class InvoiceRelease(models.Model):
-    id_invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
-    id_release = models.ForeignKey(Release, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    release = models.ForeignKey(Release, on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['id_invoice', 'id_release']
+    REQUIRED_FIELDS = ['invoice', 'release']
 
     def __str__(self):
         return '{}'.format(self)
 
 
 class BalanceRelease(models.Model):
-    id_balance = models.ForeignKey(Balance, on_delete=models.CASCADE)
-    id_release = models.ForeignKey(Release, on_delete=models.CASCADE)
+    balance = models.ForeignKey(Balance, on_delete=models.CASCADE)
+    release = models.ForeignKey(Release, on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['id_balance', 'id_release']
-
-    def __str__(self):
-        return '{}'.format(self)
-
-
-class Currency(models.Model):
-    country = models.CharField(max_length=100)
-    currency = models.CharField(max_length=100)
-    code = models.CharField(max_length=100)
-    symbol = models.CharField(max_length=100)
+    REQUIRED_FIELDS = ['balance', 'release']
 
     def __str__(self):
         return '{}'.format(self)

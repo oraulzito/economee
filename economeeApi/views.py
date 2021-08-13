@@ -48,13 +48,13 @@ class UserView(viewsets.ModelViewSet):
                 currency=request.data.get('currency'),
                 total_available=request.data.get('total_available'),
                 is_main_account=True,
-                id_user=user,
+                user=user,
             )
             Balance.objects.create(
                 date_reference=PartialDate(date.today(), precision=PartialDate.MONTH),
                 total_expense=0.0,
                 total_income=0.0,
-                id_account=account
+                account=account
             )
 
             response = Token.objects.get_or_create(user=user)
@@ -77,7 +77,18 @@ class AccountView(viewsets.ModelViewSet):
 
     # FIXME Adjust return, remove boolean flag when http code 200
     def get_queryset(self):
-        return Account.objects.filter(owner=self.request.user).all()
+        return Account.objects.filter(user=self.request.user.id).all()
+
+    def create(self, request, *args, **kwargs):
+        account = Account.objects.create(
+            name=request.data.get('name'),
+            currency_id=request.data.get('currency'),
+            total_available=request.data.get('total_available'),
+            is_main_account=request.data.get('is_main_account'),
+            user=self.request.user,
+        )
+
+        return HttpResponse(account, content_type="application/json")
 
 
 # TODO test CRUD
@@ -95,7 +106,7 @@ class BalanceView(viewsets.ModelViewSet):
 
     # FIXME get only the balance of the required month
     def get_queryset(self):
-        return Balance.objects.filter(account_id_user=self.request.user).all()
+        return Balance.objects.filter(account__user=self.request.user.id).all()
 
 
 # TODO test CRUD
@@ -112,7 +123,7 @@ class CardView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Card.objects.filter(account__owner=self.request.user)
+        return Card.objects.filter(account__user=self.request.user)
 
 
 # TODO test CRUD
@@ -129,7 +140,12 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return ReleaseCategory.objects.filter(owner=self.request.user)
+        return ReleaseCategory.objects.filter(user=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        releaseCategory = ReleaseCategory.objects.create(name=self.request.data.get('name'),
+                                                         user_id=self.request.user.id)
+        return HttpResponse(releaseCategory, content_type="application/json")
 
 
 class ReleaseView(viewsets.ModelViewSet):
@@ -147,15 +163,15 @@ class ReleaseView(viewsets.ModelViewSet):
     def get_queryset(self):
         precision_date = self.request.query_params.get('month_year_view')
 
-        if precision_date is not None and precision_date != '':
-            precision_date = datetime.strptime(precision_date, '%Y-%m').date()
-            precision_date = precision_date.replace(day=1)
-            precision_date = PartialDate(precision_date, precision=PartialDate.MONTH)
-            balance = Balance.objects.filter(account__owner=self.request.user, balance_month_year=precision_date).all()
-        else:
-            balance = Balance.objects.filter(account__owner=self.request.user).all()
+        # if precision_date is not None and precision_date != '':
+        #     precision_date = datetime.strptime(precision_date, '%Y-%m').date()
+        #     precision_date = precision_date.replace(day=1)
+        #     precision_date = PartialDate(precision_date, precision=PartialDate.MONTH)
+        #
+        # else:
+        #     balance = Balance.objects.filter(account__user=self.request.user.id).all()
 
-        return Release.objects.filter(balance__in=balance).all()
+        return Release.objects.all()
 
     # FIXME
     def create(self, request, *args, **kwargs):
@@ -173,13 +189,13 @@ class ReleaseView(viewsets.ModelViewSet):
             precision_date = PartialDate(repeat_date + relativedelta(months=+n), precision=PartialDate.MONTH)
 
             invoice = Invoice()
-            # If it's an id_card release
-            if request.data.get('id_card') is not None:
+            # If it's an card release
+            if request.data.get('card') is not None:
                 invoice = \
-                    Invoice.objects.filter(card_id=int(request.data.get('id_card')),
+                    Invoice.objects.filter(card_id=int(request.data.get('card')),
                                            invoice_month_year=precision_date).first()
                 # FIXME if the card don't exist send a 400 error
-                card = Card.objects.filter(id=int(request.data.get('id_card'))).first()
+                card = Card.objects.filter(id=int(request.data.get('card'))).first()
                 # if invoice does not exist
                 if invoice is None:
                     # if the purchase is done in the last billing day of the month the release will be done only in the next next month
@@ -189,7 +205,7 @@ class ReleaseView(viewsets.ModelViewSet):
 
                     invoice = Invoice.objects.create(
                         invoice_month_year=precision_date,
-                        card_id=int(request.data.get('id_card')),
+                        card_id=int(request.data.get('card')),
                         total=float(request.data.get('value')),
                         is_invoice_paid=False
                     )
@@ -197,12 +213,13 @@ class ReleaseView(viewsets.ModelViewSet):
                     invoice.total = invoice.total + float(request.data.get('value'))
                     invoice.save()
 
-            balance = Balance.objects.filter(account_id=int(request.data.get('id_account')),
-                                             balance_month_year=precision_date).first()
+            #  FIXME CHECK IF THE USER IT's THE ACCOUNT OWNER
+            balance = Balance.objects.filter(account_id=int(request.data.get('account_id')),
+                                             date_reference=precision_date).first()
             # If balance does not exist
             if balance is None:
                 balance = Balance.objects.create(
-                    balance_month_year=precision_date,
+                    date_reference=precision_date,
                     total_expense=float(request.data.get('value')),
                     total_income=0,
                     account_id=int(request.data.get('account_id'))
@@ -226,18 +243,29 @@ class ReleaseView(viewsets.ModelViewSet):
             is_release_paid = bool(request.data.get('is_release_paid'))
 
         releases = [Release(
-            balance=p[0],
-            invoice=p[1],
             description=request.data.get('description'),
             value=float(request.data.get('value')),
             date_release=date_release,
-            repeat_date=date_release + relativedelta(months=+p[2]),
+            date_repeat=date_release + relativedelta(months=+p[2]),
             repeat_times=int(request.data.get('repeat_times')),
             installment_number=p[2],
-            release_type=request.data.get('type'),
+            type=request.data.get('type'),
             is_release_paid=is_release_paid,
-            release_category_id=int(request.data.get('release_category_id'))) for p in params]
+            category_id=int(request.data.get('category_id'))) for p in params]
+
         Release.objects.bulk_create(releases)
+
+        # FIXME THIS PART IT's NOT WORKING
+        if request.data.get('card') is not None:
+            [InvoiceRelease(
+                release=releases[p],
+                balance=p[0]
+            ) for p in params]
+        else:
+            [InvoiceRelease(
+                release=releases[p],
+                balance=p[0]
+            ) for p in params]
 
         return HttpResponse(releases, content_type="application/json")
 
@@ -256,7 +284,7 @@ class InvoiceView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Invoice.objects.filter(card__account__owner=self.request.user).all()
+        return Invoice.objects.filter(card__account__user=self.request.user.id).all()
 
 
 class CurrencyView(viewsets.ModelViewSet):

@@ -14,28 +14,30 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 
+class CurrencySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Currency
+        fields = ['country', 'currency', 'code', 'symbol']
+
+
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
-    owner = UserSerializer(allow_null=True)
+    currency = CurrencySerializer(allow_null=False)
 
     class Meta:
         model = Account
-        fields = ['id', 'name', 'currency', 'is_main_account', 'id_user']
+        fields = ['id', 'name', 'currency', 'is_main_account']
 
 
 class BalanceSerializer(serializers.HyperlinkedModelSerializer):
-    account = AccountSerializer(allow_null=True)
-
     class Meta:
         model = Balance
-        fields = ['id', 'date_reference', 'id_account']
+        fields = ['id', 'date_reference', 'total_income', 'total_expense', 'account_id']
 
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
-    account = AccountSerializer(allow_null=True)
-
     class Meta:
         model = Card
-        fields = ['id', 'name', 'credit', 'credit_spent', 'pay_date', 'id_account']
+        fields = ['id', 'name', 'credit', 'credit_spent', 'pay_date', 'account_id']
 
 
 class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -45,24 +47,17 @@ class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
-    card = CardSerializer(allow_null=True)
-
     class Meta:
         model = Invoice
-        fields = ['id', 'total', 'date_reference', 'is_paid', 'id_card']
+        fields = ['id', 'total', 'date_reference', 'is_paid', 'card_id']
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-    release_category = ReleaseCategorySerializer()
+    category = ReleaseCategorySerializer()
 
     class Meta:
         model = Release
         fields = [
-            'id', 'description', 'value', 'date_release', 'repeat_times', 'date_repeat', 'repeat_times',
+            'id', 'description', 'value', 'date_release',
+            'installment_number', 'date_repeat', 'repeat_times',
             'is_release_paid', 'type', 'category']
-
-
-class CurrencySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Currency
-        fields = ['country', 'currency', 'code', 'symbol']
