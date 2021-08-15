@@ -175,99 +175,124 @@ class ReleaseView(viewsets.ModelViewSet):
 
     # FIXME
     def create(self, request, *args, **kwargs):
-        balances = []
-        installments = []
-        invoices = []
-        n = 0
-        total = int(request.data.get('repeat_times'))
+        #  CHECK IF THE USER IT's THE ACCOUNT OWNER
+        account = Account.objects.filter(id=int(request.data.get('account_id')), user_id=request.user.id).first()
 
-        repeat_date = datetime.strptime(request.data.get('date_repeat'), '%Y-%m-%d').date()
-        repeat_date = repeat_date.replace(day=1)
+        if account:
+            balances = []
+            installments = []
+            invoices = []
+            n = 0
+            total = int(request.data.get('repeat_times'))
 
-        while n < total:
-            # credit card shopping releases will be released only in the next month after the shopping
-            precision_date = PartialDate(repeat_date + relativedelta(months=+n), precision=PartialDate.MONTH)
+            # Format the date repeat to the first day of the month (card's releases)
+            repeat_date = datetime.strptime(request.data.get('date_repeat'), '%Y-%m-%d').date()
+            repeat_date = repeat_date.replace(day=1)
 
-            invoice = Invoice()
-            # If it's an card release
-            if request.data.get('card') is not None:
-                invoice = \
-                    Invoice.objects.filter(card_id=int(request.data.get('card')),
-                                           invoice_month_year=precision_date).first()
-                # FIXME if the card don't exist send a 400 error
-                card = Card.objects.filter(id=int(request.data.get('card'))).first()
-                # if invoice does not exist
-                if invoice is None:
-                    # if the purchase is done in the last billing day of the month the release will be done only in the next next month
-                    if (repeat_date - card.pay_date).days < 10:
-                        repeat_date = repeat_date + relativedelta(months=+ 1)
-                        precision_date = PartialDate(repeat_date, precision=PartialDate.MONTH)
+            while n < total:
+                # credit card shopping releases will be released only in the next month after the shopping
+                precision_date = PartialDate(repeat_date + relativedelta(months=+n), precision=PartialDate.MONTH)
 
-                    invoice = Invoice.objects.create(
-                        invoice_month_year=precision_date,
-                        card_id=int(request.data.get('card')),
-                        total=float(request.data.get('value')),
-                        is_invoice_paid=False
-                    )
+                invoice = Invoice()
+                # If it's an card release
+                if request.data.get('card_id') is not None:
+                    # check if the card is from user and exists
+                    card = Card.objects.filter(id=int(request.data.get('card_id')), account=account).first()
+                    if card:
+                        invoice = \
+                            Invoice.objects.filter(card_id=int(request.data.get('card_id')),
+                                                   invoice_month_year=precision_date).first()
+                        # if invoice does not exist
+                        if invoice is None:
+                            # if the purchase is done in the last billing day of the month the release will be done
+                            # only in the next next month
+                            if (repeat_date - card.pay_date).days < 10:
+                                repeat_date = repeat_date + relativedelta(months=+ 1)
+                                precision_date = PartialDate(repeat_date, precision=PartialDate.MONTH)
+
+                            invoice = Invoice.objects.create(
+                                invoice_month_year=precision_date,
+                                card_id=int(request.data.get('card')),
+                                total=float(request.data.get('value')),
+                                is_invoice_paid=False
+                            )
+                        else:
+                            invoice.total = invoice.total + float(request.data.get('value'))
+                            invoice.save()
+                    else:
+                        return HttpResponse('This card isn\`t yours', content_type="application/json")
+
+                balance = Balance.objects.filter(account=account, date_reference=precision_date).first()
+
+                # If balance does not exist, create a new one with the value, else just add the expense or
+                # income value
+                if balance is None:
+                    if request.data.get('type') == 'ER':
+                        balance = Balance.objects.create(
+                            date_reference=precision_date,
+                            total_expense=float(request.data.get('value')),
+                            total_income=0.0,
+                            account_id=int(request.data.get('account_id'))
+                        )
+                    elif request.data.get('type') == 'IR':
+                        balance = Balance.objects.create(
+                            date_reference=precision_date,
+                            total_expense=0.0,
+                            total_income=float(request.data.get('value')),
+                            account_id=int(request.data.get('account_id'))
+                        )
                 else:
-                    invoice.total = invoice.total + float(request.data.get('value'))
-                    invoice.save()
+                    if request.data.get('type') == 'ER':
+                        balance.total_expense = balance.total_expense + float(request.data.get('value'))
+                    elif request.data.get('type') == 'IR':
+                        balance.total_expense = balance.total_income + float(request.data.get('value'))
+                    balance.save()
 
-            #  FIXME CHECK IF THE USER IT's THE ACCOUNT OWNER
-            balance = Balance.objects.filter(account_id=int(request.data.get('account_id')),
-                                             date_reference=precision_date).first()
-            # If balance does not exist
-            if balance is None:
-                balance = Balance.objects.create(
-                    date_reference=precision_date,
-                    total_expense=float(request.data.get('value')),
-                    total_income=0,
-                    account_id=int(request.data.get('account_id'))
-                )
+                balances.append(balance)
+                invoices.append(invoice)
+                installments.append(n + 1)
+                n = n + 1
+
+            params = zip(balances, invoices, installments)
+
+            # If the repeat date is different than the release date then maybe the release will not be marked as paid
+            date_release = datetime.strptime(request.data.get('date_release'), '%Y-%m-%d').date()
+            if date_release != repeat_date:
+                is_release_paid = False
             else:
-                # FIXME add the earned value or the expense value
-                balance.total_expense = balance.total_expense + float(request.data.get('value'))
-                balance.save()
+                is_release_paid = bool(request.data.get('is_release_paid'))
 
-            balances.append(balance)
-            invoices.append(invoice)
-            installments.append(n + 1)
-            n = n + 1
+            # Create the release
+            releases = [Release(
+                description=request.data.get('description'),
+                value=float(request.data.get('value')),
+                date_release=date_release,
+                date_repeat=date_release + relativedelta(months=+p[2]),
+                repeat_times=int(request.data.get('repeat_times')),
+                installment_number=p[2],
+                type=request.data.get('type'),
+                is_release_paid=is_release_paid,
+                category_id=int(request.data.get('category_id'))) for p in params]
 
-        params = zip(balances, invoices, installments)
+            created_releases = Release.objects.bulk_create(releases)
 
-        date_release = datetime.strptime(request.data.get('date_release'), '%Y-%m-%d').date()
-        if date_release != repeat_date:
-            is_release_paid = False
+            #  Create the relationships between releases, invoices or balances
+            if request.data.get('card_id') is not None:
+                ir = [InvoiceRelease(
+                    release_id=created_releases[index].id,
+                    invoice_id=invoices[index].id
+                ) for index in range(len(list(params))+1)]
+                InvoiceRelease.objects.bulk_create(ir)
+            else:
+                br = [BalanceRelease(
+                    release_id=created_releases[index].id,
+                    balance_id=balances[index].id
+                ) for index in range(len(list(params))+1)]
+                BalanceRelease.objects.bulk_create(br)
+
+            return HttpResponse(releases, content_type="application/json")
         else:
-            is_release_paid = bool(request.data.get('is_release_paid'))
-
-        releases = [Release(
-            description=request.data.get('description'),
-            value=float(request.data.get('value')),
-            date_release=date_release,
-            date_repeat=date_release + relativedelta(months=+p[2]),
-            repeat_times=int(request.data.get('repeat_times')),
-            installment_number=p[2],
-            type=request.data.get('type'),
-            is_release_paid=is_release_paid,
-            category_id=int(request.data.get('category_id'))) for p in params]
-
-        Release.objects.bulk_create(releases)
-
-        # FIXME THIS PART IT's NOT WORKING
-        if request.data.get('card') is not None:
-            [InvoiceRelease(
-                release=releases[p],
-                balance=p[0]
-            ) for p in params]
-        else:
-            [InvoiceRelease(
-                release=releases[p],
-                balance=p[0]
-            ) for p in params]
-
-        return HttpResponse(releases, content_type="application/json")
+            return HttpResponse('This account isn\`t yours', content_type="application/json")
 
 
 # TODO test CRUD
