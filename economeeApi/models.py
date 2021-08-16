@@ -154,3 +154,13 @@ class BalanceRelease(models.Model):
 
     def __str__(self):
         return '{}'.format(self)
+
+
+class BalanceInvoice(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    balance = models.ForeignKey(Balance, on_delete=models.CASCADE)
+
+    REQUIRED_FIELDS = ['balance', 'invoice']
+
+    def __str__(self):
+        return '{}'.format(self)
