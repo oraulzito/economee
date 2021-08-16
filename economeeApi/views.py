@@ -110,10 +110,10 @@ class BalanceView(viewsets.ModelViewSet):
             date_reference = date_reference.replace(day=1)
             date_reference = PartialDate(date_reference)
             # FIXME return only the object, not an array
-            return Balance.objects.filter(account_id=self.request.data.get('account_id'),
+            return Balance.objects.filter(id=self.get_object().id,
                                           date_reference=date_reference).all()
         else:
-            return Balance.objects.filter(account_id=self.request.data.get('account_id')).all()
+            return Balance.objects.filter(id=self.get_object().id,).all()
 
     def create(self, request, *args, **kwargs):
         #  CHECK IF THE USER IT's THE ACCOUNT OWNER
