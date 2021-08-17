@@ -9,12 +9,12 @@ from rest_framework import viewsets, authentication
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .permissions import IsOwner, IsObjOwner, IsAccountOwner
+from .permissions import IsObjOwner, IsAccountOwner, Deny, IsAdmin
 from .serializers import *
 
 
 # Create your views here.
-# TODO test CRUD
+# FIXME make user delete work
 class UserView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = UserSerializer
@@ -24,7 +24,7 @@ class UserView(viewsets.ModelViewSet):
         if self.action == 'create':
             permission_classes = [AllowAny]
         else:
-            permission_classes = [IsOwner]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
@@ -45,20 +45,18 @@ class UserView(viewsets.ModelViewSet):
             )
             account = Account.objects.create(
                 name=request.data.get('account_name'),
-                currency=request.data.get('currency'),
-                total_available=request.data.get('total_available'),
+                currency_id=request.data.get('currency_id'),
                 is_main_account=True,
                 user=user,
             )
             Balance.objects.create(
                 date_reference=PartialDate(date.today(), precision=PartialDate.MONTH),
-                total_expense=0.0,
-                total_income=0.0,
                 account=account
             )
-
-            response = Token.objects.get_or_create(user=user)
-            return HttpResponse(response, content_type="application/json")
+            return HttpResponse(Token.objects.get_or_create(user=user)[0],
+                                content_type="application/json")
+        else:
+            return HttpResponse('The password don\'t match', content_type="application/json")
 
 
 # TODO test CRUD
@@ -71,11 +69,10 @@ class AccountView(viewsets.ModelViewSet):
         permission_classes = []
         if self.action == 'create':
             permission_classes = [IsAuthenticated]
-        elif self.action == 'list' or self.action == 'post' or self.action == 'delete':
+        elif self.action == 'list' or self.action == 'patch' or self.action == 'delete':
             permission_classes = [IsAccountOwner, IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-    # FIXME Adjust return, remove boolean flag when http code 200
     def get_queryset(self):
         return Account.objects.filter(user=self.request.user.id).all()
 
@@ -83,7 +80,6 @@ class AccountView(viewsets.ModelViewSet):
         account = Account.objects.create(
             name=request.data.get('name'),
             currency_id=request.data.get('currency'),
-            total_available=request.data.get('total_available'),
             is_main_account=request.data.get('is_main_account'),
             user=self.request.user,
         )
@@ -100,8 +96,10 @@ class BalanceView(viewsets.ModelViewSet):
         permission_classes = []
         if self.action == 'create':
             permission_classes = [IsAuthenticated]
-        elif self.action == 'list' or self.action == 'post' or self.action == 'delete':
+        elif self.action == 'list':
             permission_classes = [IsObjOwner, IsAuthenticated]
+        elif self.action == 'post' or self.action == 'delete':
+            permission_classes = [Deny]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
@@ -113,7 +111,7 @@ class BalanceView(viewsets.ModelViewSet):
             return Balance.objects.filter(id=self.get_object().id,
                                           date_reference=date_reference).all()
         else:
-            return Balance.objects.filter(id=self.get_object().id,).all()
+            return Balance.objects.filter(account__user=self.request.user.id).all()
 
     def create(self, request, *args, **kwargs):
         #  CHECK IF THE USER IT's THE ACCOUNT OWNER
@@ -129,8 +127,6 @@ class BalanceView(viewsets.ModelViewSet):
             if balanceExists is None and balanceExists != False:
                 balance = Balance.objects.create(
                     date_reference=date_reference,
-                    total_expense=self.request.data.get('total_expense'),
-                    total_income=self.request.data.get('total_income'),
                     account_id=self.request.data.get('account_id'),
                 )
                 return HttpResponse(balance, content_type="application/json")
@@ -154,7 +150,7 @@ class CardView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Card.objects.filter(account__user=self.request.user)
+        return Card.objects.filter(account__user_id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
         card = Card.objects.create(
@@ -167,7 +163,7 @@ class CardView(viewsets.ModelViewSet):
         return HttpResponse(card, content_type="application/json")
 
 
-# TODO test CRUD
+# FIXME make release category read only
 class ReleaseCategoryView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = ReleaseCategorySerializer
@@ -202,16 +198,17 @@ class ReleaseView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        date_release = self.request.query_params.get('month_year_view')
-
+        # date_release = self.request.query_params.get('month_year_view')
+        #
         # if date_release is not None and date_release != '':
         #     date_release = datetime.strptime(date_release, '%Y-%m').date()
         #     date_release = date_release.replace(day=1)
         #     date_release = PartialDate(date_release, precision=PartialDate.MONTH)
-        #
+        #     balance = Balance.objects.filter(account__user=self.request.user.id, date_release).all()
         # else:
         #     balance = Balance.objects.filter(account__user=self.request.user.id).all()
-
+        #
+        # return balance
         return Release.objects.all()
 
     # FIXME
@@ -246,12 +243,32 @@ class ReleaseView(viewsets.ModelViewSet):
                     return HttpResponse('This card isn\`t yours', content_type="application/json")
 
             for n in range(repeat_times):
+                """BALANCE"""
+                # check if there's an balance already created for that month
+                date_reference_balance = date_release.replace(day=1)
 
-                """INVOICE"""
-                invoice = Invoice()
-                # Card releases, create or add values to the invoice
-                if card is not None:
+                # Balance day must always be the 1º day of the month
+                date_reference_balance = PartialDate(date_reference_balance + relativedelta(months=+n),
+                                                     precision=PartialDate.MONTH)
 
+                balance = Balance.objects.filter(account=account, date_reference=date_reference_balance).first()
+
+                # If balance does not exist, create a new one with the value, else just add the expense or
+                # income value
+                if balance is None:
+                    balance = Balance.objects.create(
+                        date_reference=date_reference_balance,
+                        account_id=int(request.data.get('account_id'))
+                    )
+
+                balances.append(balance)
+                installments.append(n + 1)
+
+            # Card releases, create or add values to the invoice
+            if card is not None:
+                for n in range(repeat_times):
+                    """INVOICE"""
+                    invoice = Invoice()
                     # check if there's a invoice already created for that month
                     date_reference_invoice = date_release.replace(day=pay_date.day)
 
@@ -265,122 +282,35 @@ class ReleaseView(viewsets.ModelViewSet):
                     date_reference_invoice = PartialDate(date_reference_invoice, precision=PartialDate.MONTH)
                     invoice = Invoice.objects.filter(card_id=card_id, date_reference=date_reference_invoice).first()
 
-                    if invoice is not None:
-                        # if invoice exist, just add or remove the value from it
-                        if request.data.get('type') == 'ER':
-                            # If it's an expanse
-                            invoice.total = invoice.total + float(request.data.get('value'))
-                        elif request.data.get('type') == 'IR':
-                            # If it's an restitution
-                            invoice.total = invoice.total - float(request.data.get('value'))
-                        invoice.save()
-                    else:
+                    if invoice is None:
                         # if invoice does not exist, create a new one
                         invoice = Invoice.objects.create(
                             date_reference=date_reference_invoice,
                             card_id=int(card_id),
-                            total=float(request.data.get('value')),
-                            is_paid=False
+                            is_paid=False,
+                            balance=balances[n]
                         )
 
-                """BALANCE"""
-                # check if there's an balance already created for that month
-                date_reference_balance = date_release.replace(day=1)
-
-                # Balance day must always be the 1º day of the month
-                date_reference_balance = PartialDate(date_reference_balance + relativedelta(months=+n),
-                                                     precision=PartialDate.MONTH)
-
-                balance = Balance.objects.filter(account=account, date_reference=date_reference_balance).first()
-
-                # If balance does not exist, create a new one with the value, else just add the expense or
-                # income value
-                if balance is not None:
-                    if request.data.get('type') == 'ER':
-                        balance.total_expense = balance.total_expense + float(request.data.get('value'))
-                    elif request.data.get('type') == 'IR':
-                        balance.total_income = balance.total_income + float(request.data.get('value'))
-                    balance.save()
-                else:
-                    balance = Balance.objects.create(
-                        date_reference=date_reference_balance,
-                        total_expense=float(request.data.get('value')) if request.data.get('type') == 'ER' else 0.0,
-                        total_income=float(request.data.get('value')) if request.data.get('type') == 'IR' else 0.0,
-                        account_id=int(request.data.get('account_id'))
-                    )
-
-                balances.append(balance)
-                invoices.append(invoice)
-                installments.append(n + 1)
+                    invoices.append(invoice)
 
             # Create the release
             releases = [Release(
                 description=request.data.get('description'),
                 value=float(request.data.get('value')),
-                date_release=date_release + relativedelta(months=+i) if repeat_times > 1 else date_release,
-                date_repeat=date_repeat + relativedelta(months=+i) if repeat_times > 1 else date_repeat,
+                date_release=date_release + relativedelta(months=+i),
+                date_repeat=date_repeat + relativedelta(months=+i),
                 repeat_times=int(request.data.get('repeat_times')),
-                installment_number=i,
+                installment_number=i + 1,
                 type=request.data.get('type'),
                 is_release_paid=bool(request.data.get('is_release_paid')),
-                category_id=int(request.data.get('category_id'))) for i in installments]
+                category_id=int(request.data.get('category_id')),
+                balance=balances[i] if card_id is None else None,
+                invoice=invoices[i] if card_id is not None else None
+            ) for i in range(repeat_times)]
 
             created_releases = Release.objects.bulk_create(releases)
 
-            #  Create the relationships between releases, invoices or balances
-            if card is not None:
-                ir = [InvoiceRelease(
-                    release_id=created_releases[index].id,
-                    invoice_id=invoices[index].id
-                ) for index in range(repeat_times)]
-
-                bi = [BalanceInvoice(
-                    balance_id=balances[index].id,
-                    invoice_id=invoices[index].id
-                ) for index in range(repeat_times) if (BalanceInvoice.objects.filter(balance_id=balances[index].id,
-                                                                                     invoice_id=invoices[
-                                                                                         index].id).first() is None)]
-
-                if ir is not None:
-                    InvoiceRelease.objects.bulk_create(ir)
-
-                if bi is not None:
-                    BalanceInvoice.objects.bulk_create(bi)
-            else:
-                br = [BalanceRelease(
-                    release_id=created_releases[index].id,
-                    balance_id=balances[index].id
-                ) for index in range(repeat_times)]
-                if br is not None:
-                    BalanceRelease.objects.bulk_create(br)
-
-            return HttpResponse(releases, content_type="application/json")
-        else:
-            return HttpResponse('This account isn\`t yours', content_type="application/json")
-
-    def destroy(self, request, *args, **kwargs):
-        account = Account.objects.filter(id=int(request.data.get('account_id')), user_id=request.user.id).first()
-        if account:
-            release_id = int(self.get_object().id)
-            release = Release.objects.filter(id=release_id).first()
-
-            balanceRelease = BalanceRelease.objects.filter(release_id=release_id).first()
-            if balanceRelease is not None:
-                balance = Balance.objects.filter(id=balanceRelease.balance_id).first()
-                if release.type == 'ER':
-                    balance.total_expense = balance.total_expense - release.value
-                elif release.type == 'IR':
-                    balance.total_income = balance.total_income - release.value
-                balance.save()
-
-            releaseInvoice = InvoiceRelease.objects.filter(release_id=release_id).first()
-            if releaseInvoice is not None:
-                invoice = Invoice.objects.filter(id=releaseInvoice.invoice_id).first()
-                invoice.total = invoice.total - release.value
-                invoice.save()
-
-            release.delete()
-            return HttpResponse(1, content_type="application/json")
+            return HttpResponse(created_releases, content_type="application/json")
         else:
             return HttpResponse('This account isn\`t yours', content_type="application/json")
 
@@ -394,12 +324,14 @@ class InvoiceView(viewsets.ModelViewSet):
         permission_classes = []
         if self.action == 'create':
             permission_classes = [IsAuthenticated]
-        elif self.action == 'list' or self.action == 'post' or self.action == 'delete':
+        elif self.action == 'list':
             permission_classes = [IsObjOwner, IsAuthenticated]
+        elif self.action == 'post' or self.action == 'delete':
+            permission_classes = [Deny]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Invoice.objects.filter(card__account__user=self.request.user.id).all()
+        return Invoice.objects.filter(card__account__user=self.request.user).all()
 
 
 class CurrencyView(viewsets.ModelViewSet):
@@ -409,6 +341,8 @@ class CurrencyView(viewsets.ModelViewSet):
         permission_classes = []
         if self.action == 'list':
             permission_classes = [AllowAny]
+        elif self.action == 'create' or self.action == 'post' or self.action == 'delete':
+            permission_classes = [IsAdmin]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):

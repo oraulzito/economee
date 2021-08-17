@@ -20,36 +20,10 @@ class CurrencySerializer(serializers.HyperlinkedModelSerializer):
         fields = ['country', 'currency', 'code', 'symbol']
 
 
-class AccountSerializer(serializers.HyperlinkedModelSerializer):
-    currency = CurrencySerializer(allow_null=False)
-
-    class Meta:
-        model = Account
-        fields = ['id', 'name', 'currency', 'is_main_account']
-
-
-class BalanceSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Balance
-        fields = ['id', 'date_reference', 'total_income', 'total_expense', 'account_id']
-
-
-class CardSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Card
-        fields = ['id', 'name', 'credit', 'credit_spent', 'pay_date', 'account_id']
-
-
 class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ReleaseCategory
-        fields = ['name', 'id']
-
-
-class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Invoice
-        fields = ['id', 'total', 'date_reference', 'is_paid', 'card_id']
+        fields = ['id', 'name']
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -58,6 +32,42 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Release
         fields = [
-            'id', 'description', 'value', 'date_release',
-            'installment_number', 'date_repeat', 'repeat_times',
+            'id', 'description', 'value',
+            'date_repeat', 'date_release',
+            'installment_number', 'repeat_times',
             'is_release_paid', 'type', 'category']
+
+
+class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
+    releases = ReleaseSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Invoice
+        fields = ['id', 'card_id', 'date_reference', 'is_paid', 'releases']
+
+
+class BalanceSerializer(serializers.HyperlinkedModelSerializer):
+    invoices = InvoiceSerializer(many=True, read_only=True)
+    releases = ReleaseSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Balance
+        fields = ['id', 'account_id', 'date_reference', 'invoices', 'releases']
+
+
+class CardSerializer(serializers.HyperlinkedModelSerializer):
+    invoices = InvoiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Card
+        fields = ['id', 'account_id', 'name', 'credit', 'pay_date', 'invoices']
+
+
+class AccountSerializer(serializers.HyperlinkedModelSerializer):
+    currency = CurrencySerializer(allow_null=False)
+    cards = CardSerializer(many=True, read_only=True)
+    balances = BalanceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Account
+        fields = ['id', 'name', 'currency', 'is_main_account', 'cards', 'balances']

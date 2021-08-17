@@ -1,11 +1,3 @@
--- Create table variable
-CREATE TABLE currency (
-  country  VARCHAR(100),
-  currency VARCHAR(100),
-  code     VARCHAR(100),
-  symbol   VARCHAR(100)
-);
-
 -- Insert currency records
 INSERT INTO  "economeeApi_currency" (country, currency, code, symbol) VALUES ('Albania', 'Leke', 'ALL', 'Lek');
 INSERT INTO  "economeeApi_currency" (country, currency, code, symbol) VALUES ('America', 'Dollars', 'USD', '$');

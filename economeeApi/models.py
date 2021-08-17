@@ -44,7 +44,6 @@ class Currency(models.Model):
 class Account(models.Model):
     name = models.CharField(max_length=24)
     is_main_account = models.BooleanField(default=False)
-    total_available = models.FloatField(default=0.0)
     # Owner attribute according to the class diagram
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
@@ -58,9 +57,7 @@ class Account(models.Model):
 class Balance(models.Model):
     # Month reference, expected format MM/YYYY
     date_reference = PartialDateField()
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    total_income = models.FloatField(default=0.0)
-    total_expense = models.FloatField(default=0.0)
+    account = models.ForeignKey(Account, related_name='balances', on_delete=models.CASCADE)
     REQUIRED_FIELDS = ['date_reference', 'account']
 
     def __str__(self):
@@ -72,9 +69,9 @@ class Card(models.Model):
     credit = models.FloatField(default=0.0)
     credit_spent = models.FloatField(default=0.0)
     pay_date = PartialDateField()
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, related_name='cards', on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['name', 'credit', 'credit_spent', 'pay_date', 'account']
+    REQUIRED_FIELDS = ['name', 'credit', 'pay_date', 'account']
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -82,7 +79,6 @@ class Card(models.Model):
 
 class ReleaseCategory(models.Model):
     name = models.CharField(max_length=124)
-    # Owner according to class diagram
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
 
     REQUIRED_FIELDS = ['name', 'user']
@@ -93,10 +89,11 @@ class ReleaseCategory(models.Model):
 
 class Invoice(models.Model):
     date_reference = PartialDateField()
-    card = models.ForeignKey(Card, on_delete=models.CASCADE)
     # TODO send a notification in the pay_date of the card, confirming if it's paid
     is_paid = models.BooleanField(default=False)
-    total = models.FloatField(default=0.0)
+    card = models.ForeignKey(Card, related_name='invoices', on_delete=models.CASCADE)
+    balance = models.ForeignKey(Balance, related_name='invoices', on_delete=models.CASCADE)
+
     REQUIRED_FIELDS = ['date_reference', 'card', 'is_paid']
 
     def __str__(self):
@@ -112,6 +109,8 @@ class Release(models.Model):
     repeat_times = models.IntegerField(default=1)
     is_release_paid = models.BooleanField(default=False)
     category = models.ForeignKey(ReleaseCategory, on_delete=models.DO_NOTHING)
+    balance = models.ForeignKey(Balance, related_name='releases', on_delete=models.DO_NOTHING, null=True)
+    invoice = models.ForeignKey(Invoice, related_name='releases', on_delete=models.DO_NOTHING, null=True)
 
     # TODO study this idea
     # Projection release will not be used on the 'oficial' sum of the balance, it will be used only in simulation on month expenses
@@ -134,33 +133,3 @@ class Release(models.Model):
 
     def __str__(self):
         return '{}'.format(self.description)
-
-
-class InvoiceRelease(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
-    release = models.ForeignKey(Release, on_delete=models.CASCADE)
-
-    REQUIRED_FIELDS = ['invoice', 'release']
-
-    def __str__(self):
-        return '{}'.format(self)
-
-
-class BalanceRelease(models.Model):
-    balance = models.ForeignKey(Balance, on_delete=models.CASCADE)
-    release = models.ForeignKey(Release, on_delete=models.CASCADE)
-
-    REQUIRED_FIELDS = ['balance', 'release']
-
-    def __str__(self):
-        return '{}'.format(self)
-
-
-class BalanceInvoice(models.Model):
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
-    balance = models.ForeignKey(Balance, on_delete=models.CASCADE)
-
-    REQUIRED_FIELDS = ['balance', 'invoice']
-
-    def __str__(self):
-        return '{}'.format(self)
