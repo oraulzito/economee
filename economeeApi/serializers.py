@@ -7,11 +7,7 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'photo', 'dob', 'first_name', 'last_name', 'gender', 'password']
-        # TODO review if this don't make password changes unavailable
-        extra_kwargs = {
-            'password': {'write_only': True},
-        }
+        fields = ['email', 'username', 'photo', 'dob', 'first_name', 'last_name', 'gender']
 
 
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):
@@ -39,7 +35,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
-    releases = ReleaseSerializer(many=True, read_only=True)
+    releases = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Invoice
@@ -47,8 +43,8 @@ class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class BalanceSerializer(serializers.HyperlinkedModelSerializer):
-    invoices = InvoiceSerializer(many=True, read_only=True)
-    releases = ReleaseSerializer(many=True, read_only=True)
+    invoices = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    releases = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Balance
@@ -56,7 +52,7 @@ class BalanceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
-    invoices = InvoiceSerializer(many=True, read_only=True)
+    invoices = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Card
@@ -65,8 +61,8 @@ class CardSerializer(serializers.HyperlinkedModelSerializer):
 
 class AccountSerializer(serializers.HyperlinkedModelSerializer):
     currency = CurrencySerializer(allow_null=False)
-    cards = CardSerializer(many=True, read_only=True)
-    balances = BalanceSerializer(many=True, read_only=True)
+    cards = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    balances = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Account
