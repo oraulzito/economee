@@ -67,7 +67,6 @@ class Balance(models.Model):
 class Card(models.Model):
     name = models.CharField(max_length=24)
     credit = models.FloatField(default=0.0)
-    credit_spent = models.FloatField(default=0.0)
     pay_date = PartialDateField()
     account = models.ForeignKey(Account, related_name='cards', on_delete=models.CASCADE)
 
@@ -77,6 +76,7 @@ class Card(models.Model):
         return '{}'.format(self.name)
 
 
+# TODO create default release categories
 class ReleaseCategory(models.Model):
     name = models.CharField(max_length=124)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
