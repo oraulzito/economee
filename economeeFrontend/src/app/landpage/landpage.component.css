@@ -34,7 +34,7 @@ nz-card {
 }
 
 #landpageContent h1 {
-  font-size: 8vh;
+  font-size: 5vh;
   max-width: 40vw;
   margin: 5vw;
   margin-top: 3vh;
@@ -91,4 +91,8 @@ nz-card {
 .aboutUs div {
   width: 33%;
   margin-top: 2vh;
+}
+
+:host ::ng-deep nz-content{
+  width: 100%
 }
