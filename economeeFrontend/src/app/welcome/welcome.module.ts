@@ -14,22 +14,24 @@ import {NzSpaceModule} from 'ng-zorro-antd/space';
 import {ForgetPasswordComponent} from './forget-password/forget-password.component';
 import {CommonModule} from '@angular/common';
 import {NzSelectModule} from 'ng-zorro-antd/select';
+import {NzIconModule} from "ng-zorro-antd/icon";
 
 @NgModule({
-  imports: [
-    WelcomeRoutingModule,
-    NzInputModule,
-    NzFormModule,
-    NzLayoutModule,
-    NzButtonModule,
-    NzCardModule,
-    FormsModule,
-    NzCheckboxModule,
-    ReactiveFormsModule,
-    NzSpaceModule,
-    NzSelectModule,
-    CommonModule
-  ],
+    imports: [
+        WelcomeRoutingModule,
+        NzInputModule,
+        NzFormModule,
+        NzLayoutModule,
+        NzButtonModule,
+        NzCardModule,
+        FormsModule,
+        NzCheckboxModule,
+        ReactiveFormsModule,
+        NzSpaceModule,
+        NzSelectModule,
+        CommonModule,
+        NzIconModule
+    ],
   declarations: [
     SignupComponent,
     LoginComponent,
