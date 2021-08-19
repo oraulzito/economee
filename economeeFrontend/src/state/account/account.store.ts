@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import {ActiveState, EntityState, EntityStore, StoreConfig} from '@datorama/akita';
 import { Account } from './account.model';
 
-export interface AccountState extends EntityState<Account> {}
+export interface AccountState extends EntityState<Account>, ActiveState {}
 
 @Injectable({ providedIn: 'root' })
-@StoreConfig({ name: 'id_account' })
+@StoreConfig({ name: 'account' })
 export class AccountStore extends EntityStore<AccountState> {
 
   constructor() {

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import {ActiveState, EntityState, EntityStore, StoreConfig} from '@datorama/akita';
 import { Balance } from './balance.model';
 
-export interface BalanceState extends EntityState<Balance> {}
+export interface BalanceState extends EntityState<Balance>, ActiveState  {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'balance' })

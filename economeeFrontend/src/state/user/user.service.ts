@@ -4,16 +4,21 @@ import { ID } from '@datorama/akita';
 import { tap } from 'rxjs/operators';
 import { User } from './user.model';
 import { UserStore } from './user.store';
+import {UiService} from "../ui/ui.service";
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
 
-  constructor(private userStore: UserStore, private http: HttpClient) {
+  constructor(
+    private uiService: UiService,
+    private userStore: UserStore,
+    private http: HttpClient
+  ) {
   }
 
 
   get() {
-    return this.http.get<User[]>('https://api.com').pipe(tap(entities => {
+    return this.http.get<User[]>('/api/user/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
       this.userStore.set(entities);
     }));
   }

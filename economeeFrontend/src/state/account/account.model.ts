@@ -5,8 +5,6 @@ export interface Account {
   name: string;
   currency: string;
   is_main_account: boolean;
-}
-
-export function createAccount(params: Partial<Account>) {
-  return {} as Account;
+  balances: ID[];
+  cards: ID[];
 }
