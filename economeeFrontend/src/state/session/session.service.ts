@@ -2,11 +2,13 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {tap} from 'rxjs/operators';
 import {SessionStore} from './session.store';
+import {UiService} from '../ui/ui.service';
 
 @Injectable({providedIn: 'root'})
 export class SessionService {
 
   constructor(
+    private uiService: UiService,
     private sessionStore: SessionStore,
     private http: HttpClient
   ) {
@@ -15,14 +17,19 @@ export class SessionService {
 
   // tslint:disable-next-line:typedef
   login(body) {
-    return this.http.post('/api/v1/login', body).pipe(tap(token => {
-      this.sessionStore.update(token);
+    this.sessionStore.setLoading(true);
+    return this.http.post('/auth/login/', body).pipe(tap(key => {
+      this.sessionStore.update(key);
+      this.sessionStore.setLoading(false);
     }));
   }
 
   // tslint:disable-next-line:typedef
   logout() {
-    // TODO backend request to delete the token on database
-    this.sessionStore.update({token: ''});
+    this.sessionStore.setLoading(true);
+    return this.http.post('/auth/logout/', this.uiService.httpHeaderOptions()).pipe(tap(key => {
+      this.sessionStore.update({key: ''});
+      this.sessionStore.setLoading(false);
+    }));
   }
 }

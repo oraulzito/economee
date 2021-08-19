@@ -1,12 +1,17 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {UiStore} from './ui.store';
 import isMobile from 'ismobilejs';
+import {SessionQuery} from '../session/session.query';
 
 @Injectable({providedIn: 'root'})
 export class UiService {
 
-  constructor(private uiStore: UiStore, private http: HttpClient) {
+  constructor(
+    private uiStore: UiStore,
+    private sessionQuery: SessionQuery,
+    private http: HttpClient
+  ) {
   }
 
   // tslint:disable-next-line:typedef
@@ -17,5 +22,15 @@ export class UiService {
     } else {
       this.uiStore.update({mobile: false});
     }
+  }
+
+  // tslint:disable-next-line:typedef
+  httpHeaderOptions() {
+    return {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: 'Token ' + this.sessionQuery.getValue().key
+      })
+    };
   }
 }

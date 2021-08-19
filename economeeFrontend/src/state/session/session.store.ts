@@ -6,12 +6,12 @@ export interface SessionState extends EntityState<Session> {
 }
 
 @Injectable({providedIn: 'root'})
-@StoreConfig({name: 'session', idKey: 'token'})
+@StoreConfig({name: 'session', idKey: 'key'})
 export class SessionStore extends Store<SessionState> {
 
   constructor() {
     super({
-      token: ''
+      key: ''
     });
   }
 
