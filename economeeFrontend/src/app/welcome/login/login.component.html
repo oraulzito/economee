@@ -1,4 +1,4 @@
-<nz-card class="card-border card-login" nzTitle="Economee">
+<nz-card *ngIf="!loadingLogin$" class="card-border card-login" nzTitle="Economee">
   <form (ngSubmit)="submitForm()" [formGroup]="validateForm" class="login-form" nz-form>
     <nz-form-item>
       <nz-form-control nzErrorTip="Insira seu email!">
@@ -16,7 +16,8 @@
     </nz-form-item>
     <div class="login-form-margin" nz-row>
       <div [nzSpan]="24" nz-col>
-        <span class="bg-danger text-white text-center" *ngIf="error">As credenciais informadas não estão corretas!</span>
+        <span *ngIf="error"
+              class="bg-danger text-white text-center">As credenciais informadas não estão corretas!</span>
       </div>
       <div [nzSpan]="12" nz-col>
         <!--        TODO-->
@@ -38,4 +39,7 @@
     </div>
   </form>
 </nz-card>
+<div *ngIf="loadingLogin$">
+  <h2 class="text-white" nz-icon nzTheme="outline" nzType="loading"></h2>
+</div>
 

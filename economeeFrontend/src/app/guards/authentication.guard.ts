@@ -12,7 +12,6 @@ import {
 import {Observable} from 'rxjs';
 import {SessionQuery} from '../../state/session/session.query';
 import {UiQuery} from '../../state/ui/ui.query';
-import {toBoolean} from "@datorama/akita";
 
 @Injectable({
   providedIn: 'root'
@@ -35,14 +34,16 @@ export class AuthenticationGuard implements CanActivate, CanLoad {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (this.isLooged) {
       if (this.uiQuery.getValue().url.includes('welcome') || this.uiQuery.getValue().url === '/') {
-        return this.router.navigate(['dashboard']);
+        this.router.navigate(['dashboard']);
       }
+      return true;
     } else {
       if (this.uiQuery.getValue().url.includes('dashboard')) {
-        return this.router.navigate(['welcome/login']);
+        this.router.navigate(['welcome/login']);
+        return false;
       }
+      return true;
     }
-    return true;
   }
 
   canLoad(

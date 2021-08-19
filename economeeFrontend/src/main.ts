@@ -11,7 +11,7 @@ if (environment.production) {
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));
 
-const storage = persistState({include: ['session.token', 'ui']});
+const storage = persistState({include: ['session.key', 'ui']});
 
 const providers = [{provide: 'persistStorage', useValue: storage}];
 
