@@ -204,18 +204,16 @@ class ReleaseView(viewsets.ModelViewSet):
         category_id = self.request.query_params.get('category_id')
 
         if balance_id is not None:
-            releases = Release.objects.filter(balance__account__user=self.request.user, balance_id=balance_id).all()
+            return Release.objects.filter(balance__account__user=self.request.user, balance_id=balance_id).all()
         elif invoice_id is not None:
-            releases = Release.objects.filter(invoice__card__account__user=self.request.user,
-                                              invoice_id=invoice_id).all()
+            return Release.objects.filter(invoice__card__account__user=self.request.user,
+                                          invoice_id=invoice_id).all()
         elif category_id is not None:
-            releases = Release.objects.filter(invoice__card__account__user=self.request.user,
-                                              category_id=invoice_id).all()
+            return Release.objects.filter(invoice__card__account__user=self.request.user,
+                                          category_id=invoice_id).all()
         else:
-            releases = Release.objects.filter(
-                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user = self.request.user)).all()
-
-        return releases
+            return Release.objects.filter(
+                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user)).all()
 
     # FIXME
     def create(self, request, *args, **kwargs):
@@ -248,15 +246,22 @@ class ReleaseView(viewsets.ModelViewSet):
                 else:
                     return HttpResponse('This card isn\`t yours', content_type="application/json")
 
-            for n in range(repeat_times):
-                """BALANCE"""
-                # check if there's an balance already created for that month
-                date_reference_balance = date_release.replace(day=1)
+            repeat_times_balance = repeat_times
+            if card_id:
+                if (date_repeat - pay_date).days < 10:
+                    repeat_times_balance = repeat_times + 2
+                else:
+                    repeat_times_balance = repeat_times + 1
 
+            for n in range(repeat_times_balance):
+                """BALANCE"""
+                # add the month
                 # Balance day must always be the 1º day of the month
+                date_reference_balance = date_release.replace(day=1)
                 date_reference_balance = PartialDate(date_reference_balance + relativedelta(months=+n),
                                                      precision=PartialDate.MONTH)
 
+                # check if there's an balance already created for that month
                 balance = Balance.objects.filter(account=account, date_reference=date_reference_balance).first()
 
                 # If balance does not exist, create a new one with the value, else just add the expense or
@@ -266,6 +271,7 @@ class ReleaseView(viewsets.ModelViewSet):
                         date_reference=date_reference_balance,
                         account_id=int(request.data.get('account_id'))
                     )
+                    balance.save()
 
                 balances.append(balance)
                 installments.append(n + 1)
@@ -274,16 +280,16 @@ class ReleaseView(viewsets.ModelViewSet):
             if card is not None:
                 for n in range(repeat_times):
                     """INVOICE"""
-                    invoice = Invoice()
+
                     # check if there's a invoice already created for that month
                     date_reference_invoice = date_release.replace(day=pay_date.day)
 
                     if (date_repeat - pay_date).days < 10:
                         # if the purchase is done 10 days before the pay date the release will just be released 40 days
                         # after (or the next next invoice)
-                        date_reference_invoice = date_reference_invoice + relativedelta(months=+ 2)
+                        date_reference_invoice = date_reference_invoice + relativedelta(months=+(n + 2))
                     else:
-                        date_reference_invoice = date_reference_invoice + relativedelta(months=+ 1)
+                        date_reference_invoice = date_reference_invoice + relativedelta(months=+ (n + 1))
 
                     date_reference_invoice = PartialDate(date_reference_invoice, precision=PartialDate.MONTH)
                     invoice = Invoice.objects.filter(card_id=card_id, date_reference=date_reference_invoice).first()
@@ -296,7 +302,7 @@ class ReleaseView(viewsets.ModelViewSet):
                             is_paid=False,
                             balance=balances[n]
                         )
-
+                        invoice.save()
                     invoices.append(invoice)
 
             # Create the release
@@ -337,7 +343,12 @@ class InvoiceView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Invoice.objects.filter(card__account__user=self.request.user).all()
+        card_id = self.request.query_params.get('card_id')
+
+        if card_id is not None:
+            return Invoice.objects.filter(card__account__user=self.request.user, card_id=card_id).all()
+        else:
+            return Invoice.objects.filter(card__account__user=self.request.user).all()
 
 
 class CurrencyView(viewsets.ModelViewSet):
