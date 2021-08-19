@@ -31,7 +31,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'description', 'value',
             'date_repeat', 'date_release',
             'installment_number', 'repeat_times',
-            'is_release_paid', 'type', 'category']
+            'is_release_paid', 'type', 'category', 'balance_id', 'invoice_id']
 
 
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):

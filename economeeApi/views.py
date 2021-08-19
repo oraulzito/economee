@@ -3,6 +3,7 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.hashers import make_password
+from django.db.models import Q
 from django.http import HttpResponse
 from partial_date import PartialDate
 from rest_framework import viewsets, authentication
@@ -198,18 +199,23 @@ class ReleaseView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        # date_release = self.request.query_params.get('month_year_view')
-        #
-        # if date_release is not None and date_release != '':
-        #     date_release = datetime.strptime(date_release, '%Y-%m').date()
-        #     date_release = date_release.replace(day=1)
-        #     date_release = PartialDate(date_release, precision=PartialDate.MONTH)
-        #     balance = Balance.objects.filter(account__user=self.request.user.id, date_release).all()
-        # else:
-        #     balance = Balance.objects.filter(account__user=self.request.user.id).all()
-        #
-        # return balance
-        return Release.objects.all()
+        balance_id = self.request.query_params.get('balance_id')
+        invoice_id = self.request.query_params.get('invoice_id')
+        category_id = self.request.query_params.get('category_id')
+
+        if balance_id is not None:
+            releases = Release.objects.filter(balance__account__user=self.request.user, balance_id=balance_id).all()
+        elif invoice_id is not None:
+            releases = Release.objects.filter(invoice__card__account__user=self.request.user,
+                                              invoice_id=invoice_id).all()
+        elif category_id is not None:
+            releases = Release.objects.filter(invoice__card__account__user=self.request.user,
+                                              category_id=invoice_id).all()
+        else:
+            releases = Release.objects.filter(
+                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user = self.request.user)).all()
+
+        return releases
 
     # FIXME
     def create(self, request, *args, **kwargs):

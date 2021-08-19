@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from economeeApi.models import Account, Balance
+from economeeApi.models import Account, Balance, Card
 
 
 class IsOwner(permissions.BasePermission):
@@ -23,13 +23,15 @@ class IsAccountOwner(permissions.BasePermission):
             return False
 
 
+# FIXME it's not working properly
 class IsObjOwner(permissions.BasePermission):
     message = "Not a valid User ID."
 
     def has_permission(self, request, view):
-        account = Account.objects.filter(user=request.user)
-        balance = Balance.objects.filter(account=account)
-        if balance is not None:
+        account = Account.objects.filter(user=request.user).all()
+        balance = Balance.objects.filter(account__in=account)
+        card = Card.objects.filter(account__in=account)
+        if balance is not None or card is not None:
             return True
         else:
             return False
