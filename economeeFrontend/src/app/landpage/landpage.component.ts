@@ -11,6 +11,8 @@ export class LandpageComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+
+
   }
 
 }
