@@ -8,15 +8,20 @@
 
 nz-layout {
   background-color: #235C47 !important;
-  background-image: url("../assets/background.svg");
+  background-image: url("src/assets/background.svg");
   background-size: auto auto;
   background-repeat: no-repeat;
 }
 
 
-@media only screen and (orientation: portrait) {
+@media only screen and (max-width: 768px) and (orientation: portrait) {
+  /*FIXME why rotation?*/
   nz-layout {
     rotation: 90deg;
+  }
+
+  nz-content {
+    width: 100%;
   }
 }
 
@@ -27,6 +32,7 @@ nz-layout {
 :host ::ng-deep .vh-45 {
   height: 45vw !important;
 }
+
 :host ::ng-deep .vh-50 {
   height: 50vw !important;
 }

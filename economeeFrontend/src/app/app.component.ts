@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
       = this.router.events
       .subscribe(
         (event) => {
-          console.log(event);
+          // console.log(event);
           if (event instanceof NavigationStart || event instanceof NavigationEnd || event instanceof NavigationError) {
             this.uiStore.update({url: event.url});
           }
@@ -31,8 +31,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
-    console.log(JSON.stringify(this.sessionQuery.isLoggedIn$));
-
   }
 
   // tslint:disable-next-line:typedef
