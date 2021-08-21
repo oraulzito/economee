@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from partial_date import PartialDate
 from rest_framework import viewsets, authentication
 from rest_framework.authtoken.models import Token
@@ -63,8 +63,7 @@ class UserView(viewsets.ModelViewSet):
                 date_reference=date_reference,
                 account=account
             )
-            return HttpResponse(Token.objects.get_or_create(user=user)[0],
-                                content_type="application/json")
+            return JsonResponse({'key': str(Token.objects.get_or_create(user=user)[0])})
             # except Exception:
             #     return HttpResponse('Something went wrong', content_type="application/json")
         else:
