@@ -32,30 +32,50 @@ class UserView(viewsets.ModelViewSet):
         return User.objects.filter(id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
-        # global response
+        user = User
+        account = Account
+        balance = Balance
         if request.data.get('password') == request.data.get('repeat_password'):
-            user = User.objects.create(
-                email=request.data.get('email'),
-                password=make_password(request.data.get('password')),
-                username=request.data.get('username'),
-                first_name=request.data.get('first_name'),
-                last_name=request.data.get('last_name'),
-                dob=request.data.get('dob'),
-                photo=request.data.get('photo'),
-                gender=request.data.get('gender'),
-            )
-            account = Account.objects.create(
-                name=request.data.get('account_name'),
-                currency_id=request.data.get('currency_id'),
-                is_main_account=True,
-                user=user,
-            )
-            Balance.objects.create(
-                date_reference=PartialDate(date.today(), precision=PartialDate.MONTH),
-                account=account
-            )
-            return HttpResponse(Token.objects.get_or_create(user=user)[0],
-                                content_type="application/json")
+            try:
+                user = User.objects.create(
+                    email=request.data.get('email'),
+                    password=make_password(request.data.get('password')),
+                    username=request.data.get('username'),
+                    first_name=request.data.get('first_name'),
+                    last_name=request.data.get('last_name'),
+                    dob=request.data.get('dob'),
+                    photo=request.data.get('photo'),
+                    gender=request.data.get('gender'),
+                )
+
+                account = Account.objects.create(
+                    name=request.data.get('account_name'),
+                    currency_id=request.data.get('currency_id'),
+                    is_main_account=True,
+                    user=user,
+                )
+
+                date_reference = str(date.today())
+                date_reference = datetime.strptime(date_reference, '%Y-%m-%d').date()
+                date_reference = date_reference.replace(day=1)
+                date_reference = PartialDate(date_reference)
+
+                balance = Balance.objects.create(
+                    date_reference=date_reference,
+                    account=account
+                )
+                return HttpResponse(Token.objects.get_or_create(user=user)[0],
+                                    content_type="application/json")
+            except Exception:
+                if balance is not None:
+                    balance.delete()
+
+                if account is not None:
+                    account.delete()
+
+                if user is not None:
+                    user.delete()
+                return HttpResponse('Something went wrong', content_type="application/json")
         else:
             return HttpResponse('The password don\'t match', content_type="application/json")
 
@@ -178,11 +198,11 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return ReleaseCategory.objects.filter(user=self.request.user)
+        return ReleaseCategory.objects.filter(Q(user_id=self.request.user.id) | Q(user_id=None))
 
     def create(self, request, *args, **kwargs):
         releaseCategory = ReleaseCategory.objects.create(name=self.request.data.get('name'),
-                                                         user_id=self.request.user.id)
+                                                         user_id=self.request.user.id, )
         return HttpResponse(releaseCategory, content_type="application/json")
 
 
@@ -258,8 +278,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 # add the month
                 # Balance day must always be the 1º day of the month
                 date_reference_balance = date_release.replace(day=1)
-                date_reference_balance = PartialDate(date_reference_balance + relativedelta(months=+n),
-                                                     precision=PartialDate.MONTH)
+                date_reference_balance = PartialDate(date_reference_balance + relativedelta(months=+n))
 
                 # check if there's an balance already created for that month
                 balance = Balance.objects.filter(account=account, date_reference=date_reference_balance).first()
@@ -291,7 +310,7 @@ class ReleaseView(viewsets.ModelViewSet):
                     else:
                         date_reference_invoice = date_reference_invoice + relativedelta(months=+ (n + 1))
 
-                    date_reference_invoice = PartialDate(date_reference_invoice, precision=PartialDate.MONTH)
+                    date_reference_invoice = PartialDate(date_reference_invoice)
                     invoice = Invoice.objects.filter(card_id=card_id, date_reference=date_reference_invoice).first()
 
                     if invoice is None:
