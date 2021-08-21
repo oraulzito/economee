@@ -13,7 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Currency
-        fields = ['country', 'currency', 'code', 'symbol']
+        fields = ['id', 'country', 'currency', 'code', 'symbol']
 
 
 class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
