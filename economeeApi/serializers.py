@@ -7,7 +7,8 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'photo', 'dob', 'first_name', 'last_name']
+        fields = ['email', 'username', 'dob', 'first_name', 'last_name']
+        # fields = ['email', 'username', 'photo', 'dob', 'first_name', 'last_name']
 
 
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):

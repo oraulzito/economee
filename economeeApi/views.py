@@ -36,46 +36,37 @@ class UserView(viewsets.ModelViewSet):
         account = Account
         balance = Balance
         if request.data.get('password') == request.data.get('repeat_password'):
-            try:
-                user = User.objects.create(
-                    email=request.data.get('email'),
-                    password=make_password(request.data.get('password')),
-                    username=request.data.get('username'),
-                    first_name=request.data.get('first_name'),
-                    last_name=request.data.get('last_name'),
-                    dob=request.data.get('dob'),
-                    photo=request.data.get('photo'),
-                    gender=request.data.get('gender'),
-                )
+            # try:
+            user = User.objects.create(
+                email=request.data.get('email'),
+                password=make_password(request.data.get('password')),
+                username=request.data.get('username'),
+                first_name=request.data.get('first_name'),
+                last_name=request.data.get('last_name'),
+                dob=request.data.get('dob'),
+                # photo=request.data.get('photo'),
+            )
 
-                account = Account.objects.create(
-                    name=request.data.get('account_name'),
-                    currency_id=request.data.get('currency_id'),
-                    is_main_account=True,
-                    user=user,
-                )
+            account = Account.objects.create(
+                name=request.data.get('account_name'),
+                currency_id=request.data.get('currency_id'),
+                is_main_account=True,
+                user=user,
+            )
 
-                date_reference = str(date.today())
-                date_reference = datetime.strptime(date_reference, '%Y-%m-%d').date()
-                date_reference = date_reference.replace(day=1)
-                date_reference = PartialDate(date_reference)
+            date_reference = str(date.today())
+            date_reference = datetime.strptime(date_reference, '%Y-%m-%d').date()
+            date_reference = date_reference.replace(day=1)
+            date_reference = PartialDate(date_reference)
 
-                balance = Balance.objects.create(
-                    date_reference=date_reference,
-                    account=account
-                )
-                return HttpResponse(Token.objects.get_or_create(user=user)[0],
-                                    content_type="application/json")
-            except Exception:
-                if balance is not None:
-                    balance.delete()
-
-                if account is not None:
-                    account.delete()
-
-                if user is not None:
-                    user.delete()
-                return HttpResponse('Something went wrong', content_type="application/json")
+            balance = Balance.objects.create(
+                date_reference=date_reference,
+                account=account
+            )
+            return HttpResponse(Token.objects.get_or_create(user=user)[0],
+                                content_type="application/json")
+            # except Exception:
+            #     return HttpResponse('Something went wrong', content_type="application/json")
         else:
             return HttpResponse('The password don\'t match', content_type="application/json")
 

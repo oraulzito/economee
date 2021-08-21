@@ -9,7 +9,7 @@ from economee import settings
 # Create your models here.
 class User(AbstractUser):
     dob = models.DateField(default=now)
-    photo = models.ImageField(upload_to='uploads', blank=True, null=True)
+    # photo = models.ImageField(upload_to='uploads', blank=True, null=True)
 
     REQUIRED_FIELDS = ['email', 'password', 'first_name']
 
