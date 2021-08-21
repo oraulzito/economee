@@ -11,20 +11,6 @@ class User(AbstractUser):
     dob = models.DateField(default=now)
     photo = models.ImageField(upload_to='uploads', blank=True, null=True)
 
-    GENDER_MALE = 'M'
-    GENDER_FEMALE = 'F'
-    GENDER_OTHER = 'O'
-    GENDER_CHOICES = [
-        (GENDER_MALE, "Male"),
-        (GENDER_FEMALE, "Female"),
-        (GENDER_OTHER, "Other"),
-    ]
-
-    gender = models.CharField(
-        max_length=1, blank=True, choices=GENDER_CHOICES,
-        verbose_name="gender",
-    )
-
     REQUIRED_FIELDS = ['email', 'password', 'first_name']
 
     def __str__(self):
