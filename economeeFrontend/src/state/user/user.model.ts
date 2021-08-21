@@ -1,9 +1,12 @@
 export interface User {
-  id: number | string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  dob: Date;
+  // photo: string;
 }
 
 export function createUser(params: Partial<User>) {
-  return {
-
-  } as User;
+  return {} as User;
 }

@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {tap} from 'rxjs/operators';
+import {shareReplay, tap} from 'rxjs/operators';
 import {SessionStore} from './session.store';
 import {UiService} from '../ui/ui.service';
 
@@ -21,7 +21,8 @@ export class SessionService {
     return this.http.post('/auth/login/', body).pipe(tap(key => {
       this.sessionStore.update(key);
       this.sessionStore.setLoading(false);
-    }));
+    }),
+      shareReplay(1));
   }
 
   // tslint:disable-next-line:typedef
@@ -30,6 +31,7 @@ export class SessionService {
     return this.http.post('/auth/logout/', this.uiService.httpHeaderOptions()).pipe(tap(key => {
       this.sessionStore.update({key: ''});
       this.sessionStore.setLoading(false);
-    }));
+    }),
+      shareReplay(1));
   }
 }

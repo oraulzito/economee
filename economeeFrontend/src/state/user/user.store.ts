@@ -1,15 +1,27 @@
-import { Injectable } from '@angular/core';
-import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
-import { User } from './user.model';
+import {Injectable} from '@angular/core';
+import {EntityState, Store, StoreConfig} from '@datorama/akita';
+import {User} from './user.model';
 
-export interface UserState extends EntityState<User> {}
+export interface UserState extends EntityState<User> {
+}
 
-@Injectable({ providedIn: 'root' })
-@StoreConfig({ name: 'user' })
-export class UserStore extends EntityStore<UserState> {
+@Injectable({providedIn: 'root'})
+@StoreConfig({name: 'user', idKey: 'username'})
+export class UserStore extends Store<UserState> {
 
   constructor() {
-    super();
+    super(
+      {
+        id: '',
+        username: '',
+        first_name: '',
+        last_name: '',
+        email: '',
+        dob: '',
+        gender: '',
+        photo: '',
+      }
+    );
   }
 
 }

@@ -1,61 +1,81 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {CurrencyService} from '../../../state/currency/currency.service';
 import {CurrencyQuery} from '../../../state/currency/currency.query';
 import {Currency} from '../../../state/currency/currency.model';
+import {Subscription} from 'rxjs';
+import {UserService} from '../../../state/user/user.service';
+import {Router} from "@angular/router";
+import {UserQuery} from "../../../state/user/user.query";
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
 
-  actualStep = 1;
-  sumbitted = false;
   currencies: Currency[];
+  currenciesLoading$: boolean;
+  signUpLoading$: boolean;
+  error = false;
+
+  currencySubscription: Subscription;
+  currencyQuerySubscription: Subscription;
+  userQueryLoadingSubscription: Subscription;
+  currencyQueryLoadingSubscription: Subscription;
 
   form = new FormGroup({
     // personal info
     first_name: new FormControl('', [Validators.required]),
     last_name: new FormControl('', [Validators.required]),
     dob: new FormControl('', [Validators.required]),
-    gender: new FormControl(null, [Validators.required]),
+    // photo: new FormControl(null, [Validators.required]),
     // profile info
     username: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
     repeat_password: new FormControl('', [Validators.required]),
-    photo: new FormControl(null, [Validators.required]),
     // account details
     account_name: new FormControl('', Validators.required),
-    currency: new FormControl('', [Validators.required, Validators.email]),
+    currency_id: new FormControl('', [Validators.required]),
   });
 
   constructor(
     private fb: FormBuilder,
+    private router: Router,
+    private userService: UserService,
+    private userQuery: UserQuery,
+    private currencyQuery: CurrencyQuery,
     private currencyService: CurrencyService,
-    private currencyQuery: CurrencyQuery
   ) {
 
   }
 
   ngOnInit(): void {
-    // FIXME change it to query selection after the get
-    this.currencyService.get().subscribe(
-      c => this.currencies = c
-    );
+    this.currencyQueryLoadingSubscription = this.currencyQuery.selectLoading().subscribe(l => this.currenciesLoading$ = l);
+    this.userQueryLoadingSubscription = this.userQuery.selectLoading().subscribe(s => this.signUpLoading$ = s);
 
-    console.log(this.currencies);
+    this.currencySubscription = this.currencyService.get().subscribe();
+
+    this.currencyQuerySubscription = this.currencyQuery.selectAll().subscribe(c => {
+      this.currencies = c;
+      console.log(c);
+    });
   }
 
   submit(): void {
-    this.sumbitted = true;
+    this.userService.signup(this.form.value).subscribe(
+      () => this.router.navigate(['dashboard']).then(),
+      () => this.error = true
+    );
+  }
 
-    if (!this.form.valid) {
-      this.form.markAllAsTouched();
-    }
-
-    console.log('Submitted data', this.form.value);
+  // tslint:disable-next-line:typedef
+  ngOnDestroy() {
+    this.currencySubscription.unsubscribe();
+    this.currencyQuerySubscription.unsubscribe();
+    this.userQueryLoadingSubscription.unsubscribe();
+    this.currencyQueryLoadingSubscription.unsubscribe();
   }
 }

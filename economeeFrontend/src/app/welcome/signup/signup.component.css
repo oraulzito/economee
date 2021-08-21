@@ -2,3 +2,7 @@
   max-width: 400px;
   width: 100vw;
 }
+
+::ng-deep nz-option {
+  color: #333 !important;
+}

@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SessionService} from '../../../state/session/session.service';
-import {Router} from "@angular/router";
-import {SessionQuery} from "../../../state/session/session.query";
+import {Router} from '@angular/router';
+import {SessionQuery} from '../../../state/session/session.query';
 
 
 @Component({

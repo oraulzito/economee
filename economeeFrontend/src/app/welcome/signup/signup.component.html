@@ -1,109 +1,117 @@
 <nz-card class="card-border card-cadastro" nzTitle="Economee - Cadastro">
-  <span>É hora de aprimorar seu controle financeiro, preencha os dados abaixo e faremos acontecer!</span>
-  <hr>
-  <!--  <div class="float-end"><span class="text-muted">Passo {{actualStep}} de 3</span></div>-->
+   <form [formGroup]="form" class="login-form overflow-auto vh-45" nz-form>
+    <span>É hora de aprimorar seu controle financeiro, preencha os dados abaixo e faremos acontecer!</span>
+    <hr>
 
-  <div [ngSwitch]="actualStep">
-    <form *ngSwitchCase="1" [formGroup]="form" class="login-form overflow-auto vh-45" nz-form>
-      <h6>Dados Pessoais</h6>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira seu nome!">
-          <nz-input-group nzPrefixIcon="user">
-            <input formControlName="first_name" nz-input placeholder="Nome" type="password"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira seu sobrenome!">
-          <nz-input-group nzPrefixIcon="user">
-            <input formControlName="last_name" nz-input placeholder="Sobrenome" type="password"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira sua data de nascimento!">
-          <nz-input-group>
-            <input formControlName="dob" nz-input placeholder="Data de nascimento" type="date"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira seu genêro!">
-          <nz-select nzSuffixIcon="user" nzPlaceHolder="Qual seu genêro?">
-            <nz-option nzLabel="Masculino" nzValue="m"></nz-option>
-            <nz-option nzLabel="Feminino" nzValue="f"></nz-option>
-            <nz-option nzLabel="Outro" nzValue="o"></nz-option>
-          </nz-select>
-        </nz-form-control>
-      </nz-form-item>
-      <!--    </form>-->
-      <hr>
-      <!--    <form *ngSwitchCase="2" [formGroup]="validateForm2" class="login-form" nz-form>-->
-      <h6>Dados de acesso</h6>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira seu username!">
-          <nz-input-group nzPrefixIcon="mail">
-            <input formControlName="email" nz-input placeholder="Username" type="text"/>
-          </nz-input-group>
-        </nz-form-control>
-        <nz-form-control nzErrorTip="Insira seu email!">
-          <nz-input-group nzPrefixIcon="mail">
-            <input formControlName="email" nz-input placeholder="Email" type="text"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira sua senha!">
-          <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="password" nz-input placeholder="Senha" type="password"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control nzErrorTip="As senhas não conferem!">
-          <nz-input-group nzPrefixIcon="lock">
-            <input formControlName="repeat_password" nz-input placeholder="Repita sua Senha" type="password"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <nz-form-control>
-          <nz-input-group nzPrefixIcon="file-image">
-            <input formControlName="photo" nz-input placeholder="Avatar" type="file"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <!--    </form>-->
-      <hr>
-      <h6>Dados para sua conta</h6>
-      <!--    <form *ngSwitchCase="3" [formGroup]="validateForm3" class="login-form" nz-form>-->
-      <nz-form-item>
-        <nz-form-control nzErrorTip="Insira o nome da sua conta!">
-          <nz-input-group nzPrefixIcon="bank">
-            <input formControlName="account_name" nz-input placeholder="Nome da Conta" type="text"/>
-          </nz-input-group>
-        </nz-form-control>
-      </nz-form-item>
-      <nz-form-item>
-        <!-- TODO get currencies form backend -->
+    <h6>Dados Pessoais</h6>
 
-        <nz-select nzPlaceHolder="Seleciona a moeda do seu país" nzSuffixIcon="dollar">
-          <nz-option *ngFor="let c of currencies" nzLabel="{{c.id}}" nzValue="{{c.code}}"></nz-option>
-        </nz-select>
-        <nz-form-control nzErrorTip="Insira a moeda do seu país!">
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-  </div>
-  <div>
-    <div class="text-center">
-      <button *ngIf="actualStep != 1" class="login-form-button login-form-margin" nz-button nzType="text">Anterior
-      </button>
-    </div>
-    <div class="text-center">
-      <button *ngIf="actualStep != 3" class="login-form-button login-form-margin" nz-button nzType="primary">Próximo
-      </button>
-    </div>
+    <!-- FIRST NAME -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira seu nome!">
+        <nz-input-group nzPrefixIcon="user">
+          <input formControlName="first_name" nz-input placeholder="Nome" type="text"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- LAST NAME -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira seu sobrenome!">
+        <nz-input-group nzPrefixIcon="user">
+          <input formControlName="last_name" nz-input placeholder="Sobrenome" type="text"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- DOB -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira sua data de nascimento!">
+        <nz-input-group>
+          <input formControlName="dob" nz-input placeholder="Data de nascimento" type="date"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- PHOTO -->
+    <!--      <nz-form-item>-->
+    <!--        <nz-form-control>-->
+    <!--          <nz-input-group nzPrefixIcon="file-image">-->
+    <!--            <input formControlName="photo" nz-input placeholder="Avatar" type="file"/>-->
+    <!--          </nz-input-group>-->
+    <!--        </nz-form-control>-->
+    <!--      </nz-form-item>-->
+
+    <hr>
+
+    <h6>Dados de acesso</h6>
+    <!-- USERNAME -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira seu username!">
+        <nz-input-group nzPrefixIcon="user">
+          <input formControlName="username" nz-input placeholder="Username" type="text"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- EMAIL -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira seu email!">
+        <nz-input-group nzPrefixIcon="mail">
+          <input formControlName="email" nz-input placeholder="Email" type="email"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- PASSWORD -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira sua senha!">
+        <nz-input-group nzPrefixIcon="lock">
+          <input formControlName="password" nz-input placeholder="Senha" type="password"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- REPEAT PASSWORD -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="As senhas não conferem!">
+        <nz-input-group nzPrefixIcon="lock">
+          <input formControlName="repeat_password" nz-input placeholder="Repita sua Senha" type="password"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <hr>
+    <h6>Dados para sua conta</h6>
+
+    <!-- ACCOUNT NAME -->
+    <nz-form-item>
+      <nz-form-control nzErrorTip="Insira o nome da sua conta!">
+        <nz-input-group nzPrefixIcon="bank">
+          <input formControlName="account_name" nz-input placeholder="Nome da Conta" type="text"/>
+        </nz-input-group>
+      </nz-form-control>
+    </nz-form-item>
+
+    <!-- CURRENCIES -->
+    <nz-form-item>
+      <nz-select [nzDropdownRender]="renderTemplate" formControlName="currency_id"
+                 nzPlaceHolder="Seleciona a moeda do seu país" nzSuffixIcon="dollar">
+        <nz-option *ngFor="let c of currencies" nzLabel="{{c.symbol}} - {{c.country}}"
+                   nzValue="{{c.id}}"></nz-option>
+      </nz-select>
+      <nz-form-control nzErrorTip="Insira a moeda do seu país!">
+      </nz-form-control>
+      <ng-template #renderTemplate>
+        <nz-spin *ngIf="currenciesLoading$"></nz-spin>
+      </ng-template>
+    </nz-form-item>
+
+    <hr>
+    <button (click)="submit()" *ngIf="!error" nz-button nzBlock nzType="primary">Enviar</button>
+    <button (click)="submit()" *ngIf="error" class="btn-danger" nz-button nzBlock nzDanger nzType="primary">Enviar</button>
+  </form>
+  <div *ngIf="signUpLoading$" class="text-center">
+    <h4 nz-icon nzTheme="outline" nzType="loading"></h4>
   </div>
 </nz-card>
 

@@ -34,12 +34,12 @@ export class AuthenticationGuard implements CanActivate, CanLoad {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (this.isLooged) {
       if (this.uiQuery.getValue().url.includes('welcome') || this.uiQuery.getValue().url === '/') {
-        this.router.navigate(['dashboard']);
+        this.router.navigate(['dashboard']).then();
       }
       return true;
     } else {
       if (this.uiQuery.getValue().url.includes('dashboard')) {
-        this.router.navigate(['welcome/login']);
+        this.router.navigate(['welcome/login']).then();
         return false;
       }
       return true;

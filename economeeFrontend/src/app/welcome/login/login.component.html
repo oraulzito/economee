@@ -2,7 +2,7 @@
   <form (ngSubmit)="submitForm()" [formGroup]="validateForm" class="login-form" nz-form>
     <nz-form-item>
       <nz-form-control nzErrorTip="Insira seu email!">
-        <nz-input-group nzPrefixIcon="mail">
+        <nz-input-group nzPrefixIcon="user">
           <input formControlName="username" nz-input placeholder="Username" type="text"/>
         </nz-input-group>
       </nz-form-control>
@@ -19,16 +19,16 @@
         <span *ngIf="error"
               class="bg-danger text-white text-center">As credenciais informadas não estão corretas!</span>
       </div>
-      <div [nzSpan]="12" nz-col>
-        <!--        TODO-->
-        <!--        <label formControlName="remember" nz-checkbox>-->
-        <!--          <span>Lembrar de mim</span>-->
-        <!--        </label>-->
-      </div>
-      <br><br>
-      <div [nzSpan]="12" nz-col>
-        <a class="login-form-forgot" href="/forgetPassword">Esqueceu da senha?</a>
-      </div>
+      <!-- TODO -->
+      <!--      <div [nzSpan]="12" nz-col>-->
+      <!--        <label formControlName="remember" nz-checkbox>-->
+      <!--          <span>Lembrar de mim</span>-->
+      <!--        </label>-->
+      <!--      </div>-->
+      <!--      <br><br>-->
+      <!--      <div [nzSpan]="12" nz-col>-->
+      <!--        <a class="login-form-forgot" href="/forgetPassword">Esqueceu da senha?</a>-->
+      <!--      </div>-->
     </div>
     <div class="text-center">
       <button [nzType]="'primary'" class="login-form-button login-form-margin" nz-button>Entrar</button>
