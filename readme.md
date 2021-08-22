@@ -3,5 +3,5 @@
 
 **This is project consist in 3 apps:**
 - Economee, is a Python project that consist in configs to the Economee API (check the [read.me](economee/README.md) for app initialization).
-- Economee API, is the Python API made with Django Rest Framework, and serves data to Economee Frontend (app initiliaztion is the same as Economee).
+- Economee API, is the Python API made with Django Rest Framework, and serves data to Economee Frontend (app initiliaztion is the same as Economee, check the [Economee Postman API Doc](https://www.postman.com/cloudy-crater-680532/workspace/economee)). 
 - Economee Front-end, is an Angular application to display the data manipulated by the user (check the [read.me](economeeFrontend/README.md) for app initialization).
