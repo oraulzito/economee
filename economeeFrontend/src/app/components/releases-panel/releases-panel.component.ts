@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Release} from '../../../state/release/release.model';
 import {CardQuery} from '../../../state/card/card.query';
 import {InvoiceQuery} from '../../../state/invoice/invoice.query';
+import {ReleaseQuery} from '../../../state/release/release.query';
 
 @Component({
   selector: 'app-releases-panel',
@@ -18,6 +19,7 @@ export class ReleasesPanelComponent implements OnInit {
   type: string;
 
   hasData = true;
+  loadingReleases = false;
   // @Input() sm;
   // @Input() md;
   // @Input() xl;
@@ -25,11 +27,13 @@ export class ReleasesPanelComponent implements OnInit {
   constructor(
     private cardQuery: CardQuery,
     private invoiceQuery: InvoiceQuery,
+    private releaseQuery: ReleaseQuery,
   ) {
   }
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
+    this.releaseQuery.selectLoading().subscribe(r => this.loadingReleases = r);
     if (this.title !== 'My Planning') {
       if (this.data.length === 0) {
         this.hasData = false;

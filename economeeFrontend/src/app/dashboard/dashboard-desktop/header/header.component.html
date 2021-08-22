@@ -1,11 +1,18 @@
-<div nz-row>
-  <div nz-col nzSm="6">
+<div *ngIf="!accountLoading && !balanceLoading" nz-row>
+  <div nz-col nzSm="10">
     <h3 class="text-white">Economee</h3>
+    <h6 class="text-white">{{account.name}} |
+      Disponível: {{account.currency['symbol']}} {{account.total_available}}</h6>
   </div>
   <div nz-col nzSm="12">
-    <nz-date-picker class="text-white" nzBorderless nzFormat="monthFormat" nzMode="month"></nz-date-picker>
+    <nz-form-item>
+      <nz-input-group>
+        <input class="bg-transparent text-white border-0" (change)="changeBalance()" max="{{maxDate}}" min="{{minDate}}" placeholder="{{dateReference}}"
+               type="date">
+      </nz-input-group>
+    </nz-form-item>
   </div>
-  <div nz-col nzSm="6">
+  <div nz-col nzSm="2">
     <button [nzDropdownMenu]="menu2" nz-button nz-dropdown nzPlacement="bottomRight" nzShape="circle">
       <i nz-icon nzType="user"></i>
     </button>

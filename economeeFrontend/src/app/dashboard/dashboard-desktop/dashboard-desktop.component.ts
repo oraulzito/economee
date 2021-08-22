@@ -12,6 +12,7 @@ import {Release} from '../../../state/release/release.model';
 export class DashboardDesktopComponent implements OnInit {
   balanceReleases: Release[] = [];
   cardReleases: Release[] = [];
+  loadingReleases = false;
 
   constructor(
     private releaseQuery: ReleaseQuery,

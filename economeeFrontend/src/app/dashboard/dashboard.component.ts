@@ -46,6 +46,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   cardQuerySubscription = new Subscription();
   releaseQuerySubscription = new Subscription();
 
+  loadingAccount = false;
+  loadingBalance = false;
+  loadingCard = false;
+  loadingRelease = false;
+  loadingInvoice = false;
 
   constructor(
     private accountService: AccountService,
@@ -67,6 +72,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
+    this.accountQuery.selectLoading().subscribe(r => this.loadingAccount = r);
+    this.balanceQuery.selectLoading().subscribe(r => this.loadingBalance = r);
+    this.cardQuery.selectLoading().subscribe(r => this.loadingCard = r);
+    this.releaseQuery.selectLoading().subscribe(r => this.loadingRelease = r);
+    this.invoiceQuery.selectLoading().subscribe(r => this.loadingInvoice = r);
+
     // tslint:disable-next-line:variable-name
     let card_exists = true;
     // Getting the actual date to select the balance of the actual month
@@ -101,7 +112,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.releaseSubscription = this.releaseService.get().subscribe();
+    this.releaseSubscription = this.releaseService.get().subscribe(
+      () => this.accountService.totalAvailable()
+    );
 
     this.balanceQuerySubscription = this.balanceQuery.selectActive().subscribe(r => {
       this.active_balance = r;

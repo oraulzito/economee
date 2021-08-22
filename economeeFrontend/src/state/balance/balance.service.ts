@@ -19,8 +19,10 @@ export class BalanceService {
 
   // tslint:disable-next-line:typedef
   get() {
+    this.balanceStore.setLoading(true);
     return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
         this.balanceStore.set(entities);
+        this.balanceStore.setLoading(false);
       }),
       shareReplay(1));
   }

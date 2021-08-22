@@ -7,4 +7,7 @@ export interface Account {
   is_main_account: boolean;
   balances: ID[];
   cards: ID[];
+  total_available: number;
+  total_incomes: number;
+  total_expenses: number;
 }

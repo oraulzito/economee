@@ -1,4 +1,4 @@
-<nz-card [nzTitle]="title" class="h-auto w-100">
+<nz-card [nzTitle]="title" class="h-auto w-100" [nzLoading]="loadingReleases">
   <div *ngIf="!hasData">
     <app-no-data [actionText]="actionText" [text]="text" [type]="type"></app-no-data>
   </div>
