@@ -15,6 +15,9 @@ import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzMenuModule} from 'ng-zorro-antd/menu';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzDropDownModule} from "ng-zorro-antd/dropdown";
+import {NoDataComponent} from '../components/no-data/no-data.component';
+import {ReleasesPanelComponent} from '../components/releases-panel/releases-panel.component';
+import {NzEmptyModule} from 'ng-zorro-antd/empty';
 
 
 @NgModule({
@@ -27,14 +30,17 @@ import {NzDropDownModule} from "ng-zorro-antd/dropdown";
     NzButtonModule,
     NzMenuModule,
     NzIconModule,
-    NzDropDownModule
+    NzDropDownModule,
+    NzEmptyModule
   ],
   declarations: [
     DashboardComponent,
     HeaderComponent,
     ReleasesCardComponent,
     DashboardMobileComponent,
-    DashboardDesktopComponent
+    DashboardDesktopComponent,
+    NoDataComponent,
+    ReleasesPanelComponent
   ],
   exports: [
     DashboardComponent]

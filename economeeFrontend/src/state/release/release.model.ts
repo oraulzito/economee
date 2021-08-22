@@ -5,8 +5,10 @@ export interface Release {
   id: number | string;
   description: string;
   value: number;
-  date_release: Date;
-  date_repeat: Date;
+  // TODO it should be date, but API return a string
+  date_release: string;
+  // TODO it should be date, but API return a string
+  date_repeat: string;
   installment_number: number;
   repeat_times: number;
   is_release_paid: boolean;

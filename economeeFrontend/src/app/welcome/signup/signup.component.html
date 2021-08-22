@@ -1,5 +1,5 @@
 <nz-card class="card-border card-cadastro" nzTitle="Economee - Cadastro">
-   <form [formGroup]="form" class="login-form overflow-auto vh-45" nz-form>
+  <form (ngSubmit)="submit()" [formGroup]="form" class="login-form overflow-auto vh-45" nz-form>
     <span>É hora de aprimorar seu controle financeiro, preencha os dados abaixo e faremos acontecer!</span>
     <hr>
 
@@ -107,8 +107,8 @@
     </nz-form-item>
 
     <hr>
-    <button (click)="submit()" *ngIf="!error" nz-button nzBlock nzType="primary">Enviar</button>
-    <button (click)="submit()" *ngIf="error" class="btn-danger" nz-button nzBlock nzDanger nzType="primary">Enviar</button>
+    <button *ngIf="!error" nz-button nzBlock [nzType]="'primary'">Enviar</button>
+    <button *ngIf="error" nz-button nzBlock nzDanger [nzType]="'primary'">Enviar</button>
   </form>
   <div *ngIf="signUpLoading$" class="text-center">
     <h4 nz-icon nzTheme="outline" nzType="loading"></h4>

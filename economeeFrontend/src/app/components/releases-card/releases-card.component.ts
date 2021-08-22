@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {Release} from "../../../state/release/release.model";
 
 @Component({
   selector: 'app-releases-card',
@@ -8,6 +9,7 @@ import {Component, Input, OnInit} from '@angular/core';
 export class ReleasesCardComponent implements OnInit {
 
   @Input() title;
+  @Input() data: Release[];
   // @Input() sm;
   // @Input() md;
   // @Input() xl;

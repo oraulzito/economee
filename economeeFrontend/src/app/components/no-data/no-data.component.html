@@ -1,0 +1,14 @@
+<nz-empty
+  [nzNotFoundContent]="contentTpl"
+  [nzNotFoundFooter]="footerTpl"
+  nzNotFoundImage="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+>
+  <ng-template #contentTpl>
+        <span>
+          {{text}}
+        </span>
+  </ng-template>
+  <ng-template #footerTpl>
+    <button (click)="onClick()" *ngIf="actionText !== ''" nz-button nzType="primary">{{actionText}}</button>
+  </ng-template>
+</nz-empty>

@@ -31,7 +31,8 @@
       <!--      </div>-->
     </div>
     <div class="text-center">
-      <button [nzType]="'primary'" class="login-form-button login-form-margin" nz-button>Entrar</button>
+      <button *ngIf="!error" [nzType]="'primary'" class="login-form-button login-form-margin" nz-button>Entrar</button>
+      <button *ngIf="error" [nzType]="'primary'" class="login-form-button login-form-margin" nz-button nzDanger>Entrar</button>
       <br>
       <br>
       Ou

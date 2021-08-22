@@ -1,10 +1,10 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {ID} from '@datorama/akita';
-import {tap} from 'rxjs/operators';
+import {shareReplay, tap} from 'rxjs/operators';
 import {Balance} from './balance.model';
 import {BalanceStore} from './balance.store';
-import {UiService} from "../ui/ui.service";
+import {UiService} from '../ui/ui.service';
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {
@@ -19,9 +19,10 @@ export class BalanceService {
 
   // tslint:disable-next-line:typedef
   get() {
-    return this.http.get<Balance[]>('api/balance/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-      this.balanceStore.set(entities);
-    }));
+    return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
+        this.balanceStore.set(entities);
+      }),
+      shareReplay(1));
   }
 
   // tslint:disable-next-line:typedef

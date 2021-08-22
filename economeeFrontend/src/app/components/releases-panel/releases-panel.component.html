@@ -1,1 +1,10 @@
-<p>releases-panel works!</p>
+<nz-card [nzTitle]="title" class="h-auto w-100">
+  <div *ngIf="!hasData">
+    <app-no-data [actionText]="actionText" [text]="text" [type]="type"></app-no-data>
+  </div>
+  <div *ngIf="hasData">
+    <div *ngFor="let d of data">
+      <div>{{d.description}}</div>
+    </div>
+  </div>
+</nz-card>

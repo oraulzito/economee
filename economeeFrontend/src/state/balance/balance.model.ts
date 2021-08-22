@@ -1,6 +1,7 @@
 export interface Balance {
   id: number | string;
-  date_reference: Date;
+  // TODO it should be date, but API return a string
+  date_reference: string;
   account: Account;
 }
 

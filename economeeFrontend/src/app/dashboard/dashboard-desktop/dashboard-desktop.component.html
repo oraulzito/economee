@@ -2,8 +2,11 @@
   <app-header></app-header>
   <hr class="text-white w-100">
   <div class="w-100" nz-row>
-    <app-releases-card class="p-3" [nzMd]="12" [nzSm]="24" [nzXl]="7" [title]="'Releases'" nz-col></app-releases-card>
-    <app-releases-card class="p-3" [nzMd]="12" [nzSm]="24" [nzXl]="7" [title]="'Card Releases'" nz-col></app-releases-card>
-    <app-releases-card class="p-3" [nzMd]="24" [nzSm]="24" [nzXl]="10" [title]="'My Planning'" nz-col></app-releases-card>
+    <app-releases-panel [data]="balanceReleases" [nzMd]="12" [nzSm]="24" [nzXl]="7" [title]="'Releases'" class="p-3"
+                       nz-col></app-releases-panel>
+    <app-releases-panel [data]="cardReleases" [nzMd]="12" [nzSm]="24" [nzXl]="7" [title]="'Card Releases'" class="p-3"
+                       nz-col></app-releases-panel>
+    <app-releases-panel [nzMd]="24" [nzSm]="24" [nzXl]="10" [title]="'My Planning'" class="p-3"
+                       nz-col></app-releases-panel>
   </div>
 </div>

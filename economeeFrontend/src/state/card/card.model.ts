@@ -2,7 +2,8 @@ export interface Card {
   id: number | string;
   name: string;
   credit: number;
-  pay_date: Date;
+  // TODO it should be date, but API return a string
+  pay_date: string;
   account: Account;
 }
 
