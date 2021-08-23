@@ -7,7 +7,6 @@ import {Balance} from '../../../../state/balance/balance.model';
 import {Account} from '../../../../state/account/account.model';
 import {Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
-import {formatDate} from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -54,19 +53,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.balanceSubscription = this.balanceQuery.selectActive().subscribe(b => {
           if (b) {
             this.balance = b;
-            //FIXME
-            this.dateReference = DateTime.fromSQL(b.date_reference);
-            console.log(this.dateReference);
+            // FIXME
+            this.dateReference = DateTime.fromSQL(b.date_reference).toISODate();
+            // console.log(this.dateReference);
           }
         });
 
         this.balanceAllSubscription = this.balanceQuery.selectAll().subscribe(b => {
-          //FIXME
-          this.minDate = DateTime.fromSQL(b[0].date_reference);
-          //FIXME
-          this.maxDate = DateTime.fromSQL(b[b.length - 1].date_reference);
-          console.log(this.minDate);
-          console.log(this.maxDate);
+          // FIXME
+          this.minDate = DateTime.fromSQL(b[0].date_reference).toISODate();
+          // FIXME
+          this.maxDate = DateTime.fromSQL(b[b.length - 1].date_reference).toISODate();
+          // console.log(this.minDate);
+          // console.log(this.maxDate);
         });
       }
     });

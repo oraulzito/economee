@@ -8,6 +8,7 @@ import {ReleaseQuery} from './release.query';
 import {UiService} from '../ui/ui.service';
 import {BalanceQuery} from '../balance/balance.query';
 import {InvoiceQuery} from '../invoice/invoice.query';
+import {AccountQuery} from '../account/account.query';
 
 @Injectable({providedIn: 'root'})
 export class ReleaseService {
@@ -16,6 +17,7 @@ export class ReleaseService {
     private uiService: UiService,
     private releaseStore: ReleaseStore,
     private balanceQuery: BalanceQuery,
+    private accountQuery: AccountQuery,
     private invoiceQuery: InvoiceQuery,
     private releaseQuery: ReleaseQuery,
     private http: HttpClient
@@ -49,20 +51,62 @@ export class ReleaseService {
   }
 
   // tslint:disable-next-line:typedef
-  add(release: Release) {
-    this.releaseStore.add(release);
+  add(form) {
+    // FIXME if the date change it has to change the balance/invoice ID as well
+    // FIXME send only changed values
+    const body = {
+      value: form.value,
+      description: form.description,
+      date_release: form.date_release,
+      is_release_paid: form.is_release_paid,
+      category_id: form.category_id,
+      type: form.type,
+      date_repeat: form.date_release,
+      account_id: this.accountQuery.getActiveId()
+    };
+
+    return this.http.patch<number>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
+      tap(entities => {
+        if (entities === 1) {
+          this.get();
+          // this.releaseStore.add(body);
+        }
+      }),
+      shareReplay(1));
   }
 
   // tslint:disable-next-line:typedef
-  update(id, release: Partial<Release>) {
-    this.releaseStore.update(id, release);
+  update(id, form) {
+    // FIXME if the date change it has to change the balance/invoice ID as well
+    const body = {
+      value: form.value,
+      description: form.description,
+      date_release: form.date_release,
+      is_release_paid: form.is_release_paid,
+      category_id: form.category_id,
+      type: form.type,
+      date_repeat: form.date_release,
+      account_id: this.accountQuery.getActiveId()
+    };
+
+    return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
+      tap(entities => {
+        if (entities === 1) {
+          this.releaseStore.update(id, body);
+        }
+      }),
+      shareReplay(1));
   }
 
   // tslint:disable-next-line:typedef
   remove(id: ID) {
-    this.releaseStore.remove(id);
+    return this.http.delete<number>('/api/release/' + id + '/', this.uiService.httpHeaderOptions()).pipe(
+      tap(entities => {
+        if (entities === 1) {
+          this.releaseStore.remove(id);
+        }
+      }),
+      shareReplay(1));
   }
-
-
 
 }

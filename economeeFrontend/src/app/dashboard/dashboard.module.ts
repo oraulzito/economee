@@ -18,6 +18,9 @@ import {NzDropDownModule} from "ng-zorro-antd/dropdown";
 import {NoDataComponent} from '../components/no-data/no-data.component';
 import {ReleasesPanelComponent} from '../components/releases-panel/releases-panel.component';
 import {NzEmptyModule} from 'ng-zorro-antd/empty';
+import {NzProgressModule} from 'ng-zorro-antd/progress';
+import {ReactiveFormsModule} from '@angular/forms';
+import {NzSelectModule} from 'ng-zorro-antd/select';
 
 
 @NgModule({
@@ -31,7 +34,10 @@ import {NzEmptyModule} from 'ng-zorro-antd/empty';
     NzMenuModule,
     NzIconModule,
     NzDropDownModule,
-    NzEmptyModule
+    NzEmptyModule,
+    NzProgressModule,
+    ReactiveFormsModule,
+    NzSelectModule
   ],
   declarations: [
     DashboardComponent,

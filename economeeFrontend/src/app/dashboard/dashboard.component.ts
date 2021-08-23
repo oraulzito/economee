@@ -19,6 +19,7 @@ import {Card} from '../../state/card/card.model';
 import {Balance} from '../../state/balance/balance.model';
 import {Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
+import {ReleaseCategoryService} from '../../state/release-category/release-category.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -39,6 +40,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   invoiceSubscription = new Subscription();
   cardSubscription = new Subscription();
   releaseSubscription = new Subscription();
+  releaseCategorySubscription = new Subscription();
 
   accountQuerySubscription = new Subscription();
   balanceQuerySubscription = new Subscription();
@@ -57,6 +59,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private balancesService: BalanceService,
     private cardService: CardService,
     private releaseService: ReleaseService,
+    private releaseCategoryService: ReleaseCategoryService,
     private invoiceService: InvoiceService,
     private accountQuery: AccountQuery,
     private balanceQuery: BalanceQuery,
@@ -112,6 +115,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.releaseCategorySubscription = this.releaseCategoryService.get().subscribe();
+
     this.releaseSubscription = this.releaseService.get().subscribe(
       () => this.accountService.totalAvailable()
     );
@@ -163,6 +168,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.balanceSubscription.unsubscribe();
     this.invoiceSubscription.unsubscribe();
     this.releaseSubscription.unsubscribe();
+    this.releaseCategorySubscription.unsubscribe();
   }
 
 }

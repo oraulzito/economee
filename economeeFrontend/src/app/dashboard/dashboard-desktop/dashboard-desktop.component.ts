@@ -22,26 +22,7 @@ export class DashboardDesktopComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // get balance releases
-    this.releaseQuery.selectAll({
-      filterBy: ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
-    }).subscribe(
-      (rb) => {
-        this.balanceReleases = rb;
-        // console.log(JSON.stringify(rb));
-      }
-    );
 
-    // get card releases
-    if (this.invoiceQuery.hasActive()) {
-      this.releaseQuery.selectAll({
-        filterBy: ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
-      }).subscribe(
-        (ri) => {
-          this.cardReleases = ri;
-        }
-      );
-    }
   }
 
 }

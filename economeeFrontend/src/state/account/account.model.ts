@@ -8,6 +8,4 @@ export interface Account {
   balances: ID[];
   cards: ID[];
   total_available: number;
-  total_incomes: number;
-  total_expenses: number;
 }

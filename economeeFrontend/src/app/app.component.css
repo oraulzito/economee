@@ -29,12 +29,24 @@ nz-layout {
   border-radius: 16px;
 }
 
+:host ::ng-deep .vh-15 {
+  height: 15vw !important;
+}
+
+:host ::ng-deep .vh-35 {
+  height: 35vh !important;
+}
+
 :host ::ng-deep .vh-45 {
   height: 45vw !important;
 }
 
 :host ::ng-deep .vh-50 {
-  height: 50vw !important;
+  height: 50vh !important;
+}
+
+:host ::ng-deep .vh-75 {
+  height: 75vh !important;
 }
 
 :host ::ng-deep .vw-85 {

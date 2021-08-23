@@ -16,6 +16,7 @@ import {NzGridModule} from 'ng-zorro-antd/grid';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
 import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 import {environment} from '../environments/environment';
+import {NzProgressModule} from 'ng-zorro-antd/progress';
 
 registerLocaleData(en);
 
@@ -34,6 +35,7 @@ registerLocaleData(en);
     NzMenuModule,
     NzGridModule,
     NzDatePickerModule,
+    NzProgressModule,
     environment.production ? [] : AkitaNgDevtools.forRoot()
   ],
   providers: [{provide: NZ_I18N, useValue: en_US}],

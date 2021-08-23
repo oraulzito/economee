@@ -1,10 +1,56 @@
-<nz-card [nzTitle]="title" class="h-auto w-100" [nzLoading]="loadingReleases">
+<nz-card [nzExtra]="addAction" [nzLoading]="loadingReleases" [nzTitle]="title" class="releases-panel w-100">
+  <div *ngIf="hasData">
+    <div *ngIf="title === 'Releases' && !loadingBalance && !loadingAccount" nz-row>
+      <div nz-col nzSm="24">
+        <!-- Release Income/Releases -->
+        <nz-progress [nzPercent]="'100'" [nzShowInfo]="false"
+                     [nzSuccessPercent]="balanceExpensesPercentage" [nzType]="'line'"></nz-progress>
+      </div>
+      <div nz-col nzSm="24">
+        <div nz-row>
+          <div nz-col nzSm="12">
+            <p>Total Gasto
+              <br>
+              {{account.currency['symbol']}}{{balance.total_releases_expenses}}
+            </p>
+          </div>
+          <div nz-col nzSm="12">
+            <p class="text-end">
+              Total recebido
+              <br>
+              {{account.currency['symbol']}}{{balance.total_releases_incomes}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIXME -->
+    <!--  <div *ngIf="title === 'Card Releases' && " nz-row>-->
+    <!--    &lt;!&ndash; Card Available/Spent credit &ndash;&gt;-->
+    <!--    <nz-progress [nzPercent]="'100'"-->
+    <!--                 [nzSuccessPercent]="invoiceExpensesPercentage" [nzType]="'line'"></nz-progress>-->
+    <!--    <br>-->
+    <!--    <div nz-row>-->
+    <!--      <div nz-col nzSm="12">{{account.currency['symbol']}}{{card.credit}}</div>-->
+    <!--      <div nz-col nzSm="12">{{account.currency['symbol']}}{{invoice.total_card_expenses}}</div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+
+    <!-- Release Card -->
+
+    <div class="overflow-auto vh-50">
+      <div *ngFor="let r of releases">
+        <app-releases-card [currency]="account.currency['symbol']" [release]="r"></app-releases-card>
+      </div>
+    </div>
+  </div>
+
+  <!-- No release info -->
   <div *ngIf="!hasData">
     <app-no-data [actionText]="actionText" [text]="text" [type]="type"></app-no-data>
   </div>
-  <div *ngIf="hasData">
-    <div *ngFor="let d of data">
-      <div>{{d.description}}</div>
-    </div>
-  </div>
 </nz-card>
+<ng-template #addAction>
+  <i nz-icon nzTheme="outline" nzType="plus-circle"></i>
+</ng-template>

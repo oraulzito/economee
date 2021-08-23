@@ -26,7 +26,7 @@ nz-card {
 }
 
 #landpageContent {
-  background-image: url('../../assets/porquinho.png');
+  background-image: url('src/assets/porquinho.png');
   background-position-x: 38vw;
   background-size: 70vh;
   background-repeat: no-repeat;

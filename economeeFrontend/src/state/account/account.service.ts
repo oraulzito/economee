@@ -10,6 +10,9 @@ import {UiService} from '../ui/ui.service';
 import {ReleaseStore} from '../release/release.store';
 import {ReleaseQuery} from '../release/release.query';
 import {AccountQuery} from './account.query';
+import {BalanceQuery} from '../balance/balance.query';
+import {InvoiceStore} from '../invoice/invoice.store';
+import {InvoiceQuery} from '../invoice/invoice.query';
 
 @Injectable({providedIn: 'root'})
 export class AccountService {
@@ -21,7 +24,10 @@ export class AccountService {
     private releaseStore: ReleaseStore,
     private releaseQuery: ReleaseQuery,
     private accountQuery: AccountQuery,
+    private balanceQuery: BalanceQuery,
+    private invoiceQuery: InvoiceQuery,
     private cardStore: CardStore,
+    private invoiceStore: InvoiceStore,
     private http: HttpClient) {
   }
 
@@ -53,30 +59,99 @@ export class AccountService {
     // tslint:disable-next-line:variable-name
     let total_available = 0.0;
 
+    // all income releases
     this.releaseQuery.selectAll({
       filterBy: ({type}) => type === 'IR'
     }).subscribe(
       r => {
-        // tslint:disable-next-line:variable-name
-        const income_values = r.map(results => results.value);
-        const total = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        total_available += total;
-        this.accountStore.update(this.accountQuery.getActiveId(), {total_incomes: total});
+        if (r) {
+          // tslint:disable-next-line:variable-name
+          const income_values = r.map(results => results.value);
+          // tslint:disable-next-line:variable-name
+          const total_releases_incomes = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+          total_available += total_releases_incomes;
+          this.balanceStore.updateActive({total_releases_incomes});
+        }
       }
     );
 
+    // Get all expenses
     this.releaseQuery.selectAll({
-      filterBy: ({type}) => type === 'ER'
+      filterBy: [
+        ({type}) => type === 'ER',
+        // FIXME
+        // ({balance_id}) => balance_id === this.balanceQuery.getActiveId(),
+        // ({invoice_id}) => invoice_id === (this.invoiceQuery.hasActive() ? this.invoiceQuery.getActiveId() : 0),
+      ]
     }).subscribe(
       r => {
-        // tslint:disable-next-line:variable-name
-        const expense_values = r.map(results => results.value);
-        const total = expense_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        total_available -= total;
-        this.accountStore.update(this.accountQuery.getActiveId(), {total_expenses: total});
+        if (r) {
+          // tslint:disable-next-line:variable-name
+          const expense_values = r.map(results => results.value);
+          // tslint:disable-next-line:variable-name
+          const total_releases_expenses = expense_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+          total_available -= total_releases_expenses;
+          this.balanceStore.updateActive({total_releases_expenses});
+        }
       }
     );
 
-    this.accountStore.update(this.accountQuery.getActiveId(), {total_available});
+    // Only balance releases
+    this.releaseQuery.selectAll({
+      filterBy: [
+        ({type}) => type === 'ER',
+        ({balance_id}) => balance_id !== null
+      ]
+    }).subscribe(
+      r => {
+        if (r) {
+          // tslint:disable-next-line:variable-name
+          const income_values = r.map(results => results.value);
+          // tslint:disable-next-line:variable-name
+          const total_releases_expenses = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+          this.balanceStore.updateActive({total_releases_expenses});
+        }
+      }
+    );
+
+    // Only balance releases
+    this.releaseQuery.selectAll({
+      filterBy: [
+        ({type}) => type === 'IR',
+        ({balance_id}) => balance_id !== null
+      ]
+    }).subscribe(
+      r => {
+        if (r) {
+          // tslint:disable-next-line:variable-name
+          const income_values = r.map(results => results.value);
+          // tslint:disable-next-line:variable-name
+          const total_releases_incomes = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+          this.balanceStore.updateActive({total_releases_incomes});
+        }
+      }
+    );
+
+    // Only card releases
+    this.releaseQuery.selectAll({
+      filterBy: [
+        ({type}) => type === 'ER',
+        ({invoice_id}) => invoice_id !== null
+      ]
+    }).subscribe(
+      r => {
+        if (r) {
+          // tslint:disable-next-line:variable-name
+          const income_values = r.map(results => results.value);
+          // tslint:disable-next-line:variable-name
+          const total_card_expenses = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+          if (this.invoiceQuery.hasActive()) {
+            this.invoiceStore.updateActive({total_card_expenses});
+          }
+        }
+      }
+    );
+
+    this.accountStore.updateActive({total_available});
   }
 }
