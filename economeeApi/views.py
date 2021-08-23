@@ -196,6 +196,7 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         return HttpResponse(releaseCategory, content_type="application/json")
 
 
+# FIXME if the date change it has to change the balance/invoice ID as well
 class ReleaseView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = ReleaseSerializer
@@ -225,7 +226,7 @@ class ReleaseView(viewsets.ModelViewSet):
             return Release.objects.filter(
                 Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user)).all()
 
-    # FIXME
+    # FIXME if date_repeat is not sent use date_release
     def create(self, request, *args, **kwargs):
         card_id = request.data.get('card_id')
         account_id = request.data.get('account_id')
