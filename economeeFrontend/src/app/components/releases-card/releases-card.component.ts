@@ -3,7 +3,6 @@ import {Release} from '../../../state/release/release.model';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {ReleaseService} from '../../../state/release/release.service';
 import {ReleaseCategoryQuery} from '../../../state/release-category/release-category.query';
-import {isEmpty} from '@datorama/akita';
 import {ReleaseCategory} from '../../../state/release-category/release-category.model';
 import {DateTime} from 'luxon';
 
@@ -14,6 +13,7 @@ import {DateTime} from 'luxon';
 })
 export class ReleasesCardComponent implements OnInit {
 
+  @Input() add: boolean;
   @Input() release: Release;
   @Input() currency: string;
 
@@ -21,6 +21,7 @@ export class ReleasesCardComponent implements OnInit {
 
   categories: ReleaseCategory[];
   categoriesLoading = false;
+  // tslint:disable-next-line:variable-name
   date_release = new Date();
 
   constructor(
@@ -32,7 +33,7 @@ export class ReleasesCardComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
-    this.date_release = DateTime.fromSQL(this.release.date_release).toISODate();
+
     this.releaseCategoryQuery.selectLoading().subscribe(cl => {
       this.categoriesLoading = cl;
       if (!cl) {
@@ -46,32 +47,22 @@ export class ReleasesCardComponent implements OnInit {
       date_release: new FormControl(),
       is_release_paid: new FormControl(),
       category_id: new FormControl(),
+      repeat_times: new FormControl(),
       type: new FormControl(),
     });
 
-    if (isEmpty(this.release)) {
-      this.release = new class implements Release {
-        // tslint:disable-next-line:variable-name
-        balance_id: 0;
-        category: ReleaseCategory;
-        // tslint:disable-next-line:variable-name
-        date_release: '';
-        // tslint:disable-next-line:variable-name
-        date_repeat: '';
-        description: '';
-        id: 0;
-        // tslint:disable-next-line:variable-name
-        installment_number: 0;
-        // tslint:disable-next-line:variable-name
-        invoice_id: 0;
-        // tslint:disable-next-line:variable-name
-        is_release_paid: false;
-        // tslint:disable-next-line:variable-name
-        repeat_times: 0;
-        type: '';
-        value: 0;
-      };
+    if (!this.add) {
+      this.date_release = DateTime.fromSQL(this.release.date_release).toISODate();
     }
+  }
+
+  // tslint:disable-next-line:typedef
+  save() {
+    return this.releaseService.add(this.releaseForm.value).subscribe(
+      r => {
+        return r;
+      }
+    );
   }
 
   // tslint:disable-next-line:typedef
@@ -79,7 +70,7 @@ export class ReleasesCardComponent implements OnInit {
     this.releaseService.update(id, this.releaseForm.value).subscribe();
   }
 
-// tslint:disable-next-line:typedef
+  // tslint:disable-next-line:typedef
   delete(id) {
     this.releaseService.remove(id).subscribe();
   }

@@ -62,12 +62,14 @@ export class ReleaseService {
       category_id: form.category_id,
       type: form.type,
       date_repeat: form.date_release,
-      account_id: this.accountQuery.getActiveId()
+      account_id: this.accountQuery.getActiveId(),
+      balance_id: this.balanceQuery.getActiveId(),
+      repeat_times: form.repeat_times
     };
 
-    return this.http.patch<number>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
+    return this.http.post<string>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
       tap(entities => {
-        if (entities === 1) {
+        if (entities !== '') {
           this.get();
           // this.releaseStore.add(body);
         }
@@ -86,7 +88,8 @@ export class ReleaseService {
       category_id: form.category_id,
       type: form.type,
       date_repeat: form.date_release,
-      account_id: this.accountQuery.getActiveId()
+      account_id: this.accountQuery.getActiveId(),
+      repeat_times: form.repeat_times
     };
 
     return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
