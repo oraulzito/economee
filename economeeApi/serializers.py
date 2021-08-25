@@ -29,7 +29,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Release
         fields = [
-            'id', 'description', 'value',
+            'id', 'description', 'value', 'place',
             'date_repeat', 'date_release',
             'installment_number', 'repeat_times',
             'is_release_paid', 'type', 'category', 'balance_id', 'invoice_id']

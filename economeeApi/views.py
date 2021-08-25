@@ -167,7 +167,6 @@ class CardView(viewsets.ModelViewSet):
         card = Card.objects.create(
             name=self.request.data.get('name'),
             credit=self.request.data.get('credit'),
-            credit_spent=self.request.data.get('credit_spent'),
             pay_date=self.request.data.get('pay_date'),
             account_id=self.request.data.get('account_id'),
         )
@@ -318,6 +317,7 @@ class ReleaseView(viewsets.ModelViewSet):
             # Create the release
             releases = [Release(
                 description=request.data.get('description'),
+                place=request.data.get('place'),
                 value=float(request.data.get('value')),
                 date_release=date_release + relativedelta(months=+i),
                 date_repeat=date_repeat + relativedelta(months=+i),

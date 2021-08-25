@@ -87,19 +87,20 @@ class Invoice(models.Model):
 
 
 class Release(models.Model):
-    description = models.CharField(max_length=140)
+    description = models.CharField(max_length=280)
     value = models.FloatField()
     date_release = models.DateField()
     date_repeat = models.DateField()
     installment_number = models.IntegerField(default=1)
     repeat_times = models.IntegerField(default=1)
+    place = models.CharField(max_length=280, default='')
     is_release_paid = models.BooleanField(default=False)
     category = models.ForeignKey(ReleaseCategory, on_delete=models.DO_NOTHING)
     balance = models.ForeignKey(Balance, related_name='releases', on_delete=models.DO_NOTHING, null=True)
     invoice = models.ForeignKey(Invoice, related_name='releases', on_delete=models.DO_NOTHING, null=True)
 
-    # TODO study this idea
-    # Projection release will not be used on the 'oficial' sum of the balance, it will be used only in simulation on month expenses
+    # TODO study this idea Projection release will not be used on the 'oficial' sum of the balance, it will be used
+    #  only in simulation on month expenses
     PROJECTION_RELEASE = 'PR'
     EXPENSE_RELEASE = 'ER'
     INCOME_RELEASE = 'IR'
