@@ -209,19 +209,48 @@ class ReleaseView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
+        date_reference = self.request.query_params.get('date_reference')
+        month_by_month = self.request.query_params.get('month_by_month')
         balance_id = self.request.query_params.get('balance_id')
         invoice_id = self.request.query_params.get('invoice_id')
         category_id = self.request.query_params.get('category_id')
 
-        if balance_id is not None:
-            return Release.objects.filter(balance__account__user=self.request.user, balance_id=balance_id).all()
+        # Get ALL releases of a month
+        if date_reference is not None:
+            date_reference_init = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=1).date()
+
+            if date_reference_init.month == 2:
+                date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=28).date()
+            elif date_reference_init.month in {1, 3, 5, 7, 8, 10, 12}:
+                date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=31).date()
+            else:
+                date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
+
+            return Release.objects.filter(balance__account__user=self.request.user,
+                                          date_release__range=(date_reference_init, date_reference_final)).all()
+            # elif month_by_month is not None:
+            # TODO Gabriel Queries
+            # Description at:
+            # https://trello.com/c/Sm11PuHO/25-cria%C3%A7%C3%A3o-de-queries-para-gr%C3%A1ficos-de-lan%C3%A7amentos-e-gastos
+            # elif releases_by_category is not None:
+            # TODO Gabriel Queries
+            # Description at:
+            # https://trello.com/c/Sm11PuHO/25-cria%C3%A7%C3%A3o-de-queries-para-gr%C3%A1ficos-de-lan%C3%A7amentos-e-gastos
+        elif balance_id is not None:
+            # Get releases of a specific balance
+            return Release.objects.filter(
+                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
+                balance_id=balance_id).all()
         elif invoice_id is not None:
-            return Release.objects.filter(invoice__card__account__user=self.request.user,
-                                          invoice_id=invoice_id).all()
+            # Get releases of a specific invoice
+            return Release.objects.filter(invoice__card__account__user=self.request.user, invoice_id=invoice_id).all()
         elif category_id is not None:
-            return Release.objects.filter(invoice__card__account__user=self.request.user,
-                                          category_id=invoice_id).all()
+            # Get releases of specific category
+            return Release.objects.filter(
+                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
+                category_id=invoice_id).all()
         else:
+            # Get all releases
             return Release.objects.filter(
                 Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user)).all()
 
