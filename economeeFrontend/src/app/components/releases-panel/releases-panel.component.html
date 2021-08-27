@@ -1,10 +1,11 @@
-<nz-card [nzExtra]="addAction" [nzLoading]="loadingReleases" [nzTitle]="title" class="releases-panel w-100">
+<nz-card [nzExtra]="addAction" [nzLoading]="loadingBalance && loadingAccount && loadingReleases" [nzTitle]="title"
+         class="releases-panel w-100">
   <div *ngIf="hasData">
-    <div *ngIf="title === 'Releases' && !loadingBalance && !loadingAccount" nz-row>
+    <div *ngIf="id === 1" nz-row>
       <div nz-col nzSm="24">
         <!-- Release Income/Releases -->
         <nz-progress [nzPercent]="'100'" [nzShowInfo]="false"
-                     [nzSuccessPercent]="balanceExpensesPercentage" [nzType]="'line'"></nz-progress>
+                     [nzSuccessPercent]="expensesPercentage" [nzType]="'line'"></nz-progress>
       </div>
       <div nz-col nzSm="24">
         <div nz-row>
@@ -25,22 +26,36 @@
       </div>
     </div>
 
-    <!-- FIXME -->
-    <!--  <div *ngIf="title === 'Card Releases' && " nz-row>-->
-    <!--    &lt;!&ndash; Card Available/Spent credit &ndash;&gt;-->
-    <!--    <nz-progress [nzPercent]="'100'"-->
-    <!--                 [nzSuccessPercent]="invoiceExpensesPercentage" [nzType]="'line'"></nz-progress>-->
-    <!--    <br>-->
-    <!--    <div nz-row>-->
-    <!--      <div nz-col nzSm="12">{{account.currency['symbol']}}{{card.credit}}</div>-->
-    <!--      <div nz-col nzSm="12">{{account.currency['symbol']}}{{invoice.total_card_expenses}}</div>-->
-    <!--    </div>-->
-    <!--  </div>-->
+    <div *ngIf="id === 2 && !loadingCard && !loadingInvoice " nz-row>
+      <div nz-col nzSm="24">
+        <!-- Card Available/Spent credit -->
+        <nz-progress [nzPercent]="'100'" [nzShowInfo]="false"
+                     [nzSuccessPercent]="expensesPercentage" [nzType]="'line'"></nz-progress>
+      </div>
+      <div nz-col nzSm="24">
+        <div nz-row>
+          <div nz-col nzSm="12">
+            <p>Crédito Gasto
+              <br>
+              {{account.currency['symbol']}}{{invoice.total_card_expenses}}
+            </p>
+          </div>
+          <div nz-col nzSm="12">
+            <p class="text-end">
+              Crédito total
+              <br>
+              {{account.currency['symbol']}}{{card.credit}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Release Card -->
 
     <div class="overflow-auto vh-50" id="releasesList">
-      <app-releases-card (save)="addEvent($event)" [add]="true" [currency]="account.currency['symbol']"></app-releases-card>
+      <app-releases-card (save)="addEvent($event)" [add]="true"
+                         [currency]="account.currency['symbol']"></app-releases-card>
       <div *ngFor="let r of releases">
         <app-releases-card [add]="false" [currency]="account.currency['symbol']" [release]="r"></app-releases-card>
       </div>

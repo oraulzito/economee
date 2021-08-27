@@ -51,6 +51,15 @@ export class ReleaseService {
   }
 
   // tslint:disable-next-line:typedef
+  getMonthReleases() {
+    // tslint:disable-next-line:max-line-length
+    return this.http.get<Release[]>('/api/release?date_reference=' + this.balanceQuery.getActive().date_reference, this.uiService.httpHeaderOptions()).pipe(tap(entities => {
+        this.releaseStore.set(entities);
+      }),
+      shareReplay(1));
+  }
+
+  // tslint:disable-next-line:typedef
   add(form) {
     // FIXME if the date change it has to change the balance/invoice ID as well
     // FIXME send only changed values

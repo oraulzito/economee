@@ -20,6 +20,7 @@ import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 export class ReleasesPanelComponent implements OnInit {
 
   @Input() title;
+  @Input() id;
   releases: Release[];
   account: Account;
   balance: Balance;
@@ -32,8 +33,7 @@ export class ReleasesPanelComponent implements OnInit {
   text: string;
   type: string;
 
-  balanceExpensesPercentage: number;
-  invoiceExpensesPercentage: number;
+  expensesPercentage = 0;
   balanceIncomes: number;
 
   @Output() add = true;
@@ -41,6 +41,8 @@ export class ReleasesPanelComponent implements OnInit {
   loadingReleases = false;
   loadingBalance = false;
   loadingAccount = false;
+  loadingCard = false;
+  loadingInvoice = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,6 +57,12 @@ export class ReleasesPanelComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
+    this.accountQuery.selectLoading().subscribe(la => this.loadingAccount = la);
+    this.balanceQuery.selectLoading().subscribe(lb => this.loadingBalance = lb);
+    this.releaseQuery.selectLoading().subscribe(lr => this.loadingReleases = lr);
+    this.cardQuery.selectLoading().subscribe(lc => this.loadingCard = lc);
+    this.invoiceQuery.selectLoading().subscribe(li => this.loadingInvoice = li);
+
     this.releaseAddForm = this.fb.group({
       value: new FormControl(),
       description: new FormControl(),
@@ -64,50 +72,22 @@ export class ReleasesPanelComponent implements OnInit {
       type: new FormControl(),
     });
 
-    this.accountQuery.selectLoading().subscribe(la => this.loadingAccount = la);
-    this.balanceQuery.selectLoading().subscribe(lb => this.loadingBalance = lb);
-
     this.accountQuery.selectActive().subscribe(a => this.account = a);
 
-    if (this.title === 'Releases') {
-      this.getBalanceReleases();
-    }
-
-    if (this.title === 'Card Releases') {
-      this.getCardReleases();
-    }
-
-    if (this.title === 'My Planning') {
-      if (!this.cardQuery.hasActive() || !this.invoiceQuery.hasActive() || !this.releaseQuery.hasEntity()) {
+    switch (this.id) {
+      case 1:
+        this.getBalanceReleases();
+        break;
+      case 2:
+        this.getCardReleases();
+        break;
+      case 3:
         this.hasData = false;
         this.type = 'planning';
         this.actionText = '';
         this.text = 'Não há lançamentos criados em sua conta, gráficos serão gerados com os dados de lançamentos.';
-      }
+        break;
     }
-
-    // this.releaseQuery.selectLoading().subscribe(r => {
-    //   this.loadingReleases = r;
-    //   if (!r) {
-    //     switch (this.title) {
-    //       case 'Releases':
-    //
-    //         break;
-    //       case 'Card Releases':
-    //
-    //         break;
-    //       case 'My Planning':
-    //         // if (!this.cardQuery.hasActive() || !this.invoiceQuery.hasActive() || !this.releaseQuery.hasEntity()) {
-    //         this.hasData = false;
-    //         this.type = 'planning';
-    //         this.actionText = '';
-    //         this.text = 'Não há lançamentos criados em sua conta, gráficos serão gerados com os dados de lançamentos.';
-    //         // }
-    //         break;
-    //     }
-    //   }
-    //
-    // });
   }
 
   // tslint:disable-next-line:typedef
@@ -140,48 +120,48 @@ export class ReleasesPanelComponent implements OnInit {
       }
     );
 
+    // Progress bar calc
     this.balanceQuery.selectActive().subscribe(b => {
       this.balance = b;
       if (b) {
-        this.balanceExpensesPercentage = (b.total_releases_expenses * 100) / b.total_releases_incomes;
+        this.expensesPercentage = (b.total_releases_expenses * 100) / b.total_releases_incomes;
       }
     });
   }
 
   // tslint:disable-next-line:typedef
   getCardReleases() {
-    // get card releases
-    if (this.invoiceQuery.hasActive()) {
-      this.releaseQuery.selectAll({
-        filterBy: ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
-      }).subscribe(
-        (ri) => {
-          if (ri.length > 0) {
-            this.releases = ri;
-            this.hasData = true;
-          }
-        });
-    } else {
-      this.hasData = false;
-      if (!this.cardQuery.hasActive()) {
-        this.type = 'card';
-        this.actionText = 'Criar Cartão';
-        this.text = 'Não há cartões criados em sua conta';
-      } else {
-        this.type = 'invoice';
-        this.actionText = 'Criar lançamentos';
-        this.text = 'Não há lançamentos nesta fatura do seu cartão';
-      }
-    }
-
     this.cardQuery.selectActive().subscribe(c => {
       this.card = c;
-      if (c && this.invoiceQuery.hasActive()) {
-        this.invoiceQuery.selectActive().subscribe(i => {
-          this.invoice = i;
-          this.invoiceExpensesPercentage = (c.credit * 100) / i.total_card_expenses;
-        });
-      }
+      this.invoiceQuery.selectActive().subscribe(i => {
+        this.invoice = i;
+        if (this.invoice) {
+          this.releaseQuery.selectAll({
+            filterBy: ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
+          }).subscribe(
+            (ri) => {
+              if (ri.length > 0) {
+                this.releases = ri;
+                this.hasData = true;
+              } else {
+                if (!this.invoiceQuery.hasActive()) {
+                  this.hasData = false;
+                  if (!this.cardQuery.hasActive()) {
+                    this.type = 'card';
+                    this.actionText = 'Criar Cartão';
+                    this.text = 'Não há cartões criados em sua conta';
+                  } else {
+                    this.type = 'invoice';
+                    this.actionText = 'Criar lançamentos';
+                    this.text = 'Não há lançamentos nesta fatura do seu cartão';
+                  }
+                }
+              }
+            });
+
+          this.expensesPercentage = (this.invoice.total_card_expenses * 100) / this.card.credit;
+        }
+      });
     });
   }
 }

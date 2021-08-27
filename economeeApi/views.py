@@ -226,8 +226,9 @@ class ReleaseView(viewsets.ModelViewSet):
             else:
                 date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
 
-            return Release.objects.filter(balance__account__user=self.request.user,
-                                          date_release__range=(date_reference_init, date_reference_final)).all()
+            return Release.objects.filter(
+                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
+                date_release__range=(date_reference_init, date_reference_final)).all()
             # elif month_by_month is not None:
             # TODO Gabriel Queries
             # Description at:
@@ -239,7 +240,7 @@ class ReleaseView(viewsets.ModelViewSet):
         elif balance_id is not None:
             # Get releases of a specific balance
             return Release.objects.filter(
-                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
+                balance__account__user=self.request.user,
                 balance_id=balance_id).all()
         elif invoice_id is not None:
             # Get releases of a specific invoice
@@ -322,12 +323,13 @@ class ReleaseView(viewsets.ModelViewSet):
                     # check if there's a invoice already created for that month
                     date_reference_invoice = date_release.replace(day=pay_date.day)
 
-                    if (date_repeat - pay_date).days < 10:
+                    if (pay_date - date_release).days < 10:
                         # if the purchase is done 10 days before the pay date the release will just be released 40 days
                         # after (or the next next invoice)
                         date_reference_invoice = date_reference_invoice + relativedelta(months=+(n + 2))
                     else:
-                        date_reference_invoice = date_reference_invoice + relativedelta(months=+ (n + 1))
+                        if n != 0:
+                            date_reference_invoice = date_reference_invoice + relativedelta(months=+ (n + 1))
 
                     date_reference_invoice = PartialDate(date_reference_invoice)
                     invoice = Invoice.objects.filter(card_id=card_id, date_reference=date_reference_invoice).first()

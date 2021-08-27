@@ -56,47 +56,11 @@ export class AccountService {
 
   // tslint:disable-next-line:typedef
   totalAvailable() {
-    // tslint:disable-next-line:variable-name
-    let total_available = 0.0;
+    let expenseValues = 0.0;
+    let incomeValues = 0.0;
+    let cardExpenseValues = 0.0;
 
-    // all income releases
-    this.releaseQuery.selectAll({
-      filterBy: ({type}) => type === 'IR'
-    }).subscribe(
-      r => {
-        if (r) {
-          // tslint:disable-next-line:variable-name
-          const income_values = r.map(results => results.value);
-          // tslint:disable-next-line:variable-name
-          const total_releases_incomes = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-          total_available += total_releases_incomes;
-          this.balanceStore.updateActive({total_releases_incomes});
-        }
-      }
-    );
-
-    // Get all expenses
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'ER',
-        // FIXME
-        // ({balance_id}) => balance_id === this.balanceQuery.getActiveId(),
-        // ({invoice_id}) => invoice_id === (this.invoiceQuery.hasActive() ? this.invoiceQuery.getActiveId() : 0),
-      ]
-    }).subscribe(
-      r => {
-        if (r) {
-          // tslint:disable-next-line:variable-name
-          const expense_values = r.map(results => results.value);
-          // tslint:disable-next-line:variable-name
-          const total_releases_expenses = expense_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-          total_available -= total_releases_expenses;
-          this.balanceStore.updateActive({total_releases_expenses});
-        }
-      }
-    );
-
-    // Only balance releases
+    // Only balance expenses
     this.releaseQuery.selectAll({
       filterBy: [
         ({type}) => type === 'ER',
@@ -105,16 +69,16 @@ export class AccountService {
     }).subscribe(
       r => {
         if (r) {
-          // tslint:disable-next-line:variable-name
-          const income_values = r.map(results => results.value);
-          // tslint:disable-next-line:variable-name
-          const total_releases_expenses = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-          this.balanceStore.updateActive({total_releases_expenses});
+          const expenseValuesMap = r.map(results => results.value);
+          expenseValues = expenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+          this.balanceStore.updateActive({
+            total_releases_expenses: expenseValues
+          });
         }
       }
     );
 
-    // Only balance releases
+    // Only balance incomes
     this.releaseQuery.selectAll({
       filterBy: [
         ({type}) => type === 'IR',
@@ -123,11 +87,11 @@ export class AccountService {
     }).subscribe(
       r => {
         if (r) {
-          // tslint:disable-next-line:variable-name
-          const income_values = r.map(results => results.value);
-          // tslint:disable-next-line:variable-name
-          const total_releases_incomes = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-          this.balanceStore.updateActive({total_releases_incomes});
+          const incomeValuesMap = r.map(results => results.value);
+          incomeValues = incomeValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+          this.balanceStore.updateActive({
+            total_releases_incomes: incomeValues
+          });
         }
       }
     );
@@ -141,17 +105,23 @@ export class AccountService {
     }).subscribe(
       r => {
         if (r) {
-          // tslint:disable-next-line:variable-name
-          const income_values = r.map(results => results.value);
-          // tslint:disable-next-line:variable-name
-          const total_card_expenses = income_values.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-          if (this.invoiceQuery.hasActive()) {
-            this.invoiceStore.updateActive({total_card_expenses});
-          }
+          const cardExpenseValuesMap = r.map(results => results.value);
+          cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+          this.invoiceStore.updateActive({
+            total_card_expenses: cardExpenseValues
+          });
         }
       }
     );
 
-    this.accountStore.updateActive({total_available});
+    let totalAvailable = 0.0;
+
+    if (this.invoiceQuery.hasActive() && this.invoiceQuery.getActive().is_paid) {
+      totalAvailable = incomeValues - (expenseValues + cardExpenseValues);
+    } else {
+      totalAvailable = incomeValues - expenseValues;
+    }
+
+    this.accountStore.updateActive({total_available: totalAvailable});
   }
 }
