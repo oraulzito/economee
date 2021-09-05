@@ -266,6 +266,7 @@ class ReleaseView(viewsets.ModelViewSet):
         if account:
             card = None
             pay_date = datetime
+            date_reference_invoice = datetime
             invoices = []
             balances = []
             installments = []
@@ -283,6 +284,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 if card is not None:
                     # format the pay date to datetime and replace the release day to the invoice pay date
                     pay_date = datetime.strptime(str(card.pay_date), '%Y-%m-%d').date()
+                    pay_date = pay_date.replace(month=datetime.now().month)
                 else:
                     return HttpResponse('This card isn\`t yours', content_type="application/json")
 
@@ -317,22 +319,26 @@ class ReleaseView(viewsets.ModelViewSet):
 
             # Card releases, create or add values to the invoice
             if card is not None:
-                for n in range(repeat_times):
-                    """INVOICE"""
-
-                    # check if there's a invoice already created for that month
+                """INVOICE"""
+                # check if there's a invoice already created for that month
+                # if the purchase is done 10 days before the pay date the release will just be released 40 days
+                # after (or the next next invoice)
+                if (pay_date - date_release).days < 10:
                     date_reference_invoice = date_release.replace(day=pay_date.day)
+                    date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+2))
+                    date_release = date_release + relativedelta(months=+2)
+                    date_repeat = date_repeat + relativedelta(months=+2)
+                else:
+                    date_reference_invoice = date_release.replace(day=pay_date.day)
+                    date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+1))
+                    date_release = date_release + relativedelta(months=+1)
+                    date_repeat = date_repeat + relativedelta(months=+1)
 
-                    if (pay_date - date_release).days < 10:
-                        # if the purchase is done 10 days before the pay date the release will just be released 40 days
-                        # after (or the next next invoice)
-                        date_reference_invoice = date_reference_invoice + relativedelta(months=+(n + 2))
-                    else:
-                        if n != 0:
-                            date_reference_invoice = date_reference_invoice + relativedelta(months=+ (n + 1))
+                for n in range(repeat_times):
+                    date_reference_invoice.MONTH = + n
 
-                    date_reference_invoice = PartialDate(date_reference_invoice)
-                    invoice = Invoice.objects.filter(card_id=card_id, date_reference=date_reference_invoice).first()
+                    invoice = Invoice.objects.filter(card_id=card_id,
+                                                     date_reference=date_reference_invoice).first()
 
                     if invoice is None:
                         # if invoice does not exist, create a new one
@@ -350,8 +356,11 @@ class ReleaseView(viewsets.ModelViewSet):
                 description=request.data.get('description'),
                 place=request.data.get('place'),
                 value=float(request.data.get('value')),
+                value_installment=float(request.data.get('value')) / repeat_times,
+                date_creation=datetime.now(),
                 date_release=date_release + relativedelta(months=+i),
-                date_repeat=date_repeat + relativedelta(months=+i),
+                # TODO if date_repeat is different than date_release it has to have a code adjusment
+                date_repeat=date_repeat + relativedelta(months=+i + 2),
                 repeat_times=int(request.data.get('repeat_times')),
                 installment_number=i + 1,
                 type=request.data.get('type'),

@@ -88,7 +88,9 @@ class Invoice(models.Model):
 
 class Release(models.Model):
     description = models.CharField(max_length=280)
-    value = models.FloatField()
+    value = models.FloatField(default=0.0)
+    value_installment = models.FloatField(default=0.0)
+    date_creation = models.DateField()
     date_release = models.DateField()
     date_repeat = models.DateField()
     installment_number = models.IntegerField(default=1)
