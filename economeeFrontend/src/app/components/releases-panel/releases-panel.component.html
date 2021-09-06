@@ -1,4 +1,4 @@
-<nz-card [nzExtra]="addAction" [nzLoading]="loadingBalance && loadingAccount && loadingReleases" [nzTitle]="title"
+<nz-card [nzExtra]="addAction" [nzLoading]="loadingBalance || loadingAccount || loadingReleases" [nzTitle]="title"
          class="releases-panel w-100">
   <div *ngIf="hasData">
     <div *ngIf="id === 1" nz-row>
@@ -54,10 +54,11 @@
     <!-- Release Card -->
 
     <div class="overflow-auto vh-50" id="releasesList">
-      <app-releases-card (save)="addEvent($event)" [add]="true"
-                         [currency]="account.currency['symbol']"></app-releases-card>
+      <div *ngIf="add">
+        <app-release-add-card (saved)="showAddCard($event)"></app-release-add-card>
+      </div>
       <div *ngFor="let r of releases">
-        <app-releases-card [add]="false" [currency]="account.currency['symbol']" [release]="r"></app-releases-card>
+        <app-releases-card [add]="false" [release]="r"></app-releases-card>
       </div>
     </div>
   </div>
@@ -68,7 +69,7 @@
   </div>
 </nz-card>
 <ng-template #addAction>
-  <button (click)="addRelease()" class="border-0" nz-button>
+  <button (click)="showAddCard('true')" class="border-0" nz-button>
     <i nz-icon nzTheme="outline" nzType="plus-circle"></i>
   </button>
 </ng-template>

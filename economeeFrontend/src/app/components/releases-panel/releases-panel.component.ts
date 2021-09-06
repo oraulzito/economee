@@ -27,8 +27,6 @@ export class ReleasesPanelComponent implements OnInit {
   card: Card;
   invoice: Invoice;
 
-  releaseAddForm: FormGroup;
-
   actionText: string;
   text: string;
   type: string;
@@ -36,7 +34,7 @@ export class ReleasesPanelComponent implements OnInit {
   expensesPercentage = 0;
   balanceIncomes: number;
 
-  @Output() add = true;
+  add = true;
   hasData = true;
   loadingReleases = false;
   loadingBalance = false;
@@ -59,46 +57,34 @@ export class ReleasesPanelComponent implements OnInit {
   ngOnInit() {
     this.accountQuery.selectLoading().subscribe(la => this.loadingAccount = la);
     this.balanceQuery.selectLoading().subscribe(lb => this.loadingBalance = lb);
-    this.releaseQuery.selectLoading().subscribe(lr => this.loadingReleases = lr);
     this.cardQuery.selectLoading().subscribe(lc => this.loadingCard = lc);
     this.invoiceQuery.selectLoading().subscribe(li => this.loadingInvoice = li);
 
-    this.releaseAddForm = this.fb.group({
-      value: new FormControl(),
-      description: new FormControl(),
-      date_release: new FormControl(),
-      is_release_paid: new FormControl(),
-      category_id: new FormControl(),
-      type: new FormControl(),
+    this.releaseQuery.selectLoading().subscribe(lr => {
+      this.loadingReleases = lr;
+      switch (this.id) {
+        case 1:
+          this.getBalanceReleases();
+          break;
+        case 2:
+          this.getCardReleases();
+          break;
+        case 3:
+          this.hasData = false;
+          this.type = 'planning';
+          this.actionText = '';
+          this.text = 'Não há lançamentos criados em sua conta, gráficos serão gerados com os dados de lançamentos.';
+          break;
+      }
     });
 
     this.accountQuery.selectActive().subscribe(a => this.account = a);
-
-    switch (this.id) {
-      case 1:
-        this.getBalanceReleases();
-        break;
-      case 2:
-        this.getCardReleases();
-        break;
-      case 3:
-        this.hasData = false;
-        this.type = 'planning';
-        this.actionText = '';
-        this.text = 'Não há lançamentos criados em sua conta, gráficos serão gerados com os dados de lançamentos.';
-        break;
-    }
   }
 
   // tslint:disable-next-line:typedef
-  addRelease() {
-    this.add = true;
-  }
-
-  // tslint:disable-next-line:typedef
-  addEvent(result) {
-    console.log(result);
-    // this.add = false;
+  showAddCard(r: string) {
+    console.log(r);
+    this.add = r === 'true';
   }
 
   // tslint:disable-next-line:typedef

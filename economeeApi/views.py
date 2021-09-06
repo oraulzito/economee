@@ -273,7 +273,16 @@ class ReleaseView(viewsets.ModelViewSet):
             repeat_times = int(request.data.get('repeat_times'))
 
             # Change date repeat to STR, to then change the day to the correct invoice and balance day
-            date_repeat = datetime.strptime(request.data.get('date_repeat'), '%Y-%m-%d').date()
+            if request.data.get('place'):
+                place = request.data.get('place')
+            else:
+                place = ''
+
+            if request.data.get('date_repeat'):
+                date_repeat = datetime.strptime(request.data.get('date_repeat'), '%Y-%m-%d').date()
+            else:
+                date_repeat = datetime.strptime(request.data.get('date_release'), '%Y-%m-%d').date()
+
             date_release = datetime.strptime(request.data.get('date_release'), '%Y-%m-%d').date()
 
             # If it's an card release
@@ -354,7 +363,7 @@ class ReleaseView(viewsets.ModelViewSet):
             # Create the release
             releases = [Release(
                 description=request.data.get('description'),
-                place=request.data.get('place'),
+                place=place,
                 value=float(request.data.get('value')),
                 value_installment=float(request.data.get('value')) / repeat_times,
                 date_creation=datetime.now(),

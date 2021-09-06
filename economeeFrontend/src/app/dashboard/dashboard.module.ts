@@ -22,26 +22,29 @@ import {NzProgressModule} from 'ng-zorro-antd/progress';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzFormModule} from 'ng-zorro-antd/form';
+import {NzInputModule} from 'ng-zorro-antd/input';
+import {ReleaseAddCardComponent} from '../components/release-add-card/release-add-card.component';
 
 
 @NgModule({
-  imports: [
-    DashboardRoutingModule,
-    NzCardModule,
-    NzGridModule,
-    NzDatePickerModule,
-    CommonModule,
-    NzButtonModule,
-    NzMenuModule,
-    NzIconModule,
-    NzDropDownModule,
-    NzEmptyModule,
-    NzProgressModule,
-    ReactiveFormsModule,
-    NzSelectModule,
-    FormsModule,
-    NzFormModule
-  ],
+    imports: [
+        DashboardRoutingModule,
+        NzCardModule,
+        NzGridModule,
+        NzDatePickerModule,
+        CommonModule,
+        NzButtonModule,
+        NzMenuModule,
+        NzIconModule,
+        NzDropDownModule,
+        NzEmptyModule,
+        NzProgressModule,
+        ReactiveFormsModule,
+        NzSelectModule,
+        FormsModule,
+        NzFormModule,
+        NzInputModule
+    ],
   declarations: [
     DashboardComponent,
     HeaderComponent,
@@ -49,7 +52,8 @@ import {NzFormModule} from 'ng-zorro-antd/form';
     DashboardMobileComponent,
     DashboardDesktopComponent,
     NoDataComponent,
-    ReleasesPanelComponent
+    ReleasesPanelComponent,
+    ReleaseAddCardComponent
   ],
   exports: [
     DashboardComponent]

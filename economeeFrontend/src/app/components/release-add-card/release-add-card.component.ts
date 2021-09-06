@@ -1,30 +1,23 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Release} from '../../../state/release/release.model';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {ReleaseService} from '../../../state/release/release.service';
+import {AccountQuery} from '../../../state/account/account.query';
 import {ReleaseCategoryQuery} from '../../../state/release-category/release-category.query';
 import {ReleaseCategory} from '../../../state/release-category/release-category.model';
-import {DateTime} from 'luxon';
-import {AccountQuery} from '../../../state/account/account.query';
+
 
 @Component({
-  selector: 'app-releases-card',
-  templateUrl: './releases-card.component.html',
-  styleUrls: ['./releases-card.component.css']
+  selector: 'app-release-add-card',
+  templateUrl: './release-add-card.component.html',
+  styleUrls: ['./release-add-card.component.css']
 })
-export class ReleasesCardComponent implements OnInit {
-
-  @Input() add: boolean;
-  @Input() release: Release;
+export class ReleaseAddCardComponent implements OnInit {
+  @Output() saved = new EventEmitter();
 
   currency: string;
-
   releaseForm: FormGroup;
-
   categories: ReleaseCategory[];
-  categoriesLoading = false;
-  // tslint:disable-next-line:variable-name
-  date_release = new Date();
+  categoriesLoading = true;
 
   constructor(
     private fb: FormBuilder,
@@ -59,22 +52,16 @@ export class ReleasesCardComponent implements OnInit {
       place: new FormControl(),
       type: new FormControl(),
     });
-
-    if (!this.add) {
-      this.date_release = DateTime.fromSQL(this.release.date_release).toISODate();
-    }
-  }
-
-
-
-  // tslint:disable-next-line:typedef
-  edit(id) {
-    this.releaseService.update(id, this.releaseForm.value).subscribe();
   }
 
   // tslint:disable-next-line:typedef
-  delete(id) {
-    this.releaseService.remove(id).subscribe();
+  save() {
+    return this.releaseService.add(this.releaseForm.value).subscribe(
+      r => {
+        this.saved.emit('true');
+        return r;
+      },
+      (e) => this.saved.emit('false')
+    );
   }
-
 }

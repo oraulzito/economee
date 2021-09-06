@@ -1,10 +1,14 @@
 :host {
+  height: 100% !important;
   display: flex;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+:host ::ng-deep > * {
+  height: 100%;
+}
 
 nz-layout {
   background-color: #235C47 !important;
