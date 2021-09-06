@@ -66,7 +66,6 @@ export class ReleasesCardComponent implements OnInit {
   }
 
 
-
   // tslint:disable-next-line:typedef
   edit(id) {
     this.releaseService.update(id, this.releaseForm.value).subscribe();

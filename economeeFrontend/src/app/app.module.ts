@@ -17,6 +17,10 @@ import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
 import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 import {environment} from '../environments/environment';
 import {NzProgressModule} from 'ng-zorro-antd/progress';
+import * as PlotlyJS from 'plotly.js-dist-min';
+import { PlotlyModule } from 'angular-plotly.js';
+
+PlotlyModule.plotlyjs = PlotlyJS;
 
 registerLocaleData(en);
 
@@ -25,6 +29,7 @@ registerLocaleData(en);
     AppComponent,
   ],
   imports: [
+    PlotlyModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,

@@ -64,7 +64,7 @@ export class AccountService {
     this.releaseQuery.selectAll({
       filterBy: [
         ({type}) => type === 'ER',
-        ({balance_id}) => balance_id !== null
+        ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
       ]
     }).subscribe(
       r => {
@@ -82,7 +82,7 @@ export class AccountService {
     this.releaseQuery.selectAll({
       filterBy: [
         ({type}) => type === 'IR',
-        ({balance_id}) => balance_id !== null
+        ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
       ]
     }).subscribe(
       r => {
@@ -100,7 +100,7 @@ export class AccountService {
     this.releaseQuery.selectAll({
       filterBy: [
         ({type}) => type === 'ER',
-        ({invoice_id}) => invoice_id !== null
+        ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
       ]
     }).subscribe(
       r => {

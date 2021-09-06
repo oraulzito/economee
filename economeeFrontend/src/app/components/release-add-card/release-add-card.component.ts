@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {ReleaseService} from '../../../state/release/release.service';
 import {AccountQuery} from '../../../state/account/account.query';
@@ -13,6 +13,7 @@ import {ReleaseCategory} from '../../../state/release-category/release-category.
 })
 export class ReleaseAddCardComponent implements OnInit {
   @Output() saved = new EventEmitter();
+  @Input() card = false;
 
   currency: string;
   releaseForm: FormGroup;
@@ -56,12 +57,17 @@ export class ReleaseAddCardComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   save() {
-    return this.releaseService.add(this.releaseForm.value).subscribe(
+    return this.releaseService.add(this.releaseForm.value, this.card).subscribe(
       r => {
-        this.saved.emit('true');
-        return r;
+        this.saved.emit('false');
+        this.releaseCategoryQuery.selectAll().subscribe(c => this.categories = c);
       },
-      (e) => this.saved.emit('false')
+      (e) => this.saved.emit('true')
     );
+  }
+
+  // tslint:disable-next-line:typedef
+  cancel() {
+    this.saved.emit('true');
   }
 }

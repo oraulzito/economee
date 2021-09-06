@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Release} from '../../../state/release/release.model';
 import {CardQuery} from '../../../state/card/card.query';
 import {InvoiceQuery} from '../../../state/invoice/invoice.query';
@@ -10,7 +10,11 @@ import {Balance} from '../../../state/balance/balance.model';
 import {Card} from '../../../state/card/card.model';
 import {Invoice} from '../../../state/invoice/invoice.model';
 import {ReleaseService} from '../../../state/release/release.service';
-import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import {FormBuilder} from '@angular/forms';
+import {MonthByMonthService} from '../../../state/graphics/month-by-month/month-by-month.service';
+import {CategoryReleasesService} from '../../../state/graphics/category-release/category-releases.service';
+import {MonthByMonthQuery} from '../../../state/graphics/month-by-month/month-by-month.query';
+import {CategoryReleasesQuery} from '../../../state/graphics/category-release/category-releases.query';
 
 @Component({
   selector: 'app-releases-panel',
@@ -26,6 +30,8 @@ export class ReleasesPanelComponent implements OnInit {
   balance: Balance;
   card: Card;
   invoice: Invoice;
+  dataMonthbyMonth: {};
+  dataCategory: {};
 
   actionText: string;
   text: string;
@@ -33,8 +39,11 @@ export class ReleasesPanelComponent implements OnInit {
 
   expensesPercentage = 0;
   balanceIncomes: number;
-
-  add = true;
+  layoutCategory = {};
+  gDataCategory = [];
+  layoutMonth = {};
+  gDataMonth = [];
+  add = false;
   hasData = true;
   loadingReleases = false;
   loadingBalance = false;
@@ -50,6 +59,10 @@ export class ReleasesPanelComponent implements OnInit {
     private balanceQuery: BalanceQuery,
     private accountQuery: AccountQuery,
     private releaseService: ReleaseService,
+    private monthByMonthService: MonthByMonthService,
+    private monthByMonthQuery: MonthByMonthQuery,
+    private categoryReleasesQuery: CategoryReleasesQuery,
+    private categoryReleasesService: CategoryReleasesService,
   ) {
   }
 
@@ -70,21 +83,69 @@ export class ReleasesPanelComponent implements OnInit {
           this.getCardReleases();
           break;
         case 3:
-          this.hasData = false;
-          this.type = 'planning';
-          this.actionText = '';
-          this.text = 'Não há lançamentos criados em sua conta, gráficos serão gerados com os dados de lançamentos.';
+          if (!this.loadingAccount) {
+            this.monthByMonthService.get().subscribe(r => {
+                if (r !== undefined) {
+                  const totalER = r.expenses.map(e => e.total);
+                  const totalIR = r.incomes.map(i => i.total);
+
+                  // tslint:disable-next-line:variable-name
+                  const datesER = r.expenses.map(e => e.date_reference);
+                  // tslint:disable-next-line:variable-name
+                  const datesIR = r.incomes.map(i => i.date_reference);
+
+                  this.gDataMonth = [
+                    {x: datesER, y: totalER, type: 'bar', name: 'Gastos'},
+                    {x: datesIR, y: totalIR, type: 'bar', name: 'Ganhos'}
+                  ];
+
+                  this.layoutMonth = {title: 'Mês após mês', height: 400};
+                }
+              }
+            );
+
+
+            if (!this.loadingBalance) {
+              this.categoryReleasesService.get().subscribe(
+                r => {
+                  if (r !== undefined) {
+
+                    const total = r.map(e => e.total);
+                    const names = r.map(e => e.name);
+
+                    this.gDataCategory = [
+                      {values: total, labels: names, type: 'pie'},
+                    ];
+
+                    this.layoutCategory = {title: 'Gastos por categoria', height: 350};
+                  }
+                }
+              );
+            }
+          }
+
+          if (this.gDataCategory === [] || this.gDataCategory === []) {
+            this.hasData = false;
+            this.type = 'planning';
+            this.actionText = '';
+            this.text = 'Módulo em desenvolvimento';
+          }
+
           break;
       }
     });
 
-    this.accountQuery.selectActive().subscribe(a => this.account = a);
+    this.accountQuery.selectActive().subscribe(a => {
+      if (a) {
+        this.account = a;
+      }
+    });
+
   }
 
   // tslint:disable-next-line:typedef
   showAddCard(r: string) {
-    console.log(r);
-    this.add = r === 'true';
+    this.add = r === 'false';
   }
 
   // tslint:disable-next-line:typedef
@@ -129,23 +190,27 @@ export class ReleasesPanelComponent implements OnInit {
               if (ri.length > 0) {
                 this.releases = ri;
                 this.hasData = true;
+                this.expensesPercentage = (this.invoice.total_card_expenses * 100) / this.card.credit;
               } else {
+                this.hasData = false;
+
                 if (!this.invoiceQuery.hasActive()) {
-                  this.hasData = false;
                   if (!this.cardQuery.hasActive()) {
                     this.type = 'card';
                     this.actionText = 'Criar Cartão';
                     this.text = 'Não há cartões criados em sua conta';
                   } else {
                     this.type = 'invoice';
-                    this.actionText = 'Criar lançamentos';
-                    this.text = 'Não há lançamentos nesta fatura do seu cartão';
+                    this.actionText = 'Sem fatura para este mês';
+                    this.text = 'Não há uma fatura para este mês';
                   }
+                } else {
+                  this.type = 'invoice';
+                  this.actionText = 'Criar lançamentos';
+                  this.text = 'Não há lançamentos nesta fatura do seu cartão';
                 }
               }
             });
-
-          this.expensesPercentage = (this.invoice.total_card_expenses * 100) / this.card.credit;
         }
       });
     });

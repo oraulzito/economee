@@ -24,6 +24,7 @@ import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {ReleaseAddCardComponent} from '../components/release-add-card/release-add-card.component';
+import {PlotlyModule} from 'angular-plotly.js';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import {ReleaseAddCardComponent} from '../components/release-add-card/release-ad
         NzSelectModule,
         FormsModule,
         NzFormModule,
-        NzInputModule
+        NzInputModule,
+        PlotlyModule
     ],
   declarations: [
     DashboardComponent,

@@ -305,11 +305,10 @@ class ReleaseView(viewsets.ModelViewSet):
                     date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+1))
                     date_release = date_release + relativedelta(months=+1)
                     date_repeat = date_repeat + relativedelta(months=+1)
-                else:
-                    date_reference_invoice = PartialDate(date_reference_invoice)
 
                 for n in range(repeat_times):
-                    date_reference_invoice.MONTH = + n
+                    date_reference_invoice = date_release.replace(day=pay_date.day)
+                    date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+n))
 
                     invoice = Invoice.objects.filter(card_id=card_id,
                                                      date_reference=date_reference_invoice).first()

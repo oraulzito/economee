@@ -9,6 +9,7 @@ import {UiService} from '../ui/ui.service';
 import {BalanceQuery} from '../balance/balance.query';
 import {InvoiceQuery} from '../invoice/invoice.query';
 import {AccountQuery} from '../account/account.query';
+import {CardQuery} from '../card/card.query';
 
 @Injectable({providedIn: 'root'})
 export class ReleaseService {
@@ -16,6 +17,7 @@ export class ReleaseService {
   constructor(
     private uiService: UiService,
     private releaseStore: ReleaseStore,
+    private cardQuery: CardQuery,
     private balanceQuery: BalanceQuery,
     private accountQuery: AccountQuery,
     private invoiceQuery: InvoiceQuery,
@@ -36,7 +38,7 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   getBalanceReleases() {
     // tslint:disable-next-line:max-line-length
-    return this.http.get<Release[]>('/api/release?balance_id=' + this.balanceQuery.getActive(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
+    return this.http.get<Release[]>('/api/release/balance?balance_id=' + this.balanceQuery.getActive(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
       this.releaseStore.set(entities);
     }));
   }
@@ -44,7 +46,7 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   getInvoiceReleases() {
     // tslint:disable-next-line:max-line-length
-    return this.http.get<Release[]>('/api/release?invoice_id=' + this.invoiceQuery.getActive(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
+    return this.http.get<Release[]>('/api/release/invoice?invoice_id=' + this.invoiceQuery.getActive(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
         this.releaseStore.set(entities);
       }),
       shareReplay(1));
@@ -53,14 +55,14 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   getMonthReleases() {
     // tslint:disable-next-line:max-line-length
-    return this.http.get<Release[]>('/api/release?date_reference=' + this.balanceQuery.getActive().date_reference, this.uiService.httpHeaderOptions()).pipe(tap(entities => {
+    return this.http.get<Release[]>('/api/release/date_reference?date_reference=' + this.balanceQuery.getActive().date_reference, this.uiService.httpHeaderOptions()).pipe(tap(entities => {
         this.releaseStore.set(entities);
       }),
       shareReplay(1));
   }
 
   // tslint:disable-next-line:typedef
-  add(form) {
+  add(form, card) {
     // FIXME if the date change it has to change the balance/invoice ID as well
     // FIXME send only changed values
     const body = {
@@ -68,7 +70,9 @@ export class ReleaseService {
       description: form.description,
       date_release: form.date_release,
       is_release_paid: form.is_release_paid,
+      place: form.place,
       category_id: form.category_id,
+      card_id: card ? this.cardQuery.getActive().id : null,
       type: form.type,
       date_repeat: form.date_release,
       account_id: this.accountQuery.getActiveId(),
@@ -76,12 +80,9 @@ export class ReleaseService {
       repeat_times: form.repeat_times
     };
 
-    return this.http.post<string>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
+    return this.http.post<[Release]>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
       tap(entities => {
-        if (entities !== '') {
-          this.get();
-          // this.releaseStore.add(body);
-        }
+        this.releaseStore.add(entities);
       }),
       shareReplay(1));
   }

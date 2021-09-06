@@ -13,13 +13,12 @@
 nz-layout {
   background-color: #235C47 !important;
   background-image: url("src/assets/background.svg");
-  background-size: auto auto;
+  background-size: 100vw;
   background-repeat: no-repeat;
 }
 
 
 @media only screen and (max-width: 768px) and (orientation: portrait) {
-  /*FIXME why rotation?*/
   nz-layout {
     height: 100% !important;
     rotation: 90deg !important;

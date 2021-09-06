@@ -92,7 +92,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       () => {
         this.balancesService.loadMonthBalance();
         // Get the releases of the current balance
-        this.releaseService.getMonthReleases().subscribe();
+        this.releaseService.get().subscribe();
       }
     );
 
