@@ -17,7 +17,9 @@ nz-layout {
 @media only screen and (max-width: 768px) and (orientation: portrait) {
   /*FIXME why rotation?*/
   nz-layout {
-    rotation: 90deg;
+    height: 100% !important;
+    rotation: 90deg !important;
+    background-repeat: repeat;
   }
 
   nz-content {

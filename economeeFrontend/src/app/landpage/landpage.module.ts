@@ -7,6 +7,8 @@ import {NzTabsModule} from 'ng-zorro-antd/tabs';
 import {NzButtonModule} from 'ng-zorro-antd/button';
 import {CommonModule} from '@angular/common';
 import {NzTypographyModule} from 'ng-zorro-antd/typography';
+import {NzGridModule} from 'ng-zorro-antd/grid';
+import {NzIconModule} from 'ng-zorro-antd/icon';
 
 @NgModule({
   imports: [
@@ -15,7 +17,9 @@ import {NzTypographyModule} from 'ng-zorro-antd/typography';
     NzTabsModule,
     NzButtonModule,
     CommonModule,
-    NzTypographyModule
+    NzTypographyModule,
+    NzGridModule,
+    NzIconModule
   ],
   declarations: [
     LandpageComponent

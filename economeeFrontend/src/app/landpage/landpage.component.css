@@ -5,94 +5,27 @@ nz-card {
   border-radius: 16px 16px 0px 0px;
 }
 
+@media only screen and (max-width: 768px) and (orientation: portrait) {
+  nz-card {
+    width: 85vw;
+    height: 100%;
+    border-radius: 16px 16px 0px 0px;
+  }
+}
+
 :host ::ng-deep .ant-card-head {
   border-radius: 16px;
-  box-shadow: 0px 4px 5px lightgrey ;
+  box-shadow: 0px 4px 5px lightgrey;
 }
 
 :host ::ng-deep .ant-card-head-title {
-  font-size: 25px;
-  color: #235C47;
-  font-weight: bold;
+  font-size: 32px;
 }
 
-:host ::ng-deep .ant-btn-primary {
-  background-color: #29949D;
-  border: none;
+p {
+  font-size: 18px;
 }
 
-:host ::ng-deep .ant-btn-text {
-  margin-right: 5vw;
-}
-
-#landpageContent {
-  background-image: url('src/assets/porquinho.png');
-  background-position-x: 38vw;
-  background-size: 70vh;
-  background-repeat: no-repeat;
-  background-position-y: center;
-}
-
-#landpageContent h1 {
-  font-size: 5vh;
-  max-width: 40vw;
-  margin: 5vw;
-  margin-top: 3vh;
-}
-
-#landpageContent p {
-  max-width: 42vw;
-  font-size: 2.5vh;
-  margin: 5vw;
-}
-
-#landpageContent3{
-  margin-top: 6vh;
-}
-
-.images {
-  height: 30vh;
-}
-
-.images div, .aboutUs div img{
-  height: 20vh;
-  width: 20vw;
-  margin: 5vw;
-  justify-content: center;
-}
-
-.aboutUs div img {
-  width: unset;
-}
-
-.images div img, .aboutUs div img {
-  border-radius: 50%;
-}
-
-.images, .images div, #names, .aboutUs{
-  display: flex;
-}
-
-#names{
-  justify-content: center;
-}
-
-#names div {
-  font-size: 36px;
-  width: 33%;
-  text-align: center;
-  font-weight: 500;
-}
-
-.aboutUs {
-  justify-content: center;
-}
-
-.aboutUs div {
-  width: 33%;
-  margin-top: 2vh;
-}
-
-:host ::ng-deep nz-content{
-  width: 100%
+h2 {
+  font-size: 28px;
 }
