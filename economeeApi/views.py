@@ -8,6 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from partial_date import PartialDate
 from rest_framework import viewsets, authentication
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .permissions import IsObjOwner, IsAccountOwner, Deny, IsAdmin
@@ -195,6 +196,15 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         return HttpResponse(releaseCategory, content_type="application/json")
 
 
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
+
 # FIXME if the date change it has to change the balance/invoice ID as well
 class ReleaseView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
@@ -209,51 +219,9 @@ class ReleaseView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        date_reference = self.request.query_params.get('date_reference')
-        month_by_month = self.request.query_params.get('month_by_month')
-        balance_id = self.request.query_params.get('balance_id')
-        invoice_id = self.request.query_params.get('invoice_id')
-        category_id = self.request.query_params.get('category_id')
-
-        # Get ALL releases of a month
-        if date_reference is not None:
-            date_reference_init = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=1).date()
-
-            if date_reference_init.month == 2:
-                date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=28).date()
-            elif date_reference_init.month in {1, 3, 5, 7, 8, 10, 12}:
-                date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=31).date()
-            else:
-                date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
-
-            return Release.objects.filter(
-                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
-                date_release__range=(date_reference_init, date_reference_final)).all()
-            # elif month_by_month is not None:
-            # TODO Gabriel Queries
-            # Description at:
-            # https://trello.com/c/Sm11PuHO/25-cria%C3%A7%C3%A3o-de-queries-para-gr%C3%A1ficos-de-lan%C3%A7amentos-e-gastos
-            # elif releases_by_category is not None:
-            # TODO Gabriel Queries
-            # Description at:
-            # https://trello.com/c/Sm11PuHO/25-cria%C3%A7%C3%A3o-de-queries-para-gr%C3%A1ficos-de-lan%C3%A7amentos-e-gastos
-        elif balance_id is not None:
-            # Get releases of a specific balance
-            return Release.objects.filter(
-                balance__account__user=self.request.user,
-                balance_id=balance_id).all()
-        elif invoice_id is not None:
-            # Get releases of a specific invoice
-            return Release.objects.filter(invoice__card__account__user=self.request.user, invoice_id=invoice_id).all()
-        elif category_id is not None:
-            # Get releases of specific category
-            return Release.objects.filter(
-                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
-                category_id=invoice_id).all()
-        else:
-            # Get all releases
-            return Release.objects.filter(
-                Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user)).all()
+        # Get all releases
+        return Release.objects.filter(
+            Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user)).all()
 
     # FIXME if date_repeat is not sent use date_release
     def create(self, request, *args, **kwargs):
@@ -332,16 +300,13 @@ class ReleaseView(viewsets.ModelViewSet):
                 # check if there's a invoice already created for that month
                 # if the purchase is done 10 days before the pay date the release will just be released 40 days
                 # after (or the next next invoice)
+                date_reference_invoice = date_release.replace(day=pay_date.day)
                 if (pay_date - date_release).days < 10:
-                    date_reference_invoice = date_release.replace(day=pay_date.day)
-                    date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+2))
-                    date_release = date_release + relativedelta(months=+2)
-                    date_repeat = date_repeat + relativedelta(months=+2)
-                else:
-                    date_reference_invoice = date_release.replace(day=pay_date.day)
                     date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+1))
                     date_release = date_release + relativedelta(months=+1)
                     date_repeat = date_repeat + relativedelta(months=+1)
+                else:
+                    date_reference_invoice = PartialDate(date_reference_invoice)
 
                 for n in range(repeat_times):
                     date_reference_invoice.MONTH = + n
@@ -369,7 +334,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 date_creation=datetime.now(),
                 date_release=date_release + relativedelta(months=+i),
                 # TODO if date_repeat is different than date_release it has to have a code adjusment
-                date_repeat=date_repeat + relativedelta(months=+i + 2),
+                date_repeat=date_repeat + relativedelta(months=+i + 1),
                 repeat_times=int(request.data.get('repeat_times')),
                 installment_number=i + 1,
                 type=request.data.get('type'),
@@ -381,12 +346,98 @@ class ReleaseView(viewsets.ModelViewSet):
 
             created_releases = Release.objects.bulk_create(releases)
 
-            return HttpResponse(created_releases, content_type="application/json")
+            serializer = self.get_serializer(releases, many=True).data
+            return HttpResponse(json.dumps(serializer))
         else:
             return HttpResponse('This account isn\`t yours', content_type="application/json")
 
+    @action(detail=False, methods=['GET'])
+    def date_reference(self, request):
+        date_reference = self.request.query_params.get('date_reference')
+        date_reference_init = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=1).date()
 
-# TODO test CRUD
+        if date_reference_init.month == 2:
+            date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=28).date()
+        elif date_reference_init.month in {1, 3, 5, 7, 8, 10, 12}:
+            date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=31).date()
+        else:
+            date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
+
+        return Release.objects.filter(
+            Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
+            date_release__range=(date_reference_init, date_reference_final)).all()
+
+    @action(detail=False, methods=['GET'])
+    def balance(self, request):
+        balance_id = self.request.query_params.get('balance_id')
+        # Get releases of a specific balance
+        return Release.objects.filter(
+            balance__account__user=self.request.user,
+            balance_id=balance_id).all()
+
+    @action(detail=False, methods=['GET'])
+    def invoice(self, request):
+        invoice_id = self.request.query_params.get('invoice_id')
+        # Get releases of a specific invoice
+        return Release.objects.filter(invoice__card__account__user=self.request.user, invoice_id=invoice_id).all()
+
+    @action(detail=False, methods=['GET'])
+    def category(self, request):
+        category_id = self.request.query_params.get('category_id')
+        # Get releases of specific category
+        return Release.objects.filter(
+            Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
+            category_id=category_id).all()
+
+    @action(detail=False, methods=['GET'])
+    def month_graphic(self, request):
+        income = []
+        expense = []
+        for e in Balance.objects.raw("""
+                                select b.id, b.date_reference, sum(r.value_installment) as total
+                                           from \"economeeApi_release\" r
+                                           INNER JOIN \"economeeApi_account\" a on a.id = %s
+                                           INNER JOIN \"economeeApi_balance\" b on b.account_id = a.id 
+                                           INNER JOIN \"economeeApi_invoice\" i on i.balance_id = b.id 
+                                           where a.user_id = %s 
+                                           and r.type = 'ER'
+                                           GROUP BY b.id, b.date_reference;
+                                           """, [request.query_params.get('account_id'), self.request.user.id]):
+            expense.append({'id': e.id, 'date_reference': str(e.date_reference), 'total': e.total})
+
+        for i in Balance.objects.raw("""
+                        select b.id, b.date_reference, sum(r.value_installment) as total
+                        from \"economeeApi_release\" r
+                        INNER JOIN \"economeeApi_account\" a on a.id = %s
+                        INNER JOIN \"economeeApi_balance\" b on b.account_id = a.id 
+                        INNER JOIN \"economeeApi_invoice\" i on i.balance_id = b.id 
+                        where a.user_id = %s 
+                        and r.type = 'IR'
+                        GROUP BY b.id, b.date_reference;
+                        """, [request.query_params.get('account_id'), self.request.user.id]):
+            income.append({'id': i.id, 'date_reference': str(i.date_reference), 'total': i.total})
+
+        return JsonResponse({'incomes': income, 'expenses': expense})
+
+    @action(detail=False, methods=['GET'])
+    def category_graphic(self, request):
+        r = []
+
+        for e in Balance.objects.raw("""
+                                select rc.id, rc.name, sum(r.value_installment) as total
+                                    from "economeeApi_release" r
+                                         INNER JOIN "economeeApi_balance" b on b.id = r.balance_id
+                                         INNER JOIN "economeeApi_account" a on a.id = %s
+                                         INNER JOIN "economeeApi_releasecategory" rc on rc.id = r.category_id
+                                    where a.user_id = %s
+                                    and balance_id = %s
+                                    GROUP BY rc.id, rc.name
+                                           """, [request.query_params.get('account_id'), self.request.user.id,
+                                                 request.query_params.get('balance_id')]):
+            r.append({"id": e.id, "name": e.name, "total": e.total})
+        return HttpResponse(json.dumps(r))
+
+
 class InvoiceView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = InvoiceSerializer
