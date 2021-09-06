@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.timezone import now
@@ -121,4 +123,4 @@ class Release(models.Model):
     REQUIRED_FIELDS = ['description', 'value', 'type', 'date_release', 'type', 'is_release_paid', 'category']
 
     def __str__(self):
-        return '{}'.format(self.description)
+        return self
