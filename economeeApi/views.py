@@ -23,7 +23,7 @@ class UserView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'create':
+        if self.action == 'create' or self.action == 'check_email' or self.action == 'check_username':
             permission_classes = [AllowAny]
         else:
             permission_classes = [IsAuthenticated]
@@ -69,6 +69,16 @@ class UserView(viewsets.ModelViewSet):
             #     return HttpResponse('Something went wrong', content_type="application/json")
         else:
             return HttpResponse('The password don\'t match', content_type="application/json")
+
+    @action(detail=False, methods=['GET'])
+    def check_username(self, request):
+        return HttpResponse(User.objects.filter(username=self.request.query_params.get('username')).all(),
+                            content_type="application/json")
+
+    @action(detail=False, methods=['GET'])
+    def check_email(self, request):
+        return HttpResponse(User.objects.filter(email=self.request.query_params.get('email')).all(),
+                            content_type="application/json")
 
 
 # TODO test CRUD
@@ -194,15 +204,6 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         releaseCategory = ReleaseCategory.objects.create(name=self.request.data.get('name'),
                                                          user_id=self.request.user.id, )
         return HttpResponse(releaseCategory, content_type="application/json")
-
-
-def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
-    columns = [col[0] for col in cursor]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
 
 
 # FIXME if the date change it has to change the balance/invoice ID as well
