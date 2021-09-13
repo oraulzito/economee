@@ -15,6 +15,7 @@ import {ForgetPasswordComponent} from './forget-password/forget-password.compone
 import {CommonModule} from '@angular/common';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzSpinModule} from "ng-zorro-antd/spin";
 
 @NgModule({
     imports: [
@@ -30,7 +31,8 @@ import {NzIconModule} from "ng-zorro-antd/icon";
         NzSpaceModule,
         NzSelectModule,
         CommonModule,
-        NzIconModule
+        NzIconModule,
+        NzSpinModule
     ],
   declarations: [
     SignupComponent,

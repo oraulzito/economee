@@ -72,13 +72,11 @@ class UserView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def check_username(self, request):
-        return HttpResponse(User.objects.filter(username=self.request.query_params.get('username')).all(),
-                            content_type="application/json")
+        return JsonResponse({'username_exists': bool(User.objects.filter(username=self.request.query_params.get('username')).first())})
 
     @action(detail=False, methods=['GET'])
     def check_email(self, request):
-        return HttpResponse(User.objects.filter(email=self.request.query_params.get('email')).all(),
-                            content_type="application/json")
+        return JsonResponse({'email_exists': bool(User.objects.filter(email=self.request.query_params.get('email')).first())})
 
 
 # TODO test CRUD

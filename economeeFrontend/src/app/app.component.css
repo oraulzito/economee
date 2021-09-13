@@ -10,28 +10,34 @@
   height: 100%;
 }
 
+
+:host ::ng-deep .ant-card-body {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+:host ::ng-deep nz-card {
+  border-radius: 16px;
+}
+
 nz-layout {
   background-color: #235C47 !important;
   background-image: url("src/assets/background.svg");
-  background-size: 100vw;
+  background-size: cover;
   background-repeat: no-repeat;
 }
 
 
 @media only screen and (max-width: 768px) and (orientation: portrait) {
   nz-layout {
-    height: 100% !important;
-    rotation: 90deg !important;
-    background-repeat: repeat;
+    height: 100vh !important;
+    background-image: url("src/assets/backgroundMobile.svg");
+
   }
 
   nz-content {
     width: 100%;
   }
-}
-
-:host ::ng-deep .card-border {
-  border-radius: 16px;
 }
 
 :host ::ng-deep .vh-15 {

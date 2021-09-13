@@ -1,8 +1,20 @@
 .card-cadastro {
-  max-width: 400px;
+  max-width: 550px;
   width: 100vw;
+}
+
+
+::ng-deep  .ant-card-actions{
+  border-radius: 16px !important;
 }
 
 ::ng-deep nz-option {
   color: #333 !important;
+}
+
+@media only screen and (max-width: 768px) and (orientation: portrait) {
+  .card-cadastro {
+    max-width: 350px;
+    width: 100vw;
+  }
 }

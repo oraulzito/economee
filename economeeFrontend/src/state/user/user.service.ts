@@ -56,6 +56,16 @@ export class UserService {
     );
   }
 
+  // tslint:disable-next-line:typedef
+  checkUsername(value) {
+    return this.http.get('/api/user/check_username?username=' + value);
+  }
+
+  // tslint:disable-next-line:typedef
+  checkEmail(value) {
+    return this.http.get('/api/user/check_email?email=' + value);
+  }
+
 // tslint:disable-next-line:typedef
   get() {
     // return this.http.get<User>('/api/user/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
