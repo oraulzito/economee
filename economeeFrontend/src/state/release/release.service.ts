@@ -29,40 +29,53 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   get() {
     this.releaseStore.setLoading(true);
-    return this.http.get<Release[]>('/api/release/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-      this.releaseStore.set(entities);
-      this.releaseStore.setLoading(false);
-    }));
+    return this.http.get<Release[]>('/api/release/', this.uiService.httpHeaderOptions()).subscribe(
+      releases => this.releaseStore.set(releases),
+      error => this.releaseStore.setError(error),
+      () => this.releaseStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   getBalanceReleases() {
-    // tslint:disable-next-line:max-line-length
-    return this.http.get<Release[]>('/api/release/balance?balance_id=' + this.balanceQuery.getActive(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-      this.releaseStore.set(entities);
-    }));
+    this.releaseStore.setLoading(true);
+
+    return this.http.get<Release[]>('/api/release/balance?balance_id=' + this.balanceQuery.getActive(),
+      this.uiService.httpHeaderOptions()).subscribe(
+      entities => this.releaseStore.set(entities),
+      error => this.releaseStore.setError(error),
+      () => this.releaseStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   getInvoiceReleases() {
-    // tslint:disable-next-line:max-line-length
-    return this.http.get<Release[]>('/api/release/invoice?invoice_id=' + this.invoiceQuery.getActive(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-        this.releaseStore.set(entities);
-      }),
-      shareReplay(1));
+    this.releaseStore.setLoading(true);
+
+    return this.http.get<Release[]>('/api/release/invoice?invoice_id=' + this.invoiceQuery.getActive(),
+      this.uiService.httpHeaderOptions()).subscribe(
+      entities => this.releaseStore.set(entities),
+      error => this.releaseStore.setError(error),
+      () => this.releaseStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   getMonthReleases() {
-    // tslint:disable-next-line:max-line-length
-    return this.http.get<Release[]>('/api/release/date_reference?date_reference=' + this.balanceQuery.getActive().date_reference, this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-        this.releaseStore.set(entities);
-      }),
-      shareReplay(1));
+    this.releaseStore.setLoading(true);
+
+    return this.http.get<Release[]>('/api/release/date_reference?date_reference=' + this.balanceQuery.getActive().date_reference,
+      this.uiService.httpHeaderOptions()).subscribe(
+      entities => this.releaseStore.set(entities),
+      error => this.releaseStore.setError(error),
+      () => this.releaseStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   add(form, card) {
+    this.releaseStore.setLoading(true);
+
     // FIXME if the date change it has to change the balance/invoice ID as well
     // FIXME send only changed values
     const body = {
@@ -80,15 +93,13 @@ export class ReleaseService {
       repeat_times: form.repeat_times
     };
 
-    return this.http.post<[Release]>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
-      tap(entities => {
-        this.releaseStore.add(entities);
-      }),
-      shareReplay(1));
+    return this.http.post<[Release]>('/api/release/', body, this.uiService.httpHeaderOptions());
   }
 
   // tslint:disable-next-line:typedef
   update(id, form) {
+    this.releaseStore.setLoading(true);
+
     // FIXME if the date change it has to change the balance/invoice ID as well
     const body = {
       value: form.value,
@@ -102,24 +113,21 @@ export class ReleaseService {
       repeat_times: form.repeat_times
     };
 
-    return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
-      tap(entities => {
-        if (entities === 1) {
-          this.releaseStore.update(id, body);
-        }
-      }),
-      shareReplay(1));
+    return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).subscribe(
+      entities => entities === 1 ? this.releaseStore.update(id, body) : this.releaseStore.setError("Not updated"),
+      error => this.releaseStore.setError(error),
+      () => this.releaseStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   remove(id: ID) {
-    return this.http.delete<number>('/api/release/' + id + '/', this.uiService.httpHeaderOptions()).pipe(
-      tap(entities => {
-        if (entities === 1) {
-          this.releaseStore.remove(id);
-        }
-      }),
-      shareReplay(1));
-  }
+    this.releaseStore.setLoading(true);
 
+    return this.http.delete<number>('/api/release/' + id + '/', this.uiService.httpHeaderOptions()).subscribe(
+      entities => entities === 1 ? this.releaseStore.remove(id) : this.releaseStore.setError("Not removed"),
+      error => this.releaseStore.setError(error),
+      () => this.releaseStore.setLoading(false),
+    );
+  }
 }

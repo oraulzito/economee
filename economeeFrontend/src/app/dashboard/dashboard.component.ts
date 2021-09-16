@@ -79,44 +79,44 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.releaseQuery.selectLoading().subscribe(r => this.loadingRelease = r);
     this.invoiceQuery.selectLoading().subscribe(r => this.loadingInvoice = r);
 
-    this.accountSubscription = this.accountService.get().subscribe(
-      () => {
-        this.accountQuery.selectFirst().subscribe(
-          fa => this.accountStore.setActive(fa.id)
-        );
-      }
-    );
+    this.accountService.get();
 
-    // get account balances
-    this.balanceSubscription = this.balancesService.get().subscribe(
-      () => {
-        this.balancesService.loadMonthBalance();
-        // Get the releases of the current balance
-        this.releaseService.get().subscribe();
+    this.accountQuery.selectFirst().subscribe(
+      fa => {
+        if (fa) {
+          this.accountStore.setActive(fa.id);
+
+          // get account balances
+          this.balancesService.get();
+          this.balancesService.loadMonthBalance();
+
+          // Get the releases of the current balance
+          this.releaseService.get();
+        }
       }
     );
 
     // Get account cards
-    this.cardSubscription = this.cardService.get().subscribe(
-      () => {
-        // Set active the first found card
-        this.cardQuery.selectFirst().subscribe(
-          (c) => {
-            this.cardStore.setActive(c.id);
+    this.cardService.get()
 
-            this.invoiceSubscription = this.invoiceService.getCardInvoice().subscribe(() => {
-              // Load the month invoice
-              this.invoiceService.loadMonthInvoice();
-              // Calc the expended, income, and total available value in the account.
-              this.accountService.totalAvailable();
-            });
-          },
-        );
+    // Set active the first found card
+    this.cardQuery.selectFirst().subscribe(
+      c => {
+        if (c) {
+          this.cardStore.setActive(c.id);
+          this.invoiceService.getCardInvoice();
+          this.invoiceService.loadMonthInvoice();
+        }
       }
     );
 
+    if (this.accountQuery.hasActive() && this.cardQuery.hasActive() && this.balanceQuery.hasActive() && this.invoiceQuery.hasActive()) {
+      // Calc the expended, income, and total available value in the account.
+      this.accountService.totalAvailable();
+    }
+
     // Load all release categories
-    this.releaseCategorySubscription = this.releaseCategoryService.get().subscribe();
+    this.releaseCategoryService.get();
   }
 
   ngOnDestroy(): void {

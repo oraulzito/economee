@@ -26,33 +26,22 @@ export class InvoiceService {
 
   // tslint:disable-next-line:typedef
   get() {
-    return this.http.get<Invoice[]>('/api/invoice/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-      this.invoiceStore.set(entities);
-    }));
+    return this.http.get<Invoice[]>('/api/invoice/', this.uiService.httpHeaderOptions()).subscribe(
+      entity => this.invoiceStore.set(entity),
+      error => this.invoiceStore.setError(error),
+      () => this.invoiceStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   getCardInvoice() {
     // tslint:disable-next-line:max-line-length
-    return this.http.get<Invoice[]>('/api/invoice?card_id=' + this.cardQuery.getActiveId(), this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-        this.invoiceStore.set(entities);
-      }),
-      shareReplay(1));
-  }
-
-  // tslint:disable-next-line:typedef
-  add(invoice: Invoice) {
-    this.invoiceStore.add(invoice);
-  }
-
-  // tslint:disable-next-line:typedef
-  update(id, invoice: Partial<Invoice>) {
-    this.invoiceStore.update(id, invoice);
-  }
-
-  // tslint:disable-next-line:typedef
-  remove(id: ID) {
-    this.invoiceStore.remove(id);
+    return this.http.get<Invoice[]>('/api/invoice?card_id=' + this.cardQuery.getActiveId(),
+      this.uiService.httpHeaderOptions()).subscribe(
+      entity => this.invoiceStore.set(entity),
+      error => this.invoiceStore.setError(error),
+      () => this.invoiceStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef

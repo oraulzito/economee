@@ -1,7 +1,5 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {ID} from '@datorama/akita';
-import {shareReplay, tap} from 'rxjs/operators';
 import {Balance} from './balance.model';
 import {BalanceStore} from './balance.store';
 import {UiService} from '../ui/ui.service';
@@ -23,30 +21,15 @@ export class BalanceService {
   ) {
   }
 
-
   // tslint:disable-next-line:typedef
   get() {
     this.balanceStore.setLoading(true);
-    return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-        this.balanceStore.set(entities);
-        this.balanceStore.setLoading(false);
-      }),
-      shareReplay(1));
-  }
 
-  // tslint:disable-next-line:typedef
-  add(balance: Balance) {
-    this.balanceStore.add(balance);
-  }
-
-  // tslint:disable-next-line:typedef
-  update(id, balance: Partial<Balance>) {
-    this.balanceStore.update(id, balance);
-  }
-
-  // tslint:disable-next-line:typedef
-  remove(id: ID) {
-    this.balanceStore.remove(id);
+    return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).subscribe(
+      entities => this.balanceStore.set(entities),
+      error => this.balanceStore.setError(error),
+      () => this.balanceStore.setLoading(false)
+    );
   }
 
   // tslint:disable-next-line:typedef
@@ -64,7 +47,9 @@ export class BalanceService {
     // Get and set active the balance referred to the current month
     this.balanceQuery.selectEntity(({date_reference}) => date_reference === date).subscribe(
       b => {
-        this.balanceStore.setActive(b.id);
+        if (b) {
+          this.balanceStore.setActive(b.id);
+        }
       }
     );
   }

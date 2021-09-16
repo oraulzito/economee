@@ -8,9 +8,8 @@
   <div nz-col nzSm="12">
     <nz-form-item>
       <nz-input-group>
-        <input (change)="changeBalance()" class="bg-transparent text-white border-0" max="{{maxDate}}" min="{{minDate}}"
-               [ngModel]="dateReference"
-               type="date">
+        <nz-date-picker (change)="changeBalance()" [(ngModel)]="dateReference" class="bg-transparent text-white border-0"
+                        nzMode="month"></nz-date-picker>
       </nz-input-group>
     </nz-form-item>
   </div>

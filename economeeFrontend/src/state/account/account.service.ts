@@ -1,7 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {ID} from '@datorama/akita';
-import {shareReplay, tap} from 'rxjs/operators';
 import {Account} from './account.model';
 import {AccountStore} from './account.store';
 import {BalanceStore} from '../balance/balance.store';
@@ -13,6 +12,7 @@ import {AccountQuery} from './account.query';
 import {BalanceQuery} from '../balance/balance.query';
 import {InvoiceStore} from '../invoice/invoice.store';
 import {InvoiceQuery} from '../invoice/invoice.query';
+import {Release} from "../release/release.model";
 
 @Injectable({providedIn: 'root'})
 export class AccountService {
@@ -33,25 +33,58 @@ export class AccountService {
 
   // tslint:disable-next-line:typedef
   get() {
-    return this.http.get<Account[]>('/api/account/', this.uiService.httpHeaderOptions()).pipe(tap(account => {
-        this.accountStore.set(account);
-      }),
-      shareReplay(1));
+    this.accountStore.setLoading(true);
+
+    return this.http.get<Account[]>('/api/account/', this.uiService.httpHeaderOptions()).subscribe(
+      account => this.accountStore.set(account),
+      error => this.accountStore.setError(error),
+      () => this.accountStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
-  add(account: Account) {
-    this.accountStore.add(account);
+  add(form) {
+    this.accountStore.setLoading(true);
+
+    const body = {
+      name: form.name,
+      currency_id: form.currency,
+      is_main_account: form.is_main_account,
+    };
+
+    return this.http.post<Account>('/api/account/', body, this.uiService.httpHeaderOptions()).subscribe(
+      entities => this.accountStore.add(entities),
+      error => this.accountStore.setError(error),
+      () => this.accountStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
-  update(id, account: Partial<Account>) {
-    this.accountStore.update(id, account);
+  update(id, form) {
+    this.accountStore.setLoading(true);
+
+    const body = {
+      name: form.name,
+      currency_id: form.currency,
+      is_main_account: form.is_main_account,
+    };
+
+    return this.http.patch<Account>('/api/account/' + id+ '/', body, this.uiService.httpHeaderOptions()).subscribe(
+      entities => this.accountStore.update(id, entities),
+      error => this.accountStore.setError(error),
+      () => this.accountStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef
   remove(id: ID) {
-    this.accountStore.remove(id);
+    this.accountStore.setLoading(true);
+
+    return this.http.delete<number>('/api/account/' + id + '/', this.uiService.httpHeaderOptions()).subscribe(
+      entities => entities === 1 ? this.accountStore.remove(id) : this.accountStore.setError("Not removed"),
+      error => this.accountStore.setError(error),
+      () => this.accountStore.setLoading(false),
+    );
   }
 
   // tslint:disable-next-line:typedef

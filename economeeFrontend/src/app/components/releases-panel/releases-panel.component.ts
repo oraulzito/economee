@@ -73,42 +73,51 @@ export class ReleasesPanelComponent implements OnInit {
     this.cardQuery.selectLoading().subscribe(lc => this.loadingCard = lc);
     this.invoiceQuery.selectLoading().subscribe(li => this.loadingInvoice = li);
 
+    this.accountQuery.selectActive().subscribe(a => {
+      if (a) {
+        this.account = a;
+      }
+    });
+
     this.releaseQuery.selectLoading().subscribe(lr => {
       this.loadingReleases = lr;
-      switch (this.id) {
-        case 1:
-          this.getBalanceReleases();
-          break;
-        case 2:
-          this.getCardReleases();
-          break;
-        case 3:
-          if (!this.loadingAccount) {
-            this.monthByMonthService.get().subscribe(r => {
-                if (r !== undefined) {
-                  const totalER = r.expenses.map(e => e.total);
-                  const totalIR = r.incomes.map(i => i.total);
+      if (lr) {
+        switch (this.id) {
+          case 1:
+            this.getBalanceReleases();
+            break;
+          case 2:
+            this.getCardReleases();
+            break;
+          case 3:
+            if (this.accountQuery.hasActive()) {
+              this.monthByMonthService.get();
 
-                  // tslint:disable-next-line:variable-name
-                  const datesER = r.expenses.map(e => e.date_reference);
-                  // tslint:disable-next-line:variable-name
-                  const datesIR = r.incomes.map(i => i.date_reference);
+              this.monthByMonthQuery.select().subscribe(r => {
+                  if (r) {
+                    const totalER = r.expenses.map(e => e.total);
+                    const totalIR = r.incomes.map(i => i.total);
 
-                  this.gDataMonth = [
-                    {x: datesER, y: totalER, type: 'bar', name: 'Gastos'},
-                    {x: datesIR, y: totalIR, type: 'bar', name: 'Ganhos'}
-                  ];
+                    // tslint:disable-next-line:variable-name
+                    const datesER = r.expenses.map(e => e.date_reference);
+                    // tslint:disable-next-line:variable-name
+                    const datesIR = r.incomes.map(i => i.date_reference);
 
-                  this.layoutMonth = {title: 'Mês após mês', height: 400};
+                    this.gDataMonth = [
+                      {x: datesER, y: totalER, type: 'bar', name: 'Gastos'},
+                      {x: datesIR, y: totalIR, type: 'bar', name: 'Ganhos'}
+                    ];
+
+                    this.layoutMonth = {title: 'Mês após mês', height: 400};
+                  }
                 }
-              }
-            );
+              );
 
+              this.categoryReleasesService.get()
 
-            if (!this.loadingBalance) {
-              this.categoryReleasesService.get().subscribe(
+              this.categoryReleasesQuery.selectAll().subscribe(
                 r => {
-                  if (r !== undefined) {
+                  if (r) {
 
                     const total = r.map(e => e.total);
                     const names = r.map(e => e.name);
@@ -122,25 +131,18 @@ export class ReleasesPanelComponent implements OnInit {
                 }
               );
             }
-          }
 
-          if (this.gDataCategory === [] || this.gDataCategory === []) {
-            this.hasData = false;
-            this.type = 'planning';
-            this.actionText = '';
-            this.text = 'Módulo em desenvolvimento';
-          }
 
-          break;
+            if (this.gDataMonth.length === 0 || this.gDataCategory.length === 0) {
+              this.hasData = false;
+              this.type = 'planning';
+              this.actionText = '';
+              this.text = 'Sem dados para a criação de gráficos.';
+            }
+            break;
+        }
       }
     });
-
-    this.accountQuery.selectActive().subscribe(a => {
-      if (a) {
-        this.account = a;
-      }
-    });
-
   }
 
   // tslint:disable-next-line:typedef
@@ -158,6 +160,14 @@ export class ReleasesPanelComponent implements OnInit {
         if (rb.length > 0) {
           this.releases = rb;
           this.hasData = true;
+
+          // Progress bar calc
+          this.balanceQuery.selectActive().subscribe(b => {
+            this.balance = b;
+            if (b) {
+              this.expensesPercentage = (b.total_releases_expenses * 100) / b.total_releases_incomes;
+            }
+          });
         } else {
           this.hasData = false;
           this.type = 'releases';
@@ -166,53 +176,43 @@ export class ReleasesPanelComponent implements OnInit {
         }
       }
     );
-
-    // Progress bar calc
-    this.balanceQuery.selectActive().subscribe(b => {
-      this.balance = b;
-      if (b) {
-        this.expensesPercentage = (b.total_releases_expenses * 100) / b.total_releases_incomes;
-      }
-    });
   }
 
   // tslint:disable-next-line:typedef
   getCardReleases() {
     this.cardQuery.selectActive().subscribe(c => {
       this.card = c;
-      this.invoiceQuery.selectActive().subscribe(i => {
-        this.invoice = i;
-        if (this.invoice) {
-          this.releaseQuery.selectAll({
-            filterBy: ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
-          }).subscribe(
-            (ri) => {
-              if (ri.length > 0) {
-                this.releases = ri;
-                this.hasData = true;
-                this.expensesPercentage = (this.invoice.total_card_expenses * 100) / this.card.credit;
-              } else {
-                this.hasData = false;
-
-                if (!this.invoiceQuery.hasActive()) {
-                  if (!this.cardQuery.hasActive()) {
-                    this.type = 'card';
-                    this.actionText = 'Criar Cartão';
-                    this.text = 'Não há cartões criados em sua conta';
-                  } else {
-                    this.type = 'invoice';
-                    this.actionText = 'Sem fatura para este mês';
-                    this.text = 'Não há uma fatura para este mês';
-                  }
+      if (!this.card) {
+        this.hasData = false;
+        this.type = 'card';
+        this.actionText = 'Criar Cartão';
+        this.text = 'Não há cartões criados em sua conta';
+      } else {
+        this.invoiceQuery.selectActive().subscribe(i => {
+          this.invoice = i;
+          if (!this.invoice) {
+            this.type = 'invoice';
+            this.actionText = 'Sem fatura para este mês';
+            this.text = 'Não há uma fatura para este mês';
+          } else {
+            this.releaseQuery.selectAll({
+              filterBy: ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
+            }).subscribe(
+              (ri) => {
+                if (ri.length > 0) {
+                  this.releases = ri;
+                  this.hasData = true;
+                  this.expensesPercentage = (this.invoice.total_card_expenses * 100) / this.card.credit;
                 } else {
+                  this.hasData = false;
                   this.type = 'invoice';
                   this.actionText = 'Criar lançamentos';
                   this.text = 'Não há lançamentos nesta fatura do seu cartão';
                 }
-              }
-            });
-        }
-      });
+              });
+          }
+        });
+      }
     });
   }
 }

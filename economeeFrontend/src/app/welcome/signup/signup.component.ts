@@ -136,7 +136,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.currencyQueryLoadingSubscription = this.currencyQuery.selectLoading().subscribe(l => this.currenciesLoading$ = l);
     this.userQueryLoadingSubscription = this.userQuery.selectLoading().subscribe(s => this.signUpLoading$ = s);
 
-    this.currencySubscription = this.currencyService.get().subscribe();
+    this.currencyService.get();
 
     this.currencyQuerySubscription = this.currencyQuery.selectAll().subscribe(c => {
       this.currencies = c;

@@ -21,12 +21,13 @@ export class MonthByMonthService {
 
   // tslint:disable-next-line:typedef
   get() {
-    // tslint:disable-next-line:max-line-length
-    return this.http.get<MonthByMonth>('/api/release/month_graphic?account_id=' + this.accountQuery.getActive().id, this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-        this.monthByMonthStore.update(entities);
-      }),
-      shareReplay(),
-      retry(2),
+    this.monthByMonthStore.setLoading(true);
+
+    return this.http.get<MonthByMonth>('/api/release/month_graphic?account_id=' + this.accountQuery.getActive().id,
+      this.uiService.httpHeaderOptions()).subscribe(
+      entity => this.monthByMonthStore.update(entity),
+      error => this.monthByMonthStore.setError(error),
+      () => this.monthByMonthStore.setLoading(false),
     );
   }
 

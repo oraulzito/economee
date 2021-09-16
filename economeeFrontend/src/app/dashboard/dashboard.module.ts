@@ -25,6 +25,7 @@ import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {ReleaseAddCardComponent} from '../components/release-add-card/release-add-card.component';
 import {PlotlyModule} from 'angular-plotly.js';
+import {ProgressBarComponent} from "../components/progress-bar/progress-bar.component";
 
 
 @NgModule({
@@ -47,16 +48,17 @@ import {PlotlyModule} from 'angular-plotly.js';
         NzInputModule,
         PlotlyModule
     ],
-  declarations: [
-    DashboardComponent,
-    HeaderComponent,
-    ReleasesCardComponent,
-    DashboardMobileComponent,
-    DashboardDesktopComponent,
-    NoDataComponent,
-    ReleasesPanelComponent,
-    ReleaseAddCardComponent
-  ],
+    declarations: [
+        DashboardComponent,
+        HeaderComponent,
+        ReleasesCardComponent,
+        DashboardMobileComponent,
+        DashboardDesktopComponent,
+        NoDataComponent,
+        ReleasesPanelComponent,
+        ReleaseAddCardComponent,
+        ProgressBarComponent
+    ],
   exports: [
     DashboardComponent]
 })
