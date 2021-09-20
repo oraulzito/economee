@@ -1,1 +1,12 @@
-<p>dashboard-mobile works!</p>
+<div class="h-100 vw-85 foote-mobile">
+  <app-header [class]="'fixed-top p-4'"></app-header>
+  <div class="w-100" nz-row>
+    <app-releases-panel *ngIf="id ===1" [id]=1 [nzXs]="24" [title]="'Lançamentos'" class="p-3"
+                        nz-col></app-releases-panel>
+    <app-releases-panel *ngIf="id ===2" [id]=2 [nzXs]="24" [title]="'Fatura'" class="p-3"
+                        nz-col></app-releases-panel>
+    <app-releases-panel *ngIf="id ===3" [id]=3 [nzXs]="24" [title]="'Planejamento'" class="p-3"
+                        nz-col></app-releases-panel>
+  </div>
+  <app-footer (idParent)="showComponent($event)"></app-footer>
+</div>

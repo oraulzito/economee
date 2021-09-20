@@ -9,6 +9,7 @@ export class UiService {
 
   constructor(
     private uiStore: UiStore,
+
     private sessionQuery: SessionQuery,
     private http: HttpClient
   ) {

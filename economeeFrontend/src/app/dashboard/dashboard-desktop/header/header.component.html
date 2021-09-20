@@ -2,13 +2,13 @@
 <div *ngIf="!accountLoading && !balanceLoading" nz-row>
   <div nz-col nzSm="10">
     <h3 class="text-white">Economee</h3>
-    <h6 class="text-white">{{account.name}} |
-      Disponível: {{account.currency['symbol']}} {{account.total_available}}</h6>
+    <h6 class="text-white">{{account.name}} | {{account.currency['symbol']}} {{account.total_available}}</h6>
   </div>
   <div nz-col nzSm="12">
     <nz-form-item>
       <nz-input-group>
-        <nz-date-picker (change)="changeBalance()" [(ngModel)]="dateReference" class="bg-transparent text-white border-0"
+        <nz-date-picker (change)="changeBalance()" [(ngModel)]="dateReference"
+                        class="bg-transparent text-white border-0"
                         nzMode="month"></nz-date-picker>
       </nz-input-group>
     </nz-form-item>

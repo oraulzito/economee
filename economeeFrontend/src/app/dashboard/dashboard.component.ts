@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {AccountService} from '../../state/account/account.service';
 import {BalanceService} from '../../state/balance/balance.service';
 import {CardService} from '../../state/card/card.service';
@@ -18,6 +18,8 @@ import {Card} from '../../state/card/card.model';
 import {Balance} from '../../state/balance/balance.model';
 import {Subscription} from 'rxjs';
 import {ReleaseCategoryService} from '../../state/release-category/release-category.service';
+import {UiQuery} from "../../state/ui/ui.query";
+import {UiService} from "../../state/ui/ui.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -68,6 +70,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private balancesStore: BalanceStore,
     private invoiceStore: InvoiceStore,
     private cardStore: CardStore,
+    private uiService: UiService,
+    private uiQuery: UiQuery
   ) {
   }
 
@@ -80,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.invoiceQuery.selectLoading().subscribe(r => this.loadingInvoice = r);
 
     this.accountService.get();
-
+    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
     this.accountQuery.selectFirst().subscribe(
       fa => {
         if (fa) {
@@ -117,6 +121,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // Load all release categories
     this.releaseCategoryService.get();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.uiService.mobile();
   }
 
   ngOnDestroy(): void {

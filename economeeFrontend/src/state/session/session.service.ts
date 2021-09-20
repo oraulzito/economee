@@ -19,10 +19,18 @@ export class SessionService {
   // tslint:disable-next-line:typedef
   login(body) {
     this.sessionStore.setLoading(true);
-    return this.http.post('/auth/login/', body).pipe(tap(key => {
-        this.sessionStore.update(key);
-        this.sessionStore.setLoading(false);
-      }),
+    return this.http.post('/auth/login/', body).pipe(
+      tap(
+        key => {
+          this.sessionStore.update(key);
+        },
+        error => {
+          this.sessionStore.setError(error);
+          this.sessionStore.setLoading(false);
+        },
+        () => {
+          this.sessionStore.setLoading(false);
+        }),
       shareReplay(1));
   }
 
