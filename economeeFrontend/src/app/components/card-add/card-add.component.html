@@ -1,0 +1,26 @@
+<nz-card class="shadow card-release m-2 border-1">
+  <form [formGroup]="cardForm" nz-form>
+    <div nz-row>
+      <div nz-col nzSm="12">
+        <h6>
+          <nz-form-item>
+            <nz-input-group>
+              <input
+                formControlName="name" placeholder="Nome" type="text">
+            </nz-input-group>
+          </nz-form-item>
+        </h6>
+      </div>
+      <div nz-col nzSm="12">
+        <div class="float-end">
+          <button (click)="cancel()" class="mx-2" nz-button nzDanger nzType="primary">
+            <i nz-icon nzTheme="outline" nzType="stop"></i>
+          </button>
+          <button (click)="save()" class="mx-2" nz-button nzType="primary">
+            <i nz-icon nzTheme="outline" nzType="plus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</nz-card>

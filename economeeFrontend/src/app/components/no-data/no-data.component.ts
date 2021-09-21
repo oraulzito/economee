@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-no-data',
@@ -7,9 +7,11 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class NoDataComponent implements OnInit {
 
+  @Input() id: number;
   @Input() type: string;
   @Input() text: string;
   @Input() actionText: string;
+  @Output() buttonClick = new EventEmitter();
 
   constructor() {
   }
@@ -20,14 +22,7 @@ export class NoDataComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   onClick() {
-    switch (this.type) {
-      case 'releases':
-        break;
-      case 'card':
-        break;
-      case 'invoice':
-        break;
-    }
+    this.buttonClick.emit(this.id);
   }
 
 }

@@ -7,11 +7,11 @@ import {ReleaseCategory} from '../../../state/release-category/release-category.
 
 
 @Component({
-  selector: 'app-release-add-card',
-  templateUrl: './release-add-card.component.html',
-  styleUrls: ['./release-add-card.component.css']
+  selector: 'app-release-add',
+  templateUrl: './release-add.component.html',
+  styleUrls: ['./release-add.component.css']
 })
-export class ReleaseAddCardComponent implements OnInit {
+export class ReleaseAddComponent implements OnInit {
   @Output() saved = new EventEmitter();
   @Input() card = false;
 

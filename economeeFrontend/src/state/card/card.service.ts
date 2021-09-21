@@ -4,6 +4,7 @@ import {ID} from '@datorama/akita';
 import {Card} from './card.model';
 import {CardStore} from './card.store';
 import {UiService} from '../ui/ui.service';
+import {tap} from "rxjs/operators";
 
 @Injectable({providedIn: 'root'})
 export class CardService {
@@ -37,10 +38,11 @@ export class CardService {
       account_id: form.account_id,
     };
 
-    return this.http.post<Card>('/api/card/', body, this.uiService.httpHeaderOptions()).subscribe(
-      entity => this.cardStore.add(entity),
-      error => this.cardStore.setError(error),
-      () => this.cardStore.setLoading(false),
+    return this.http.post<Card>('/api/card/', body, this.uiService.httpHeaderOptions()).pipe(tap(
+        entity => this.cardStore.add(entity),
+        error => this.cardStore.setError(error),
+        () => this.cardStore.setLoading(false),
+      )
     );
   }
 

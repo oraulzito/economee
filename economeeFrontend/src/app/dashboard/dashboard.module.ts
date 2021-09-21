@@ -23,10 +23,11 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
-import {ReleaseAddCardComponent} from '../components/release-add-card/release-add-card.component';
+import {ReleaseAddComponent} from '../components/release-add/release-add.component';
 import {PlotlyModule} from 'angular-plotly.js';
 import {ProgressBarComponent} from "../components/progress-bar/progress-bar.component";
 import {FooterComponent} from "./dashboard-mobile/footer/footer.component";
+import {CardAddComponent} from "../components/card-add/card-add.component";
 
 
 @NgModule({
@@ -57,9 +58,10 @@ import {FooterComponent} from "./dashboard-mobile/footer/footer.component";
         DashboardDesktopComponent,
         NoDataComponent,
         ReleasesPanelComponent,
-        ReleaseAddCardComponent,
+        ReleaseAddComponent,
         ProgressBarComponent,
-        FooterComponent
+        FooterComponent,
+        CardAddComponent
     ],
   exports: [
     DashboardComponent]

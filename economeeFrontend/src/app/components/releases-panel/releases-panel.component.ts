@@ -25,6 +25,7 @@ export class ReleasesPanelComponent implements OnInit {
 
   @Input() title;
   @Input() id;
+
   releases: Release[];
   account: Account;
   balance: Balance;
@@ -43,7 +44,8 @@ export class ReleasesPanelComponent implements OnInit {
   gDataCategory = [];
   layoutMonth = {};
   gDataMonth = [];
-  add = false;
+  addRelease = false;
+  addCard = false;
   hasData = true;
   loadingReleases = false;
   loadingBalance = false;
@@ -147,7 +149,23 @@ export class ReleasesPanelComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   showAddCard(r: string) {
-    this.add = r === 'false';
+    this.addCard = r === 'false';
+  }
+
+  // tslint:disable-next-line:typedef
+  showAddRelease(r: string) {
+    this.addRelease = r === 'false';
+  }
+
+  showAdd(r: number) {
+    switch (r) {
+      case 1 || 2:
+        this.addRelease = true;
+        break;
+      case 3:
+        this.addCard = true;
+        break;
+    }
   }
 
   // tslint:disable-next-line:typedef

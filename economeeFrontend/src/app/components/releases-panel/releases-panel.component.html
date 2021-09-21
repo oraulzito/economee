@@ -2,26 +2,31 @@
          class="releases-panel w-100">
 
   <!-- Money bar -->
-  <ng-template [ngIf]="hasData && id===1 && !loadingBalance && !loadingAccount">
-        <app-progress-bar [title1]="'Total Gasto <br> '+account.currency['symbol']+' '+ balance.total_releases_expenses"
-                      [title2]="'Total recebido <br> '+ account.currency['symbol']+' '+balance.total_releases_incomes"
-                      [successPercentage]="expensesPercentage"></app-progress-bar>
+  <ng-template [ngIf]="hasData && id === 1 && !loadingBalance && !loadingAccount">
+    <app-progress-bar [successPercentage]="expensesPercentage"
+                      [title1]="'Total Gasto <br> '+account.currency['symbol']+' '+ balance.total_releases_expenses"
+                      [title2]="'Total recebido <br> '+ account.currency['symbol']+' '+balance.total_releases_incomes"></app-progress-bar>
   </ng-template>
 
   <!-- Credit Card bar -->
   <ng-template [ngIf]="hasData && id ===2 && !loadingCard && !loadingInvoice && !loadingAccount">
-    <app-progress-bar [title1]="'Crédito Gasto <br> '+account.currency['symbol']+' '+ invoice.total_card_expenses"
-                      [title2]="'Crédito total <br> '+ account.currency['symbol']+' '+card.credit"
-                      [successPercentage]="expensesPercentage"></app-progress-bar>
+    <app-progress-bar [successPercentage]="expensesPercentage"
+                      [title1]="'Crédito Gasto <br> '+account.currency['symbol']+' '+ invoice.total_card_expenses"
+                      [title2]="'Crédito total <br> '+ account.currency['symbol']+' '+card.credit"></app-progress-bar>
   </ng-template>
 
   <!-- Release add -->
-  <ng-template [ngIf]="add">
-    <app-release-add-card (saved)="showAddCard($event)" [card]="id===2"></app-release-add-card>
+  <ng-template [ngIf]="addRelease">
+    <app-release-add (saved)="showAddRelease($event)" [card]="id === 2"></app-release-add>
+  </ng-template>
+
+  <!-- Card add -->
+  <ng-template [ngIf]="addCard">
+    <app-card-add (saved)="showAddCard($event)"></app-card-add>
   </ng-template>
 
   <!-- Releases -->
-  <ng-template [ngIf]="hasData && (id===1 || id ===2)">
+  <ng-template [ngIf]="hasData && (id === 1 || id === 2)">
     <div class="overflow-auto vh-50" id="releasesList">
       <div *ngFor="let r of releases">
         <app-releases-card [add]="false" [release]="r"></app-releases-card>
@@ -29,14 +34,15 @@
     </div>
   </ng-template>
 
-  <div *ngIf="id ===3 && hasData">
+  <div *ngIf="id === 3 && hasData">
     <plotly-plot [data]="gDataMonth" [layout]="layoutMonth"></plotly-plot>
     <plotly-plot [data]="gDataCategory" [layout]="layoutCategory"></plotly-plot>
   </div>
 
   <!-- No release info -->
-  <ng-template [ngIf]="!hasData">
-    <app-no-data *ngIf="!add" [actionText]="actionText" [text]="text" [type]="type"></app-no-data>
+  <ng-template [ngIf]="!hasData && (!addRelease || !addCard)">
+    <app-no-data (buttonClick)="showAdd($event)" [actionText]="actionText" [id]="id" [text]="text"
+                 [type]="type"></app-no-data>
   </ng-template>
 </nz-card>
 
