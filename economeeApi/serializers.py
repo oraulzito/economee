@@ -20,7 +20,7 @@ class CurrencySerializer(serializers.HyperlinkedModelSerializer):
 class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ReleaseCategory
-        fields = ['id', 'name', 'color']
+        fields = ['id', 'name','type']
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):

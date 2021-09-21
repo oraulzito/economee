@@ -83,7 +83,7 @@ export class ReleasesPanelComponent implements OnInit {
 
     this.releaseQuery.selectLoading().subscribe(lr => {
       this.loadingReleases = lr;
-      if (lr) {
+      if (lr === false) {
         switch (this.id) {
           case 1:
             this.getBalanceReleases();
@@ -159,11 +159,11 @@ export class ReleasesPanelComponent implements OnInit {
 
   showAdd(r: number) {
     switch (r) {
-      case 1 || 2:
-        this.addRelease = true;
+      case 1:
+        this.addRelease = !this.addRelease;
         break;
-      case 3:
-        this.addCard = true;
+      case 2:
+        this.addCard = !this.addCard;
         break;
     }
   }

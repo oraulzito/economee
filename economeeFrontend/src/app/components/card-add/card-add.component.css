@@ -1,0 +1,42 @@
+:host ::ng-deep input, .ant-input-affix-wrapper {
+  border: 0;
+}
+
+:host ::ng-deep .ant-input-affix-wrapper > input, .ant-input-affix-wrapper > span {
+/*  padding: 0;*/
+/*  margin: 0;*/
+/*  width: 100%;*/
+}
+
+:host ::ng-deep .ant-form-item {
+  margin: 0 0 8px;
+  border-bottom: 1px solid #3333334a;
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
+}
+
+.card-release {
+  border-radius: 16px;
+}
+
+:host ::ng-deep .category > nz-select-top-control {
+  background-color: #29949D !important;
+  color: white;
+  border-radius: 16px !important;
+  border: 0px;
+}
+
+:host ::ng-deep .type > nz-select-top-control {
+  background-color: #883B21 !important;
+  color: white;
+  border-radius: 16px !important;
+  border: 0px;
+}
+
+:host ::ng-deep .paid > nz-select-top-control {
+  background-color: #E3A238 !important;
+  color: white;
+  border-radius: 16px !important;
+  border: 0px;
+}

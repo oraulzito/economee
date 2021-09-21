@@ -1,5 +1,3 @@
-import json
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.timezone import now
@@ -67,10 +65,10 @@ class Card(models.Model):
 # TODO create default release categories
 class ReleaseCategory(models.Model):
     name = models.CharField(max_length=124)
-    color = models.CharField(max_length=124)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+    type = models.IntegerField(default=0)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True)
 
-    REQUIRED_FIELDS = ['name', 'user']
+    REQUIRED_FIELDS = ['name', 'type']
 
     def __str__(self):
         return '{}'.format(self.name)

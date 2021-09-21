@@ -1,3 +1,4 @@
+import json
 from datetime import date
 from datetime import datetime
 
@@ -200,6 +201,7 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         releaseCategory = ReleaseCategory.objects.create(name=self.request.data.get('name'),
+                                                         type=self.request.data.get('type'),
                                                          user_id=self.request.user.id, )
         return HttpResponse(releaseCategory, content_type="application/json")
 

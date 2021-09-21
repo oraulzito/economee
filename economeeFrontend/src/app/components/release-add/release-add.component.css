@@ -3,9 +3,9 @@
 }
 
 :host ::ng-deep .ant-input-affix-wrapper > input, .ant-input-affix-wrapper > span {
-  padding: 0;
-  margin: 0;
-  width: 100%;
+  /*padding: 0;*/
+  /*margin: 0;*/
+  /*width: 100%;*/
 }
 
 :host ::ng-deep .ant-form-item {

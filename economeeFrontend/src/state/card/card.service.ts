@@ -5,6 +5,7 @@ import {Card} from './card.model';
 import {CardStore} from './card.store';
 import {UiService} from '../ui/ui.service';
 import {tap} from "rxjs/operators";
+import {AccountQuery} from "../account/account.query";
 
 @Injectable({providedIn: 'root'})
 export class CardService {
@@ -12,6 +13,7 @@ export class CardService {
   constructor(
     private uiService: UiService,
     private cardStore: CardStore,
+    private accountQuery: AccountQuery,
     private http: HttpClient
   ) {
   }
@@ -35,7 +37,7 @@ export class CardService {
       name: form.name,
       credit: form.credit,
       pay_date: form.pay_date,
-      account_id: form.account_id,
+      account_id: this.accountQuery.getActiveId(),
     };
 
     return this.http.post<Card>('/api/card/', body, this.uiService.httpHeaderOptions()).pipe(tap(

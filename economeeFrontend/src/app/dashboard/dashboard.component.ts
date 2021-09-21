@@ -1,4 +1,4 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {AccountService} from '../../state/account/account.service';
 import {BalanceService} from '../../state/balance/balance.service';
 import {CardService} from '../../state/card/card.service';
@@ -26,7 +26,7 @@ import {UiService} from "../../state/ui/ui.service";
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   balances: getEntityType<BalanceState>;
   mobile$ = false;
 
@@ -82,9 +82,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.balanceQuery.selectLoading().subscribe(r => this.loadingBalance = r);
     this.releaseQuery.selectLoading().subscribe(r => this.loadingRelease = r);
     this.invoiceQuery.selectLoading().subscribe(r => this.loadingInvoice = r);
+    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
 
     this.accountService.get();
-    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
+
     this.accountQuery.selectFirst().subscribe(
       fa => {
         if (fa) {
@@ -109,18 +110,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (c) {
           this.cardStore.setActive(c.id);
           this.invoiceService.getCardInvoice();
-          this.invoiceService.loadMonthInvoice();
         }
       }
     );
 
-    if (this.accountQuery.hasActive() && this.cardQuery.hasActive() && this.balanceQuery.hasActive() && this.invoiceQuery.hasActive()) {
-      // Calc the expended, income, and total available value in the account.
-      this.accountService.totalAvailable();
-    }
 
     // Load all release categories
     this.releaseCategoryService.get();
+  }
+
+  ngAfterViewInit() {
+    if (this.accountQuery.hasActive() && this.cardQuery.hasActive() && this.balanceQuery.hasActive() && this.invoiceQuery.hasActive()) {
+      this.invoiceService.loadMonthInvoice();
+      // Calc the expended, income, and total available value in the account.
+      this.accountService.totalAvailable();
+    }
   }
 
   @HostListener('window:resize')

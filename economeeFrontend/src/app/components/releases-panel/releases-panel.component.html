@@ -40,14 +40,14 @@
   </div>
 
   <!-- No release info -->
-  <ng-template [ngIf]="!hasData && (!addRelease || !addCard)">
+  <ng-template [ngIf]="!hasData && (!addRelease && !addCard)">
     <app-no-data (buttonClick)="showAdd($event)" [actionText]="actionText" [id]="id" [text]="text"
                  [type]="type"></app-no-data>
   </ng-template>
 </nz-card>
 
 <ng-template #addAction>
-  <button (click)="showAddCard('false')" class="border-0" nz-button>
+  <button (click)="showAdd(id)" class="border-0" nz-button>
     <i nz-icon nzTheme="outline" nzType="plus-circle"></i>
   </button>
 </ng-template>

@@ -28,6 +28,7 @@ import {PlotlyModule} from 'angular-plotly.js';
 import {ProgressBarComponent} from "../components/progress-bar/progress-bar.component";
 import {FooterComponent} from "./dashboard-mobile/footer/footer.component";
 import {CardAddComponent} from "../components/card-add/card-add.component";
+import {NzSpinModule} from "ng-zorro-antd/spin";
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import {CardAddComponent} from "../components/card-add/card-add.component";
         FormsModule,
         NzFormModule,
         NzInputModule,
-        PlotlyModule
+        PlotlyModule,
+        NzSpinModule
     ],
     declarations: [
         DashboardComponent,

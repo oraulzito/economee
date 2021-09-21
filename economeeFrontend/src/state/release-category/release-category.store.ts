@@ -5,7 +5,7 @@ import { ReleaseCategory } from './release-category.model';
 export interface ReleaseCategoryState extends EntityState<ReleaseCategory> {}
 
 @Injectable({ providedIn: 'root' })
-@StoreConfig({ name: 'ReleaseCategory' })
+@StoreConfig({ name: 'categories' })
 export class ReleaseCategoryStore extends EntityStore<ReleaseCategoryState> {
 
   constructor() {
