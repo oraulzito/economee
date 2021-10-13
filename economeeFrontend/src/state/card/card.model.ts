@@ -4,7 +4,7 @@ export interface Card {
   credit: number;
   // TODO it should be date, but API return a string
   pay_date: string;
-  account: Account;
+  account_id: Account['id'];
 }
 
 export function createCard(params: Partial<Card>) {

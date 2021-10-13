@@ -1,5 +1,7 @@
 import {ReleaseCategory} from '../release-category/release-category.model';
 import {ID} from '@datorama/akita';
+import {Balance} from "../balance/balance.model";
+import {Invoice} from "../invoice/invoice.model";
 
 export interface Release {
   id: number | string;
@@ -17,8 +19,8 @@ export interface Release {
   repeat_times: number;
   is_release_paid: boolean;
   category: ReleaseCategory;
-  balance_id: ID;
-  invoice_id: ID;
+  balance_id: Balance['id'];
+  invoice_id: Invoice['id'];
 }
 
 export function createRelease(params: Partial<Release>) {
