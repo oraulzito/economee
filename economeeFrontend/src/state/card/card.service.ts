@@ -1,11 +1,12 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {ID} from '@datorama/akita';
+import {ID, setLoading} from '@datorama/akita';
 import {Card} from './card.model';
 import {CardStore} from './card.store';
 import {UiService} from '../ui/ui.service';
-import {tap} from "rxjs/operators";
+import {catchError, shareReplay, tap} from "rxjs/operators";
 import {AccountQuery} from "../account/account.query";
+import {throwError} from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class CardService {
@@ -22,10 +23,11 @@ export class CardService {
   get() {
     this.cardStore.setLoading(true);
 
-    return this.http.get<Card[]>('/api/card/', this.uiService.httpHeaderOptions()).subscribe(
-      entities => this.cardStore.set(entities),
-      error => this.cardStore.setError(error),
-      () => this.cardStore.setLoading(false)
+    return this.http.get<Card[]>('/api/card/', this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.cardStore),
+      tap(card => this.cardStore.set(card)),
+      catchError((error) => throwError(error)),
     );
   }
 
@@ -40,11 +42,11 @@ export class CardService {
       account_id: this.accountQuery.getActiveId(),
     };
 
-    return this.http.post<Card>('/api/card/', body, this.uiService.httpHeaderOptions()).pipe(tap(
-        entity => this.cardStore.add(entity),
-        error => this.cardStore.setError(error),
-        () => this.cardStore.setLoading(false),
-      )
+    return this.http.post<Card>('/api/card/', body, this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.cardStore),
+      tap(card => this.cardStore.add(card)),
+      catchError((error) => throwError(error)),
     );
   }
 
@@ -58,10 +60,11 @@ export class CardService {
       pay_date: form.pay_date,
     };
 
-    return this.http.patch<Card>('/api/card/' + id + '/', body, this.uiService.httpHeaderOptions()).subscribe(
-      entity => this.cardStore.update(id, entity),
-      error => this.cardStore.setError(error),
-      () => this.cardStore.setLoading(false),
+    return this.http.patch<Card>('/api/card/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.cardStore),
+      tap(card => this.cardStore.update(id, card)),
+      catchError((error) => throwError(error)),
     );
   }
 
@@ -69,10 +72,11 @@ export class CardService {
   remove(id: ID) {
     this.cardStore.setLoading(true);
 
-    return this.http.delete<number>('/api/card/' + id + '/', this.uiService.httpHeaderOptions()).subscribe(
-      entities => entities === 1 ? this.cardStore.remove(id) : this.cardStore.setError("Not removed"),
-      error => this.cardStore.setError(error),
-      () => this.cardStore.setLoading(false),
+    return this.http.delete<number>('/api/card/' + id + '/', this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.cardStore),
+      tap(card => card === 1 ? this.cardStore.remove(id) : this.cardStore.setError("Not removed")),
+      catchError((error) => throwError(error)),
     );
   }
 }

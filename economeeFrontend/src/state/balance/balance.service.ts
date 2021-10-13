@@ -7,6 +7,9 @@ import {formatDate} from '@angular/common';
 import {BalanceQuery} from './balance.query';
 import {ReleaseService} from '../release/release.service';
 import {InvoiceService} from '../invoice/invoice.service';
+import {catchError, shareReplay, tap} from "rxjs/operators";
+import {setLoading} from "@datorama/akita";
+import {throwError} from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {
@@ -23,12 +26,11 @@ export class BalanceService {
 
   // tslint:disable-next-line:typedef
   get() {
-    this.balanceStore.setLoading(true);
-
-    return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).subscribe(
-      entities => this.balanceStore.set(entities),
-      error => this.balanceStore.setError(error),
-      () => this.balanceStore.setLoading(false)
+    return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.balanceStore),
+      tap(balance => this.balanceStore.set(balance)),
+      catchError((error) => throwError(error)),
     );
   }
 
@@ -41,11 +43,13 @@ export class BalanceService {
 
     // Change the day to the first day of the month
     const firstDayOfMonth = new Date(actualDate.getFullYear(), actualDate.getMonth(), 1);
+
     // Format to SQL date format
+    // const date = DateTime.fromSQL(firstDayOfMonth).toISODate();
     const date = formatDate(firstDayOfMonth.toString(), 'YYYY-MM-dd', 'en-US');
 
     // Get and set active the balance referred to the current month
-    this.balanceQuery.selectEntity(({date_reference}) => date_reference === date).subscribe(
+    this.balanceQuery.selectEntity(b => b.date_reference === date).subscribe(
       b => {
         if (b) {
           this.balanceStore.setActive(b.id);

@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {ID} from '@datorama/akita';
-import {shareReplay, tap} from 'rxjs/operators';
+import {setLoading} from '@datorama/akita';
+import {catchError, shareReplay, tap} from 'rxjs/operators';
 import {Invoice} from './invoice.model';
 import {InvoiceStore} from './invoice.store';
 import {UiService} from '../ui/ui.service';
@@ -10,6 +10,7 @@ import {formatDate} from '@angular/common';
 import {InvoiceQuery} from './invoice.query';
 import {BalanceQuery} from '../balance/balance.query';
 import {DateTime} from 'luxon';
+import {throwError} from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class InvoiceService {
@@ -26,10 +27,11 @@ export class InvoiceService {
 
   // tslint:disable-next-line:typedef
   get() {
-    return this.http.get<Invoice[]>('/api/invoice/', this.uiService.httpHeaderOptions()).subscribe(
-      entity => this.invoiceStore.set(entity),
-      error => this.invoiceStore.setError(error),
-      () => this.invoiceStore.setLoading(false),
+    return this.http.get<Invoice[]>('/api/invoice/', this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.invoiceStore),
+      tap(invoice => this.invoiceStore.set(invoice)),
+      catchError((error) => throwError(error)),
     );
   }
 
@@ -37,10 +39,11 @@ export class InvoiceService {
   getCardInvoice() {
     // tslint:disable-next-line:max-line-length
     return this.http.get<Invoice[]>('/api/invoice?card_id=' + this.cardQuery.getActiveId(),
-      this.uiService.httpHeaderOptions()).subscribe(
-      entity => this.invoiceStore.set(entity),
-      error => this.invoiceStore.setError(error),
-      () => this.invoiceStore.setLoading(false),
+      this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.invoiceStore),
+      tap(invoice => this.invoiceStore.set(invoice)),
+      catchError((error) => throwError(error)),
     );
   }
 

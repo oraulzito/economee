@@ -1,7 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {ID} from '@datorama/akita';
-import {shareReplay, tap} from 'rxjs/operators';
+import {ID, setLoading} from '@datorama/akita';
 import {Release} from './release.model';
 import {ReleaseStore} from './release.store';
 import {ReleaseQuery} from './release.query';
@@ -10,6 +9,8 @@ import {BalanceQuery} from '../balance/balance.query';
 import {InvoiceQuery} from '../invoice/invoice.query';
 import {AccountQuery} from '../account/account.query';
 import {CardQuery} from '../card/card.query';
+import {catchError, shareReplay, tap} from "rxjs/operators";
+import {throwError} from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class ReleaseService {
@@ -29,46 +30,44 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   get() {
     this.releaseStore.setLoading(true);
-    return this.http.get<Release[]>('/api/release/', this.uiService.httpHeaderOptions()).subscribe(
-      releases => this.releaseStore.set(releases),
-      error => this.releaseStore.setError(error),
-      () => this.releaseStore.setLoading(false),
+    return this.http.get<Release[]>('/api/release/', this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.releaseStore),
+      tap(releases => this.releaseStore.set(releases)),
+      catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
   getBalanceReleases() {
-    this.releaseStore.setLoading(true);
-
     return this.http.get<Release[]>('/api/release/balance?balance_id=' + this.balanceQuery.getActive(),
-      this.uiService.httpHeaderOptions()).subscribe(
-      entities => this.releaseStore.set(entities),
-      error => this.releaseStore.setError(error),
-      () => this.releaseStore.setLoading(false),
+      this.uiService.httpHeaderOptions()).pipe(
+        shareReplay(1),
+      setLoading(this.releaseStore),
+      tap(entities => this.releaseStore.set(entities)),
+      catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
   getInvoiceReleases() {
-    this.releaseStore.setLoading(true);
-
     return this.http.get<Release[]>('/api/release/invoice?invoice_id=' + this.invoiceQuery.getActive(),
-      this.uiService.httpHeaderOptions()).subscribe(
-      entities => this.releaseStore.set(entities),
-      error => this.releaseStore.setError(error),
-      () => this.releaseStore.setLoading(false),
+      this.uiService.httpHeaderOptions()).pipe(
+        shareReplay(1),
+      setLoading(this.releaseStore),
+      tap(entities => this.releaseStore.set(entities)),
+      catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
   getMonthReleases() {
-    this.releaseStore.setLoading(true);
-
-    return this.http.get<Release[]>('/api/release/date_reference?date_reference=' + this.balanceQuery.getActive().date_reference,
-      this.uiService.httpHeaderOptions()).subscribe(
-      entities => this.releaseStore.set(entities),
-      error => this.releaseStore.setError(error),
-      () => this.releaseStore.setLoading(false),
+    return this.http.get<Release[]>('/api/release/?date_reference=' + this.balanceQuery.getActive().date_reference,
+      this.uiService.httpHeaderOptions()).pipe(
+        shareReplay(1),
+      setLoading(this.releaseStore),
+      tap(entities => this.releaseStore.set(entities)),
+      catchError(error => throwError(error))
     );
   }
 
@@ -113,21 +112,21 @@ export class ReleaseService {
       repeat_times: form.repeat_times
     };
 
-    return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).subscribe(
-      entities => entities === 1 ? this.releaseStore.update(id, body) : this.releaseStore.setError("Not updated"),
-      error => this.releaseStore.setError(error),
-      () => this.releaseStore.setLoading(false),
+    return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.releaseStore),
+      tap(entities => entities === 1 ? this.releaseStore.update(id, body) : this.releaseStore.setError("Not updated")),
+      catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
   remove(id: ID) {
-    this.releaseStore.setLoading(true);
-
-    return this.http.delete<number>('/api/release/' + id + '/', this.uiService.httpHeaderOptions()).subscribe(
-      entities => entities === 1 ? this.releaseStore.remove(id) : this.releaseStore.setError("Not removed"),
-      error => this.releaseStore.setError(error),
-      () => this.releaseStore.setLoading(false),
+    return this.http.delete<number>('/api/release/' + id + '/', this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      setLoading(this.releaseStore),
+      tap(entities => entities === 1 ? this.releaseStore.remove(id) : this.releaseStore.setError("Not removed")),
+      catchError(error => throwError(error))
     );
   }
 }
