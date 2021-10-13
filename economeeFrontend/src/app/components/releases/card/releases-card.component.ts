@@ -1,24 +1,33 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Release} from '../../../../state/release/release.model';
 import {FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import {ReleaseService} from '../../../state/release/release.service';
-import {AccountQuery} from '../../../state/account/account.query';
-import {ReleaseCategoryQuery} from '../../../state/release-category/release-category.query';
-import {ReleaseCategory} from '../../../state/release-category/release-category.model';
-
+import {ReleaseService} from '../../../../state/release/release.service';
+import {ReleaseCategoryQuery} from '../../../../state/release-category/release-category.query';
+import {ReleaseCategory} from '../../../../state/release-category/release-category.model';
+import {DateTime} from 'luxon';
+import {AccountQuery} from '../../../../state/account/account.query';
 
 @Component({
-  selector: 'app-release-add',
-  templateUrl: './release-add.component.html',
-  styleUrls: ['./release-add.component.css']
+  selector: 'app-releases-card',
+  templateUrl: './releases-card.component.html',
+  styleUrls: ['./releases-card.component.css']
 })
-export class ReleaseAddComponent implements OnInit {
+export class ReleasesCardComponent implements OnInit {
+
   @Output() saved = new EventEmitter();
-  @Input() card = false;
+
+  @Input() add: boolean;
+  @Input() release: Release;
+  @Input() card;
 
   currency: string;
+
   releaseForm: FormGroup;
+
   categories: ReleaseCategory[];
-  categoriesLoading = true;
+  categoriesLoading = false;
+  // tslint:disable-next-line:variable-name
+  date_release = new Date();
 
   constructor(
     private fb: FormBuilder,
@@ -52,11 +61,27 @@ export class ReleaseAddComponent implements OnInit {
       repeat_times: new FormControl(),
       place: new FormControl(),
       type: new FormControl(),
+      card: new FormControl(this.card)
     });
+
+    if (!this.add) {
+      this.date_release = DateTime.fromSQL(this.release.date_release).toISODate();
+    }
+  }
+
+
+  // tslint:disable-next-line:typedef
+  editRelease(id) {
+    this.releaseService.update(id, this.releaseForm.value);
   }
 
   // tslint:disable-next-line:typedef
-  save() {
+  deleteRelease(id) {
+    this.releaseService.remove(id);
+  }
+
+   // tslint:disable-next-line:typedef
+  saveRelease() {
     return this.releaseService.add(this.releaseForm.value, this.card).subscribe(
       r => {
         this.saved.emit('false');
@@ -67,7 +92,8 @@ export class ReleaseAddComponent implements OnInit {
   }
 
   // tslint:disable-next-line:typedef
-  cancel() {
+  cancelRelease() {
     this.saved.emit('true');
   }
+
 }

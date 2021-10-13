@@ -2,18 +2,18 @@
   <div nz-col nzSm="24">
     <!-- Card Available/Spent credit -->
     <nz-progress [nzPercent]="'100'" [nzShowInfo]="false"
-                 [nzSuccessPercent]="successPercentage" [nzType]="'line'"></nz-progress>
+                 [nzSuccessPercent]=successPercentage [nzType]="'line'"></nz-progress>
   </div>
   <div nz-col nzSm="24">
     <div nz-row>
       <div nz-col nzSm="12">
         <p>
-          {{title1}}
+          {{progressTitle1}}
         </p>
       </div>
       <div nz-col nzSm="12">
         <p class="text-end">
-          {{title2}}
+          {{progressTitle2}}
         </p>
       </div>
     </div>

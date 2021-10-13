@@ -7,6 +7,7 @@ import {Balance} from '../../../../state/balance/balance.model';
 import {Account} from '../../../../state/account/account.model';
 import {Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
+import {AccountService} from "../../../../state/account/account.service";
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   maxDate = new Date();
 
   constructor(
+    private accountService: AccountService,
     private sessionService: SessionService,
     private accountQuery: AccountQuery,
     private balanceQuery: BalanceQuery,
@@ -44,6 +46,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.accountLoading = r;
       if (!r) {
         this.accountSubscription = this.accountQuery.selectActive().subscribe(a => this.account = a);
+        // Calc the expended, income, and total available value in the account.
+        this.accountService.totalAvailable();
       }
     });
 
@@ -53,19 +57,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.balanceSubscription = this.balanceQuery.selectActive().subscribe(b => {
           if (b) {
             this.balance = b;
-            // FIXME
             this.dateReference = DateTime.fromSQL(b.date_reference).toISODate();
-            // console.log(this.dateReference);
           }
         });
 
         this.balanceAllSubscription = this.balanceQuery.selectAll().subscribe(b => {
-          // FIXME
           this.minDate = DateTime.fromSQL(b[0].date_reference).toISODate();
-          // FIXME
           this.maxDate = DateTime.fromSQL(b[b.length - 1].date_reference).toISODate();
-          // console.log(this.minDate);
-          // console.log(this.maxDate);
         });
       }
     });

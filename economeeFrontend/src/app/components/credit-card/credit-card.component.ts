@@ -5,11 +5,11 @@ import {CardService} from "../../../state/card/card.service";
 import {CardQuery} from "../../../state/card/card.query";
 
 @Component({
-  selector: 'app-card-add',
-  templateUrl: './card-add.component.html',
-  styleUrls: ['./card-add.component.css']
+  selector: 'app-credit-card',
+  templateUrl: './credit-card.component.html',
+  styleUrls: ['./credit-card.component.css']
 })
-export class CardAddComponent implements OnInit {
+export class CreditCardComponent implements OnInit {
   @Output() saved = new EventEmitter();
 
   currency: string;

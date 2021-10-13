@@ -11,9 +11,11 @@ export class NoDataComponent implements OnInit {
   @Input() type: string;
   @Input() text: string;
   @Input() actionText: string;
+  @Input() actionText2: string;
   @Output() buttonClick = new EventEmitter();
 
-  constructor() {
+  constructor(
+  ) {
   }
 
   // tslint:disable-next-line:typedef
@@ -21,8 +23,8 @@ export class NoDataComponent implements OnInit {
   }
 
   // tslint:disable-next-line:typedef
-  onClick() {
-    this.buttonClick.emit(this.id);
+  onClick(id) {
+    this.buttonClick.emit(id);
   }
 
 }

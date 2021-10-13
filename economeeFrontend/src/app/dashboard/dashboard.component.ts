@@ -1,130 +1,111 @@
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {AccountService} from '../../state/account/account.service';
-import {BalanceService} from '../../state/balance/balance.service';
-import {CardService} from '../../state/card/card.service';
-import {ReleaseService} from '../../state/release/release.service';
-import {ReleaseQuery} from '../../state/release/release.query';
-import {BalanceQuery} from '../../state/balance/balance.query';
-import {CardQuery} from '../../state/card/card.query';
-import {BalanceState, BalanceStore} from '../../state/balance/balance.store';
-import {getEntityType} from '@datorama/akita';
 import {AccountStore} from '../../state/account/account.store';
 import {AccountQuery} from '../../state/account/account.query';
-import {InvoiceService} from '../../state/invoice/invoice.service';
-import {InvoiceQuery} from '../../state/invoice/invoice.query';
-import {InvoiceStore} from '../../state/invoice/invoice.store';
-import {CardStore} from '../../state/card/card.store';
-import {Card} from '../../state/card/card.model';
-import {Balance} from '../../state/balance/balance.model';
 import {Subscription} from 'rxjs';
-import {ReleaseCategoryService} from '../../state/release-category/release-category.service';
 import {UiQuery} from "../../state/ui/ui.query";
 import {UiService} from "../../state/ui/ui.service";
+import {BalanceService} from "../../state/balance/balance.service";
+import {CardService} from "../../state/card/card.service";
+import {ReleaseService} from "../../state/release/release.service";
+import {ReleaseCategoryService} from "../../state/release-category/release-category.service";
+import {InvoiceService} from "../../state/invoice/invoice.service";
+import {BalanceQuery} from "../../state/balance/balance.query";
+import {CardQuery} from "../../state/card/card.query";
+import {InvoiceQuery} from "../../state/invoice/invoice.query";
+import {CardStore} from "../../state/card/card.store";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-  balances: getEntityType<BalanceState>;
+export class DashboardComponent implements OnInit, OnDestroy {
+
   mobile$ = false;
 
-  // tslint:disable-next-line:variable-name
-  active_balance: Balance;
-  // tslint:disable-next-line:variable-name
-  active_card: Card;
-
   accountSubscription = new Subscription();
-  balanceSubscription = new Subscription();
-  invoiceSubscription = new Subscription();
-  cardSubscription = new Subscription();
-  releaseSubscription = new Subscription();
-  releaseCategorySubscription = new Subscription();
-
   accountQuerySubscription = new Subscription();
-  balanceQuerySubscription = new Subscription();
-  invoiceQuerySubscription = new Subscription();
-  cardQuerySubscription = new Subscription();
-  releaseQuerySubscription = new Subscription();
 
   loadingAccount = false;
-  loadingBalance = false;
-  loadingCard = false;
-  loadingRelease = false;
-  loadingInvoice = false;
 
   constructor(
-    private accountService: AccountService,
     private balancesService: BalanceService,
     private cardService: CardService,
     private releaseService: ReleaseService,
     private releaseCategoryService: ReleaseCategoryService,
     private invoiceService: InvoiceService,
+    private accountService: AccountService,
     private accountQuery: AccountQuery,
     private balanceQuery: BalanceQuery,
-    private cardQuery: CardQuery,
     private invoiceQuery: InvoiceQuery,
-    private releaseQuery: ReleaseQuery,
+    private cardQuery: CardQuery,
     private accountStore: AccountStore,
-    private balancesStore: BalanceStore,
-    private invoiceStore: InvoiceStore,
     private cardStore: CardStore,
     private uiService: UiService,
-    private uiQuery: UiQuery
+    private uiQuery: UiQuery,
   ) {
+
+
   }
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
-    this.cardQuery.selectLoading().subscribe(r => this.loadingCard = r);
-    this.accountQuery.selectLoading().subscribe(r => this.loadingAccount = r);
-    this.balanceQuery.selectLoading().subscribe(r => this.loadingBalance = r);
-    this.releaseQuery.selectLoading().subscribe(r => this.loadingRelease = r);
-    this.invoiceQuery.selectLoading().subscribe(r => this.loadingInvoice = r);
-    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
-
-    this.accountService.get();
+    this.onResize();
+    this.accountService.get().subscribe();
 
     this.accountQuery.selectFirst().subscribe(
       fa => {
         if (fa) {
+          // TODO change to set active a preferred account
+          // set the first account as active
           this.accountStore.setActive(fa.id);
+        }
+      });
 
+    this.accountQuery.selectActive().subscribe(
+      aa => {
+        if (aa) {
           // get account balances
-          this.balancesService.get();
-          this.balancesService.loadMonthBalance();
+          this.balancesService.get().subscribe(
+            () => this.balancesService.loadMonthBalance()
+          );
 
-          // Get the releases of the current balance
-          this.releaseService.get();
+          // Get account cards
+          this.cardService.get().subscribe();
+
+          // Load all release categories
+          this.releaseCategoryService.get().subscribe();
         }
       }
     );
 
-    // Get account cards
-    this.cardService.get()
+    this.balanceQuery.selectActive().subscribe(ab => {
+      if (ab) {
+        this.releaseService.getMonthReleases().subscribe();
+      }
+    });
 
     // Set active the first found card
     this.cardQuery.selectFirst().subscribe(
       c => {
         if (c) {
           this.cardStore.setActive(c.id);
-          this.invoiceService.getCardInvoice();
         }
       }
     );
 
+    this.cardQuery.selectActive().subscribe(
+      ac => {
+        if (ac) {
+          this.invoiceService.getCardInvoice().subscribe(
+            () => this.invoiceService.loadMonthInvoice()
+          );
+        }
+      }
+    );
 
-    // Load all release categories
-    this.releaseCategoryService.get();
-  }
-
-  ngAfterViewInit() {
-    if (this.accountQuery.hasActive() && this.cardQuery.hasActive() && this.balanceQuery.hasActive() && this.invoiceQuery.hasActive()) {
-      this.invoiceService.loadMonthInvoice();
-      // Calc the expended, income, and total available value in the account.
-      this.accountService.totalAvailable();
-    }
+    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
   }
 
   @HostListener('window:resize')
@@ -133,14 +114,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.balanceQuerySubscription.unsubscribe();
-    this.cardQuerySubscription.unsubscribe();
     this.accountSubscription.unsubscribe();
-    this.cardSubscription.unsubscribe();
-    this.balanceSubscription.unsubscribe();
-    this.invoiceSubscription.unsubscribe();
-    this.releaseSubscription.unsubscribe();
-    this.releaseCategorySubscription.unsubscribe();
   }
 
 }

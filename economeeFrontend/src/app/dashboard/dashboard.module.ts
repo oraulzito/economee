@@ -4,7 +4,7 @@ import {DashboardRoutingModule} from './dashboard-routing.module';
 
 import {DashboardComponent} from './dashboard.component';
 import {HeaderComponent} from './dashboard-desktop/header/header.component';
-import {ReleasesCardComponent} from '../components/releases-card/releases-card.component';
+import {ReleasesCardComponent} from '../components/releases/card/releases-card.component';
 import {NzCardModule} from 'ng-zorro-antd/card';
 import {NzGridModule} from 'ng-zorro-antd/grid';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
@@ -16,55 +16,53 @@ import {NzMenuModule} from 'ng-zorro-antd/menu';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 import {NoDataComponent} from '../components/no-data/no-data.component';
-import {ReleasesPanelComponent} from '../components/releases-panel/releases-panel.component';
+import {ReleasesPanelComponent} from '../components/releases/panel/releases-panel.component';
 import {NzEmptyModule} from 'ng-zorro-antd/empty';
 import {NzProgressModule} from 'ng-zorro-antd/progress';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
-import {ReleaseAddComponent} from '../components/release-add/release-add.component';
 import {PlotlyModule} from 'angular-plotly.js';
-import {ProgressBarComponent} from "../components/progress-bar/progress-bar.component";
+import {ProgressBarComponent} from "../components/graphics/progress-bar/progress-bar.component";
 import {FooterComponent} from "./dashboard-mobile/footer/footer.component";
-import {CardAddComponent} from "../components/card-add/card-add.component";
+import {CreditCardComponent} from "../components/credit-card/credit-card.component";
 import {NzSpinModule} from "ng-zorro-antd/spin";
 
 
 @NgModule({
-    imports: [
-        DashboardRoutingModule,
-        NzCardModule,
-        NzGridModule,
-        NzDatePickerModule,
-        CommonModule,
-        NzButtonModule,
-        NzMenuModule,
-        NzIconModule,
-        NzDropDownModule,
-        NzEmptyModule,
-        NzProgressModule,
-        ReactiveFormsModule,
-        NzSelectModule,
-        FormsModule,
-        NzFormModule,
-        NzInputModule,
-        PlotlyModule,
-        NzSpinModule
-    ],
-    declarations: [
-        DashboardComponent,
-        HeaderComponent,
-        ReleasesCardComponent,
-        DashboardMobileComponent,
-        DashboardDesktopComponent,
-        NoDataComponent,
-        ReleasesPanelComponent,
-        ReleaseAddComponent,
-        ProgressBarComponent,
-        FooterComponent,
-        CardAddComponent
-    ],
+  imports: [
+    DashboardRoutingModule,
+    NzCardModule,
+    NzGridModule,
+    NzDatePickerModule,
+    CommonModule,
+    NzButtonModule,
+    NzMenuModule,
+    NzIconModule,
+    NzDropDownModule,
+    NzEmptyModule,
+    NzProgressModule,
+    ReactiveFormsModule,
+    NzSelectModule,
+    FormsModule,
+    NzFormModule,
+    NzInputModule,
+    PlotlyModule,
+    NzSpinModule
+  ],
+  declarations: [
+    DashboardComponent,
+    HeaderComponent,
+    ReleasesCardComponent,
+    DashboardMobileComponent,
+    DashboardDesktopComponent,
+    NoDataComponent,
+    ReleasesPanelComponent,
+    ProgressBarComponent,
+    FooterComponent,
+    CreditCardComponent
+  ],
   exports: [
     DashboardComponent]
 })
