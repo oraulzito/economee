@@ -73,11 +73,13 @@ class UserView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def check_username(self, request):
-        return JsonResponse({'username_exists': bool(User.objects.filter(username=self.request.query_params.get('username')).first())})
+        return JsonResponse(
+            {'username_exists': bool(User.objects.filter(username=self.request.query_params.get('username')).first())})
 
     @action(detail=False, methods=['GET'])
     def check_email(self, request):
-        return JsonResponse({'email_exists': bool(User.objects.filter(email=self.request.query_params.get('email')).first())})
+        return JsonResponse(
+            {'email_exists': bool(User.objects.filter(email=self.request.query_params.get('email')).first())})
 
 
 # TODO test CRUD
@@ -320,7 +322,6 @@ class ReleaseView(viewsets.ModelViewSet):
                             date_reference=date_reference_invoice,
                             card_id=int(card_id),
                             is_paid=False,
-                            balance=balances[n]
                         )
                         invoice.save()
                     invoices.append(invoice)
@@ -340,7 +341,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 type=request.data.get('type'),
                 is_release_paid=bool(request.data.get('is_release_paid')),
                 category_id=int(request.data.get('category_id')),
-                balance=balances[i] if card_id is None else None,
+                balance=balances[i],
                 invoice=invoices[i] if card_id is not None else None
             ) for i in range(repeat_times)]
 
@@ -394,27 +395,27 @@ class ReleaseView(viewsets.ModelViewSet):
         income = []
         expense = []
         for e in Balance.objects.raw("""
-                                select b.id, b.date_reference, sum(r.value_installment) as total
-                                           from \"economeeApi_release\" r
-                                           INNER JOIN \"economeeApi_account\" a on a.id = %s
-                                           INNER JOIN \"economeeApi_balance\" b on b.account_id = a.id 
-                                           INNER JOIN \"economeeApi_invoice\" i on i.balance_id = b.id 
-                                           where a.user_id = %s 
-                                           and r.type = 'ER'
-                                           GROUP BY b.id, b.date_reference;
-                                           """, [request.query_params.get('account_id'), self.request.user.id]):
+                                select bal.id, bal.date_reference,
+                                     sum(rel.value_installment) as total
+                                    from "economeeApi_release" as rel
+                                             left join "economeeApi_balance" as bal
+                                                       on rel.balance_id = bal.id
+                                    where rel.type = 'ER'
+                                      and bal.account_id = %s
+                                    group by bal.id order by bal.date_reference;
+                                           """, [request.query_params.get('account_id')]):
             expense.append({'id': e.id, 'date_reference': str(e.date_reference), 'total': e.total})
 
         for i in Balance.objects.raw("""
-                        select b.id, b.date_reference, sum(r.value_installment) as total
-                        from \"economeeApi_release\" r
-                        INNER JOIN \"economeeApi_account\" a on a.id = %s
-                        INNER JOIN \"economeeApi_balance\" b on b.account_id = a.id 
-                        INNER JOIN \"economeeApi_invoice\" i on i.balance_id = b.id 
-                        where a.user_id = %s 
-                        and r.type = 'IR'
-                        GROUP BY b.id, b.date_reference;
-                        """, [request.query_params.get('account_id'), self.request.user.id]):
+                       select bal.id, bal.date_reference,
+                               sum(rel.value_installment) as total
+                        from "economeeApi_release" as rel
+                                 left join "economeeApi_balance" as bal
+                                           on rel.balance_id = bal.id
+                        where rel.type = 'IR'
+                          and bal.account_id = %s
+                        group by bal.id order by bal.date_reference;
+                        """, [request.query_params.get('account_id')]):
             income.append({'id': i.id, 'date_reference': str(i.date_reference), 'total': i.total})
 
         return JsonResponse({'incomes': income, 'expenses': expense})

@@ -79,7 +79,6 @@ class Invoice(models.Model):
     # TODO send a notification in the pay_date of the card, confirming if it's paid
     is_paid = models.BooleanField(default=False)
     card = models.ForeignKey(Card, related_name='invoices', on_delete=models.CASCADE)
-    balance = models.ForeignKey(Balance, related_name='invoices', on_delete=models.CASCADE)
 
     REQUIRED_FIELDS = ['date_reference', 'card', 'is_paid']
 
