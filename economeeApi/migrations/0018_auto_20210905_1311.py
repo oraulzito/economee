@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='release',
-            name='value_installment',
+            name='installment_value',
             field=models.FloatField(default=0.0),
         ),
         migrations.AlterField(

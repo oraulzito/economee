@@ -1,22 +1,25 @@
 <nz-card [nzActions]="release? [edit, delete]:[add, cancelAdd]"
-         class="shadow card-release m-2 border-1">
+         class="card-release m-3 border-1">
   <form [formGroup]="releaseForm" nz-form>
     <div nz-row>
-      <div nz-col nzSm="24">
+      <div nz-col nzSm="12">
         <h6>
           <nz-form-item>
-            <input formControlName="description"
-                   nz-input placeholder="{{release? release.description :'Descrição' }}" type="text">
+            <input [ngModel]="release? release.description :''"
+                   formControlName="description"
+                   nz-input
+                   type="text">
           </nz-form-item>
         </h6>
       </div>
-    </div>
-    <div nz-row>
+      <div nz-col nzSm="1"></div>
       <div nz-col nzSm="11">
         <h6>
           <nz-form-item>
             <nz-input-group [nzPrefix]="prefixCurrency">
-              <input formControlName="value" placeholder="{{release? release.value:'Valor'}}" type="number">
+              <input [ngModel]="release? release.installment_value:0"
+                     formControlName="{{release ?'installment_value' :'value'}}"
+                     type="number">
             </nz-input-group>
             <ng-template #prefixCurrency>
               {{currency}}
@@ -24,62 +27,78 @@
           </nz-form-item>
         </h6>
       </div>
-      <div nz-col nzSm="1"></div>
+    </div>
+    <div nz-row>
       <div nz-col nzSm="12">
         <nz-form-item>
           <!-- FIXME find a way to put date as dd/MMMM/YYYY -->
-          <input formControlName="date_release" nz-input
-                 placeholder="{{release? release.date_release :'Data de lançamento'}}}" type="date">
-        </nz-form-item>
-      </div>
-    </div>
-    <div nz-row>
-      <div nz-col nzSm="11">
-        <nz-form-item>
-          <input formControlName="place" nz-input placeholder="{{release? release.place: 'Local'}}" type="text">
+          <input [ngModel]="release? release.date_release :''" formControlName="date_release"
+                 nz-input
+                 type="date">
         </nz-form-item>
       </div>
       <div nz-col nzSm="1"></div>
-      <div nz-col nzSm="12">
+      <div nz-col nzSm="11">
         <nz-form-item>
-          <nz-input-group [nzAddOnBefore]="release?repeatTimes:null">
-            <input formControlName="repeat_times" min="1" nz-input
-                   placeholder="{{release? release.repeat_times :'Número de repetições'}}"
-                   type="number"
-                   value="1">
+          <nz-input-group [nzPrefix]="prefixLocal">
+            <input [ngModel]="release? release.place: ''" formControlName="place"
+                   nz-input
+                   type="text">
           </nz-input-group>
-          <ng-template #repeatTimes>
-            <span>Parcela {{release.installment_number}} de </span>
+          <ng-template #prefixLocal>
+            <i nz-icon nzTheme="outline" nzType="environment"></i>
           </ng-template>
         </nz-form-item>
       </div>
     </div>
     <div nz-row nzJustify="space-around">
-      <div nz-col nzSm="7">
-        <nz-select [ngModel]="release? release.category.id :0" [nzDropdownRender]="renderTemplate" class="category"
-                   formControlName="category_id">
-          <nz-option [nzLabel]="'Categoria'" [nzValue]="0" nzDisabled></nz-option>
-          <nz-option *ngFor="let c of categories" [nzLabel]=c.name [nzValue]=c.id></nz-option>
-        </nz-select>
-        <ng-template #renderTemplate>
-          <nz-spin *ngIf="categoriesLoading"></nz-spin>
-        </ng-template>
+      <div nz-col nzSm="12">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release? release.category.id :0" [nzDropdownRender]="renderTemplate"
+                     class="text-center category"
+                     formControlName="category_id">
+            <nz-option [nzLabel]="'Categoria'" [nzValue]="0" nzDisabled></nz-option>
+            <nz-option *ngFor="let c of categories" [nzLabel]=c.name [nzValue]=c.id></nz-option>
+          </nz-select>
+          <ng-template #renderTemplate>
+            <nz-spin *ngIf="categoriesLoading"></nz-spin>
+          </ng-template>
+        </nz-form-item>
       </div>
-
-      <div nz-col nzSm="7">
-        <nz-select [ngModel]="release? release.type:0" class="type" formControlName="type">
-          <nz-option [nzLabel]="'Tipo'" [nzValue]="0" nzDisabled></nz-option>
-          <nz-option [nzLabel]="'Gasto'" [nzValue]="'ER'"></nz-option>
-          <nz-option [nzLabel]="'Ganho'" [nzValue]="'IR'"></nz-option>
-        </nz-select>
+      <div nz-col nzSm="1"></div>
+      <div nz-col nzSm="11">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release?release.installment_number:null" class="text-center repeat"
+                     formControlName="repeat_times" nzBorderless>
+            <ng-template *ngFor="let i of maxRepeatTimes">
+              <nz-option *ngIf="!release" [nzLabel]="i+'X'" [nzValue]="i"></nz-option>
+            </ng-template>
+            <nz-option [hidden]="release" [nzLabel]="release.installment_number+' de '+release.repeat_times"
+                       [nzValue]="release.installment_number" nzDisabled></nz-option>
+          </nz-select>
+        </nz-form-item>
       </div>
-
-      <div nz-col nzSm="7">
-        <nz-select [ngModel]="release? release.is_release_paid: 0" class="paid" formControlName="is_release_paid">
-          <nz-option [nzLabel]="'Está Pago?'" [nzValue]="0" nzDisabled></nz-option>
-          <nz-option [nzLabel]="'Pago'" [nzValue]=true></nz-option>
-          <nz-option [nzLabel]="'Não Pago'" [nzValue]="false"></nz-option>
-        </nz-select>
+    </div>
+    <div nz-row nzJustify="space-around">
+      <div nz-col nzSm="12">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release? release.type:0" class="text-center type" formControlName="type">
+            <nz-option [nzLabel]="'Tipo'" [nzValue]="0" nzDisabled></nz-option>
+            <nz-option [nzLabel]="'Gasto'" [nzValue]="'ER'"></nz-option>
+            <nz-option [nzLabel]="'Ganho'" [nzValue]="'IR'"></nz-option>
+          </nz-select>
+        </nz-form-item>
+      </div>
+      <div nz-col nzSm="1"></div>
+      <div nz-col nzSm="11">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release? release.is_release_paid: 0" class="text-center paid"
+                     formControlName="is_release_paid">
+            <nz-option [nzLabel]="'Está Pago?'" [nzValue]="0" nzDisabled></nz-option>
+            <nz-option [nzLabel]="'Pago'" [nzValue]=true></nz-option>
+            <nz-option [nzLabel]="'Não Pago'" [nzValue]="false"></nz-option>
+          </nz-select>
+        </nz-form-item>
       </div>
     </div>
   </form>

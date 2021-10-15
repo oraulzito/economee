@@ -31,7 +31,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'id', 'description', 'value', 'place',
             'date_repeat', 'date_release',
-            'installment_number', 'repeat_times',
+            'installment_value', 'installment_number', 'repeat_times',
             'is_release_paid', 'type', 'category', 'balance_id', 'invoice_id']
 
 

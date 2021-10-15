@@ -1,4 +1,5 @@
 .releases-panel{
   height: inherit;
   border-radius: 16px;
+  background-color: #f6f6f6 !important;
 }

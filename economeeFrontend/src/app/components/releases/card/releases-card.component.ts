@@ -28,6 +28,8 @@ export class ReleasesCardComponent implements OnInit {
   categoriesLoading = false;
   // tslint:disable-next-line:variable-name
   date_release = new Date();
+  // TODO make this configurable
+  maxRepeatTimes = [12];
 
   constructor(
     private fb: FormBuilder,
@@ -53,6 +55,7 @@ export class ReleasesCardComponent implements OnInit {
     });
 
     this.releaseForm = this.fb.group({
+      installment_value: new FormControl(),
       value: new FormControl(),
       description: new FormControl(),
       date_release: new FormControl(),

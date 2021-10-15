@@ -101,7 +101,7 @@ export class ReleaseService {
 
     // FIXME if the date change it has to change the balance/invoice ID as well
     const body = {
-      value: form.value,
+      installment_value: form.value,
       description: form.description,
       date_release: form.date_release,
       is_release_paid: form.is_release_paid,

@@ -14,6 +14,11 @@
 :host ::ng-deep .ant-card-body {
   max-height: 75vh;
   overflow-y: auto;
+  padding: 24px 24px 8px 24px !important;
+}
+
+:host ::ng-deep.ant-btn {
+  border-radius: 16px;
 }
 
 :host ::ng-deep nz-card {
@@ -22,16 +27,14 @@
 
 nz-layout {
   background-color: #235C47 !important;
-  background-image: url("src/assets/background.svg");
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-
 @media only screen and (max-width: 768px) and (orientation: portrait) {
   nz-layout {
     height: 100vh !important;
-    background-image: url("src/assets/backgroundMobile.svg");
+    /*background-image: url("src/assets/backgroundMobile.svg");*/
 
   }
 

@@ -8,7 +8,7 @@ export interface Release {
   description: string;
   place: string;
   value: number;
-  value_installment: number;
+  installment_value: number;
   // TODO it should be date, but API return a string
   date_release: string;
   // TODO it should be date, but API return a string

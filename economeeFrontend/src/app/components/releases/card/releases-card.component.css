@@ -2,41 +2,50 @@
   border: 0;
 }
 
+:host ::ng-deep .card-release > .ant-card-actions {
+  background-color: transparent;
+  border-radius: 16px;
+}
+
 :host ::ng-deep .ant-input-affix-wrapper > input, .ant-input-affix-wrapper > span {
   padding: 0;
   margin: 0;
   width: 100%;
 }
 
-:host ::ng-deep .ant-form-item {
-  margin: 0 0 8px;
-  border-bottom: 1px solid #3333334a;
-  border-left: 0;
-  border-right: 0;
-  border-top: 0;
-}
+/*:host ::ng-deep .select-form-item {*/
+/*  border: 0 !important;*/
+/*}*/
 
 .card-release {
   border-radius: 16px;
 }
 
+.ant-form-item {
+  margin-bottom: 8px !important;
+}
+
+.ant-form-item:not(.select-form-item) {
+  border-bottom: 1px solid #333333;
+}
+
+:host ::ng-deep .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  color: white !important;
+  border-radius: 16px !important;
+}
+
 :host ::ng-deep .category > nz-select-top-control {
   background-color: #29949D !important;
-  color: white;
-  border-radius: 16px !important;
-  border: 0px;
 }
 
 :host ::ng-deep .type > nz-select-top-control {
   background-color: #883B21 !important;
-  color: white;
-  border-radius: 16px !important;
-  border: 0px;
+}
+
+:host ::ng-deep .repeat > nz-select-top-control {
+  background-color: #195E64 !important;
 }
 
 :host ::ng-deep .paid > nz-select-top-control {
   background-color: #E3A238 !important;
-  color: white;
-  border-radius: 16px !important;
-  border: 0px;
 }

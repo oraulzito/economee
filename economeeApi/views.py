@@ -331,7 +331,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 description=request.data.get('description'),
                 place=place,
                 value=float(request.data.get('value')),
-                value_installment=float(request.data.get('value')) / repeat_times,
+                installment_value=float(request.data.get('value')) / repeat_times,
                 date_creation=datetime.now(),
                 date_release=date_release + relativedelta(months=+i),
                 # TODO if date_repeat is different than date_release it has to have a code adjusment
@@ -396,7 +396,7 @@ class ReleaseView(viewsets.ModelViewSet):
         expense = []
         for e in Balance.objects.raw("""
                                 select bal.id, bal.date_reference,
-                                     sum(rel.value_installment) as total
+                                     sum(rel.installment_value) as total
                                     from "economeeApi_release" as rel
                                              left join "economeeApi_balance" as bal
                                                        on rel.balance_id = bal.id
@@ -408,7 +408,7 @@ class ReleaseView(viewsets.ModelViewSet):
 
         for i in Balance.objects.raw("""
                        select bal.id, bal.date_reference,
-                               sum(rel.value_installment) as total
+                               sum(rel.installment_value) as total
                         from "economeeApi_release" as rel
                                  left join "economeeApi_balance" as bal
                                            on rel.balance_id = bal.id
@@ -425,7 +425,7 @@ class ReleaseView(viewsets.ModelViewSet):
         r = []
 
         for e in Balance.objects.raw("""
-                                select rc.id, rc.name, sum(r.value_installment) as total
+                                select rc.id, rc.name, sum(r.installment_value) as total
                                     from "economeeApi_release" r
                                          INNER JOIN "economeeApi_balance" b on b.id = r.balance_id
                                          INNER JOIN "economeeApi_account" a on a.id = %s
