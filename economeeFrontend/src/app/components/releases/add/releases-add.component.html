@@ -1,0 +1,118 @@
+<nz-card
+  class="card-release m-3 border-1">
+  <form [formGroup]="releaseForm" nz-form>
+    <div nz-row>
+      <div nz-col nzSm="12">
+        <h6>
+          <nz-form-item>
+            <nz-input-group [nzPrefix]="prefixCurrency">
+              <input [ngModel]="release? release.installment_value:0"
+                     formControlName="{{release ?'installment_value' :'value'}}"
+                     type="number">
+            </nz-input-group>
+            <ng-template #prefixCurrency>
+              {{currency}}
+            </ng-template>
+          </nz-form-item>
+        </h6>
+      </div>
+      <div nz-col nzSm="1"></div>
+      <div nz-col nzSm="11">
+        <nz-form-item>
+          <!-- FIXME find a way to put date as dd/MMMM/YYYY -->
+          <input [ngModel]="release? release.date_release :''" formControlName="date_release"
+                 nz-input
+                 type="date">
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSm="16">
+        <h6>
+          <nz-form-item>
+            <input [ngModel]="release? release.description :''"
+                   formControlName="description"
+                   nz-input
+                   type="text">
+          </nz-form-item>
+        </h6>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSm="24">
+        <nz-form-item>
+          <nz-input-group [nzPrefix]="prefixLocal">
+            <input [ngModel]="release? release.place: ''" formControlName="place"
+                   nz-input
+                   type="text">
+          </nz-input-group>
+          <ng-template #prefixLocal>
+            <i nz-icon nzTheme="outline" nzType="environment"></i>
+          </ng-template>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row nzJustify="space-around">
+      <div nz-col nzSm="8">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release? release.category.id :0" [nzDropdownRender]="renderTemplate"
+                     class="text-center category"
+                     formControlName="category_id">
+            <nz-option [nzLabel]="'Categoria'" [nzValue]="0" nzDisabled></nz-option>
+            <nz-option *ngFor="let c of categories" [nzLabel]=c.name [nzValue]=c.id></nz-option>
+          </nz-select>
+          <ng-template #renderTemplate>
+            <nz-spin *ngIf="categoriesLoading"></nz-spin>
+          </ng-template>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSm="8">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release? release.type:0" class="text-center type" formControlName="type">
+            <nz-option [nzLabel]="'Tipo'" [nzValue]="0" nzDisabled></nz-option>
+            <nz-option [nzLabel]="'Gasto'" [nzValue]="'ER'"></nz-option>
+            <nz-option [nzLabel]="'Ganho'" [nzValue]="'IR'"></nz-option>
+          </nz-select>
+        </nz-form-item>
+      </div>
+
+      <div nz-col nzSm="8">
+        <nz-form-item class="select-form-item">
+          <nz-select [ngModel]="release? release.is_release_paid: 0" class="text-center paid"
+                     formControlName="is_release_paid">
+            <nz-option [nzLabel]="'Está Pago?'" [nzValue]="0" nzDisabled></nz-option>
+            <nz-option [nzLabel]="'Pago'" [nzValue]=true></nz-option>
+            <nz-option [nzLabel]="'Não Pago'" [nzValue]="false"></nz-option>
+          </nz-select>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+</nz-card>
+
+<ng-template #delete>
+  <button (click)="deleteRelease(release.id)" class="mx-2" nz-button nzDanger nzType="primary">
+    <i nz-icon nzTheme="outline" nzType="delete"></i>
+    Deletar
+  </button>
+</ng-template>
+<ng-template #edit>
+  <button (click)="editRelease(release.id)" class="mx-2" nz-button nzType="primary">
+    <i nz-icon nzType="edit"></i>
+    Editar
+  </button>
+</ng-template>
+<ng-template #add>
+  <button (click)="saveRelease()" class="mx-2" nz-button nzType="primary">
+    <i nz-icon nzTheme="outline" nzType="plus"></i>
+    Adicionar
+  </button>
+</ng-template>
+<ng-template #cancelAdd>
+  <button (click)="cancelRelease()" class="mx-2" nz-button nzDanger nzType="primary">
+    <i nz-icon nzTheme="outline" nzType="stop"></i>
+    Cancelar
+  </button>
+</ng-template>
+

@@ -25,27 +25,46 @@
   margin-bottom: 8px !important;
 }
 
-.ant-form-item:not(.select-form-item) {
+.ant-form-item:not(.badge-economee) {
   border-bottom: 1px solid #333333;
 }
 
-:host ::ng-deep .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+:host ::ng-deep .badge-economee, .ant-select:not(.ant-select-customize-input) .ant-select-selector {
   color: white !important;
   border-radius: 16px !important;
 }
 
-:host ::ng-deep .category > nz-select-top-control {
+.ant-card-head-title{
+  padding: 0;
+}
+
+.badge-economee {
+  width: 98%;
+  height: 99%;
+  display: inline-block;
+  padding: .35em .65em;
+  font-size: .75em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25rem;
+}
+
+:host ::ng-deep .category {
   background-color: #29949D !important;
 }
 
-:host ::ng-deep .type > nz-select-top-control {
+:host ::ng-deep .type {
   background-color: #883B21 !important;
 }
 
-:host ::ng-deep .repeat > nz-select-top-control {
+:host ::ng-deep .repeat {
   background-color: #195E64 !important;
 }
 
-:host ::ng-deep .paid > nz-select-top-control {
+:host ::ng-deep .paid {
   background-color: #E3A238 !important;
 }

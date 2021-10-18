@@ -6,6 +6,7 @@ import {ReleaseCategoryQuery} from '../../../../state/release-category/release-c
 import {ReleaseCategory} from '../../../../state/release-category/release-category.model';
 import {DateTime} from 'luxon';
 import {AccountQuery} from '../../../../state/account/account.query';
+import {Currency} from "../../../../state/currency/currency.model";
 
 @Component({
   selector: 'app-releases-card',
@@ -20,7 +21,7 @@ export class ReleasesCardComponent implements OnInit {
   @Input() release: Release;
   @Input() card;
 
-  currency: string;
+  currency: Currency;
 
   releaseForm: FormGroup;
 
@@ -30,6 +31,7 @@ export class ReleasesCardComponent implements OnInit {
   date_release = new Date();
   // TODO make this configurable
   maxRepeatTimes = [12];
+  isVisibile = false;
 
   constructor(
     private fb: FormBuilder,
@@ -43,60 +45,17 @@ export class ReleasesCardComponent implements OnInit {
   ngOnInit() {
     this.accountQuery.selectActive().subscribe(r => {
       if (r) {
-        this.currency = r.currency.symbol;
+        this.currency = r.currency
       }
     });
 
-    this.releaseCategoryQuery.selectLoading().subscribe(cl => {
-      this.categoriesLoading = cl;
-      if (!cl) {
-        this.releaseCategoryQuery.selectAll().subscribe(c => this.categories = c);
-      }
-    });
-
-    this.releaseForm = this.fb.group({
-      installment_value: new FormControl(),
-      value: new FormControl(),
-      description: new FormControl(),
-      date_release: new FormControl(),
-      is_release_paid: new FormControl(),
-      category_id: new FormControl(),
-      repeat_times: new FormControl(),
-      place: new FormControl(),
-      type: new FormControl(),
-      card: new FormControl(this.card)
-    });
-
-    if (!this.add) {
-      this.date_release = DateTime.fromSQL(this.release.date_release).toISODate();
-    }
   }
 
-
-  // tslint:disable-next-line:typedef
-  editRelease(id) {
-    this.releaseService.update(id, this.releaseForm.value);
+  showModal() {
+    this.isVisibile = true;
   }
 
-  // tslint:disable-next-line:typedef
-  deleteRelease(id) {
-    this.releaseService.remove(id);
+  modalAction(r) {
+    this.isVisibile = r;
   }
-
-   // tslint:disable-next-line:typedef
-  saveRelease() {
-    return this.releaseService.add(this.releaseForm.value, this.card).subscribe(
-      r => {
-        this.saved.emit('false');
-        this.releaseCategoryQuery.selectAll().subscribe(c => this.categories = c);
-      },
-      (e) => this.saved.emit('true')
-    );
-  }
-
-  // tslint:disable-next-line:typedef
-  cancelRelease() {
-    this.saved.emit('true');
-  }
-
 }

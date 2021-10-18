@@ -8,6 +8,7 @@ import {Account} from '../../../../state/account/account.model';
 import {Subscription} from 'rxjs';
 import {DateTime} from 'luxon';
 import {AccountService} from "../../../../state/account/account.service";
+import {ReleaseQuery} from "../../../../state/release/release.query";
 
 @Component({
   selector: 'app-header',
@@ -36,6 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private sessionService: SessionService,
     private accountQuery: AccountQuery,
     private balanceQuery: BalanceQuery,
+    private releaseQuery: ReleaseQuery,
     private router: Router
   ) {
   }
@@ -46,10 +48,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.accountLoading = r;
       if (!r) {
         this.accountSubscription = this.accountQuery.selectActive().subscribe(a => this.account = a);
-        // Calc the expended, income, and total available value in the account.
-        this.accountService.totalAvailable();
       }
     });
+
+    this.releaseQuery.selectLoading().subscribe(r => {
+        if (!r) {
+          this.accountService.totalAvailable();
+        }
+      }
+    );
 
     this.balanceLoadingSubscription = this.balanceQuery.selectLoading().subscribe(r => {
       this.balanceLoading = r;

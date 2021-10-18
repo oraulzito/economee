@@ -29,7 +29,6 @@ export class ReleaseService {
 
   // tslint:disable-next-line:typedef
   get() {
-    this.releaseStore.setLoading(true);
     return this.http.get<Release[]>('/api/release/', this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.releaseStore),
@@ -42,7 +41,7 @@ export class ReleaseService {
   getBalanceReleases() {
     return this.http.get<Release[]>('/api/release/balance?balance_id=' + this.balanceQuery.getActive(),
       this.uiService.httpHeaderOptions()).pipe(
-        shareReplay(1),
+      shareReplay(1),
       setLoading(this.releaseStore),
       tap(entities => this.releaseStore.set(entities)),
       catchError(error => throwError(error))
@@ -53,7 +52,7 @@ export class ReleaseService {
   getInvoiceReleases() {
     return this.http.get<Release[]>('/api/release/invoice?invoice_id=' + this.invoiceQuery.getActive(),
       this.uiService.httpHeaderOptions()).pipe(
-        shareReplay(1),
+      shareReplay(1),
       setLoading(this.releaseStore),
       tap(entities => this.releaseStore.set(entities)),
       catchError(error => throwError(error))
@@ -64,7 +63,7 @@ export class ReleaseService {
   getMonthReleases() {
     return this.http.get<Release[]>('/api/release/?date_reference=' + this.balanceQuery.getActive().date_reference,
       this.uiService.httpHeaderOptions()).pipe(
-        shareReplay(1),
+      shareReplay(1),
       setLoading(this.releaseStore),
       tap(entities => this.releaseStore.set(entities)),
       catchError(error => throwError(error))
@@ -73,8 +72,6 @@ export class ReleaseService {
 
   // tslint:disable-next-line:typedef
   add(form, card) {
-    this.releaseStore.setLoading(true);
-
     // FIXME if the date change it has to change the balance/invoice ID as well
     // FIXME send only changed values
     const body = {
@@ -92,16 +89,19 @@ export class ReleaseService {
       repeat_times: form.repeat_times
     };
 
-    return this.http.post<[Release]>('/api/release/', body, this.uiService.httpHeaderOptions());
+    return this.http.post<[Release]>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
+      shareReplay(1),
+      tap(entities => this.releaseStore.add(entities)),
+      catchError(error => throwError(error))
+    );
   }
 
   // tslint:disable-next-line:typedef
   update(id, form) {
-    this.releaseStore.setLoading(true);
-
     // FIXME if the date change it has to change the balance/invoice ID as well
     const body = {
-      installment_value: form.value,
+      installment_value: form.installment_value,
+      value: form.value,
       description: form.description,
       date_release: form.date_release,
       is_release_paid: form.is_release_paid,
@@ -112,9 +112,8 @@ export class ReleaseService {
       repeat_times: form.repeat_times
     };
 
-    return this.http.patch<number>('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
+    return this.http.patch('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      setLoading(this.releaseStore),
       tap(entities => entities === 1 ? this.releaseStore.update(id, body) : this.releaseStore.setError("Not updated")),
       catchError(error => throwError(error))
     );
@@ -124,7 +123,6 @@ export class ReleaseService {
   remove(id: ID) {
     return this.http.delete<number>('/api/release/' + id + '/', this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      setLoading(this.releaseStore),
       tap(entities => entities === 1 ? this.releaseStore.remove(id) : this.releaseStore.setError("Not removed")),
       catchError(error => throwError(error))
     );

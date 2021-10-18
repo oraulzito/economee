@@ -34,26 +34,22 @@ export class ProgressBarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.accountQuery.selectActive().subscribe(a => {
-      if (a) {
-        this.account = a;
-        switch (this.id) {
-          case 1:
-            this.progressTitle1 = 'Total Gasto \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_expenses;
-            this.progressTitle2 = 'Total recebido \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_incomes;
-            console.log(this.progressTitle1);
-            console.log(this.progressTitle2);
-            break;
-          case 2:
-            this.progressTitle1 = 'Crédito Gasto \n ' + this.account.currency.symbol + ' ' + this.invoice.total_card_expenses;
-            this.progressTitle2 = 'Crédito total \n ' + this.account.currency.symbol + ' ' + this.card.credit;
-            break;
-          default:
-            break;
-        }
+    this.account = this.accountQuery.getActive();
+    this.balance = this.balanceQuery.getActive();
+    this.card = this.cardQuery.getActive();
 
-      }
-    });
+    switch (this.id) {
+      case 1:
+        this.progressTitle1 = 'Total Gasto \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_expenses;
+        this.progressTitle2 = 'Total recebido \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_incomes;
+        break;
+      case 2:
+        this.progressTitle1 = 'Crédito Gasto \n ' + this.account.currency.symbol + ' ' + this.invoice.total_card_expenses;
+        this.progressTitle2 = 'Crédito total \n ' + this.account.currency.symbol + ' ' + this.card.credit;
+        break;
+      default:
+        break;
+    }
   }
 
 }

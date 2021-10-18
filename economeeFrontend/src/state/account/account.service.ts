@@ -96,19 +96,19 @@ export class AccountService {
     this.releaseQuery.selectAll({
       filterBy: [
         ({type}) => type === 'ER',
-        ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
+        ({balance_id}) => balance_id === this.balanceQuery.getActiveId(),
+        ({invoice_id}) => invoice_id === null
       ]
-    }).pipe(
-      tap(r => {
-          if (r) {
-            const expenseValuesMap = r.map(results => results.value);
-            expenseValues = expenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-          }
-          this.balanceStore.updateActive({
-            total_releases_expenses: expenseValues
-          });
+    }).subscribe(r => {
+        if (r) {
+          const expenseValuesMap = r.map(results => results.value);
+          expenseValues = expenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
         }
-      ));
+        this.balanceStore.updateActive({
+          total_releases_expenses: expenseValues
+        });
+      }
+    );
 
     // Only balance incomes
     this.releaseQuery.selectAll({
@@ -116,17 +116,16 @@ export class AccountService {
         ({type}) => type === 'IR',
         ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
       ]
-    }).pipe(
-      tap(r => {
-          if (r) {
-            const incomeValuesMap = r.map(results => results.value);
-            incomeValues = incomeValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-          }
-          this.balanceStore.updateActive({
-            total_releases_incomes: incomeValues
-          });
+    }).subscribe(r => {
+        if (r) {
+          const incomeValuesMap = r.map(results => results.value);
+          incomeValues = incomeValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
         }
-      ));
+        this.balanceStore.updateActive({
+          total_releases_incomes: incomeValues
+        });
+      }
+    );
 
     // Only card releases
     this.releaseQuery.selectAll({
@@ -134,17 +133,16 @@ export class AccountService {
         ({type}) => type === 'ER',
         ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
       ]
-    }).pipe(
-      tap(r => {
-          if (r) {
-            const cardExpenseValuesMap = r.map(results => results.value);
-            cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-          }
-          this.invoiceStore.updateActive({
-            total_card_expenses: cardExpenseValues
-          });
+    }).subscribe(r => {
+        if (r) {
+          const cardExpenseValuesMap = r.map(results => results.value);
+          cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
         }
-      ));
+        this.invoiceStore.updateActive({
+          total_card_expenses: cardExpenseValues
+        });
+      }
+    );
 
     let totalAvailable = 0.0;
 

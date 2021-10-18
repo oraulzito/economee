@@ -28,29 +28,32 @@ import {ProgressBarComponent} from "../components/graphics/progress-bar/progress
 import {FooterComponent} from "./dashboard-mobile/footer/footer.component";
 import {CreditCardComponent} from "../components/credit-card/credit-card.component";
 import {NzSpinModule} from "ng-zorro-antd/spin";
+import {NzModalModule} from "ng-zorro-antd/modal";
+import {ReleasesAddComponent} from "../components/releases/add/releases-add.component";
 
 
 @NgModule({
-  imports: [
-    DashboardRoutingModule,
-    NzCardModule,
-    NzGridModule,
-    NzDatePickerModule,
-    CommonModule,
-    NzButtonModule,
-    NzMenuModule,
-    NzIconModule,
-    NzDropDownModule,
-    NzEmptyModule,
-    NzProgressModule,
-    ReactiveFormsModule,
-    NzSelectModule,
-    FormsModule,
-    NzFormModule,
-    NzInputModule,
-    PlotlyModule,
-    NzSpinModule
-  ],
+    imports: [
+        DashboardRoutingModule,
+        NzCardModule,
+        NzGridModule,
+        NzDatePickerModule,
+        CommonModule,
+        NzButtonModule,
+        NzMenuModule,
+        NzIconModule,
+        NzDropDownModule,
+        NzEmptyModule,
+        NzProgressModule,
+        ReactiveFormsModule,
+        NzSelectModule,
+        FormsModule,
+        NzFormModule,
+        NzInputModule,
+        PlotlyModule,
+        NzSpinModule,
+        NzModalModule
+    ],
   declarations: [
     DashboardComponent,
     HeaderComponent,
@@ -61,7 +64,8 @@ import {NzSpinModule} from "ng-zorro-antd/spin";
     ReleasesPanelComponent,
     ProgressBarComponent,
     FooterComponent,
-    CreditCardComponent
+    CreditCardComponent,
+    ReleasesAddComponent
   ],
   exports: [
     DashboardComponent]

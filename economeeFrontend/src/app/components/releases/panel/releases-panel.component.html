@@ -9,13 +9,16 @@
 
   <!-- Release add -->
   <ng-template [ngIf]="addRelease">
-    <app-releases-card (saved)="showAddRelease($event)" [add]="true"
-                       [card]="id === 2 ? card.id : null"></app-releases-card>
+    <nz-modal [(nzVisible)]="addRelease">
+      <app-releases-add (saved)="showAddRelease($event)" [card]="(id === 2 ? card : null)"></app-releases-add>
+    </nz-modal>
   </ng-template>
 
   <!-- Card add -->
   <ng-template [ngIf]="addCard">
-    <app-credit-card (saved)="showAddCard($event)"></app-credit-card>
+    <nz-modal [(nzVisible)]="addCard">
+      <app-credit-card (saved)="showAddCard($event)"></app-credit-card>
+    </nz-modal>
   </ng-template>
 
   <ng-template [ngIf]="hasData && id !== 3">

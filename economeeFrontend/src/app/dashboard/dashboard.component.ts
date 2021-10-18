@@ -52,60 +52,44 @@ export class DashboardComponent implements OnInit, OnDestroy {
   // tslint:disable-next-line:typedef
   ngOnInit() {
     this.onResize();
-    this.accountService.get().subscribe();
+    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
 
-    this.accountQuery.selectFirst().subscribe(
-      fa => {
+    this.accountService.get().subscribe(
+      (fa) => {
         if (fa) {
           // TODO change to set active a preferred account
           // set the first account as active
-          this.accountStore.setActive(fa.id);
+          this.accountStore.setActive(fa[0].id);
         }
-      });
+      },
+      () => {
+      },
+      () => {
+        this.balancesService.get().subscribe(
+          () => this.balancesService.loadMonthBalance(),
+          () => {
+          },
+          () => this.releaseService.getMonthReleases().subscribe()
+        );
 
-    this.accountQuery.selectActive().subscribe(
-      aa => {
-        if (aa) {
-          // get account balances
-          this.balancesService.get().subscribe(
-            () => this.balancesService.loadMonthBalance()
-          );
+        // Get account cards
+        this.cardService.get().subscribe(
+          c => this.cardStore.setActive(c[0].id),
+          () => {
+          },
+          () => {
+            this.invoiceService.getCardInvoice().subscribe(
+              () => {},
+              () => {},
+              () => this.invoiceService.loadMonthInvoice()
+            );
+          }
+        );
 
-          // Get account cards
-          this.cardService.get().subscribe();
-
-          // Load all release categories
-          this.releaseCategoryService.get().subscribe();
-        }
+        // Load all release categories
+        this.releaseCategoryService.get().subscribe();
       }
     );
-
-    this.balanceQuery.selectActive().subscribe(ab => {
-      if (ab) {
-        this.releaseService.getMonthReleases().subscribe();
-      }
-    });
-
-    // Set active the first found card
-    this.cardQuery.selectFirst().subscribe(
-      c => {
-        if (c) {
-          this.cardStore.setActive(c.id);
-        }
-      }
-    );
-
-    this.cardQuery.selectActive().subscribe(
-      ac => {
-        if (ac) {
-          this.invoiceService.getCardInvoice().subscribe(
-            () => this.invoiceService.loadMonthInvoice()
-          );
-        }
-      }
-    );
-
-    this.uiQuery.select('mobile').subscribe(m => this.mobile$ = m);
   }
 
   @HostListener('window:resize')
