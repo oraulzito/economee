@@ -1,24 +1,27 @@
+import en from '@angular/common/locales/en';
+
+import {environment} from '../environments/environment';
+
 import {NgModule} from '@angular/core';
+
+import {FormsModule} from '@angular/forms';
+import {registerLocaleData} from '@angular/common';
+import {HttpClientModule} from '@angular/common/http';
 import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NG_ENTITY_SERVICE_CONFIG} from '@datorama/akita-ng-entity-service';
+
+import {en_US, NZ_I18N} from 'ng-zorro-antd/i18n';
+import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 
 import {AppComponent} from './app.component';
-import {en_US, NZ_I18N} from 'ng-zorro-antd/i18n';
-import {registerLocaleData} from '@angular/common';
-import en from '@angular/common/locales/en';
-import {FormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppRoutingModule} from './app-routing.module';
-import {IconsProviderModule} from './icons-provider.module';
 import {NzLayoutModule} from 'ng-zorro-antd/layout';
-import {NzMenuModule} from 'ng-zorro-antd/menu';
-import {NzGridModule} from 'ng-zorro-antd/grid';
-import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
-import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
-import {environment} from '../environments/environment';
-import {NzProgressModule} from 'ng-zorro-antd/progress';
+
 import * as PlotlyJS from 'plotly.js-dist-min';
-import { PlotlyModule } from 'angular-plotly.js';
+import {PlotlyModule} from 'angular-plotly.js';
+import {DashboardModule} from './features/dashboard/dashboard.module';
+import {WelcomeModule} from './features/welcome/welcome.module';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -35,15 +38,23 @@ registerLocaleData(en);
     HttpClientModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    IconsProviderModule,
     NzLayoutModule,
-    NzMenuModule,
-    NzGridModule,
-    NzDatePickerModule,
-    NzProgressModule,
+    DashboardModule,
+    WelcomeModule,
     environment.production ? [] : AkitaNgDevtools.forRoot()
   ],
-  providers: [{provide: NZ_I18N, useValue: en_US}],
+  providers: [
+    {
+      provide: NG_ENTITY_SERVICE_CONFIG,
+      useValue: {
+        baseUrl: 'localhost:8000/api'
+      }
+    },
+    {
+      provide: NZ_I18N,
+      useValue: en_US
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

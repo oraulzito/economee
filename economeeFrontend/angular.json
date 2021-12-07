@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": "a612b04d-4e34-4b50-8166-6e03354fa8fe",
+    "analytics": false,
     "defaultCollection": "@datorama/akita"
   },
   "version": 1,
@@ -38,7 +38,7 @@
               "node_modules/bootstrap/dist/css/bootstrap-reboot.min.css",
               "node_modules/bootstrap/dist/css/bootstrap-utilities.min.css",
               "src/theme.less",
-              "src/styles.css"
+              "src/styles.less"
             ],
             "scripts": []
           },
@@ -101,7 +101,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.less"
             ],
             "scripts": []
           }
@@ -132,6 +132,11 @@
           }
         }
       }
+    }
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "less"
     }
   },
   "defaultProject": "economee"

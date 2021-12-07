@@ -1,22 +1,39 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AuthenticationGuard} from './guards/authentication.guard';
+import {AuthenticationGuard} from './core/guards/authentication.guard';
+import {WelcomeComponent} from './features/welcome/welcome.component';
+import {ProfileComponent} from './features/authentication/profile/profile.component';
+import {LoginComponent} from './features/authentication/login/login.component';
+import {SignInComponent} from './features/authentication/sign-in/sign-in.component';
+import {DashboardComponent} from './features/dashboard/dashboard.component';
+
 
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./landpage/landpage.module').then(l => l.LandpageModule),
-    canActivate: [AuthenticationGuard]
-  },
-  {
-    path: 'welcome',
-    loadChildren: () => import('./welcome/welcome.module').then(m => m.WelcomeModule),
-    canActivate: [AuthenticationGuard]
+    component: WelcomeComponent,
+    canActivate: [AuthenticationGuard],
+    children: [
+      {
+        path: 'signIn', // child route path
+        component: SignInComponent, // child route component that the router renders
+      },
+      {
+        path: 'login', // child route path
+        component: LoginComponent, // child route component that the router renders
+      },
+    ]
   },
   {
     path: 'dashboard',
-    loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
-    canActivate: [AuthenticationGuard]
+    component: DashboardComponent,
+    // canActivate: [AuthenticationGuard],
+    children: [
+      {
+        path: 'profile', // child route path
+        component: ProfileComponent, // child route component that the router renders
+      },
+    ]
   }
 ];
 

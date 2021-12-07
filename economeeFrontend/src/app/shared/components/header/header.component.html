@@ -1,0 +1,32 @@
+<app-card class="header-panel rounded-3 m-4" nz-row nzJustify="center">
+  <div class="logo text-center" nz-col nzMd="3"><h3>Economee</h3></div>
+  <div nz-col nz-menu nzMd="18">
+    <div nz-row>
+      <div nz-col nzMd="12">
+
+      </div>
+      <div nz-col nzMd="6">a a</div>
+      <div nz-col nzMd="6">
+<!--        <nz-date-picker nzMode="month" ></nz-date-picker>-->
+      </div>
+    </div>
+  </div>
+  <div class="text-center" nz-col nzMd="3">
+    <nz-avatar [nzDropdownMenu]="menu" [nzPlacement]="'bottomCenter'"
+               nz-dropdown nzIcon="user" nzSize="large"></nz-avatar>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li nz-menu-item>
+          <a [href]="'/dashboard/configuration'" class="text-decoration-none">
+            Perfil
+            <i nz-icon nzTheme="outline" nzType="user"></i>
+          </a>
+        </li>
+        <li (click)="logout()" class="btn-danger text-white" nz-menu-item>
+          Logout
+          <i nz-icon nzTheme="outline" nzType="logout"></i>
+        </li>
+      </ul>
+    </nz-dropdown-menu>
+  </div>
+</app-card>

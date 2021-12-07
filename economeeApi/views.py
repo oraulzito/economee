@@ -334,7 +334,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 installment_value=float(request.data.get('value')) / repeat_times,
                 date_creation=datetime.now(),
                 date_release=date_release + relativedelta(months=+i),
-                # TODO if date_repeat is different than date_release it has to have a code adjusment
+                # TODO if date_repeat is different than date_release it has to have a code adjustment
                 date_repeat=date_repeat + relativedelta(months=+i + 1),
                 repeat_times=int(request.data.get('repeat_times')),
                 installment_number=i + 1,

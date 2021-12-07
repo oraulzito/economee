@@ -1,13 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
-import {UiStore} from '../state/ui/ui.store';
+import {UiStore} from './core/state/ui/ui.store';
 import {Subscription} from 'rxjs';
-import {SessionQuery} from "../state/session/session.query";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.less']
 })
 export class AppComponent implements OnInit, OnDestroy {
   isCollapsed = false;
@@ -16,13 +15,11 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private uiStore: UiStore,
-    private sessionQuery: SessionQuery
   ) {
     this.event$
       = this.router.events
       .subscribe(
         (event) => {
-          // console.log(event);
           if (event instanceof NavigationStart || event instanceof NavigationEnd || event instanceof NavigationError) {
             this.uiStore.update({url: event.url});
           }

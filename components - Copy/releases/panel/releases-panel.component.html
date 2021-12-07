@@ -1,0 +1,44 @@
+<nz-card [nzExtra]="addAction" [nzLoading]="loadingBalance || loadingAccount || loadingReleases" [nzTitle]="panelTitle"
+         class="releases-panel w-100">
+
+  <ng-template [ngIf]="hasData && id !== 3">
+    <!-- Progress Bar/ Release List-->
+    <app-progress-bar [progressTitle1]="progressTitle1" [progressTitle2]="progressTitle2"
+                      [successPercentage]="expensesPercentage"></app-progress-bar>
+  </ng-template>
+
+  <!-- Release add -->
+  <ng-template [ngIf]="addRelease">
+    <app-releases-add [card]="(id === 2 ? card : null)"></app-releases-add>
+  </ng-template>
+
+  <!-- Card add -->
+  <ng-template [ngIf]="addCard">
+    <app-credit-card></app-credit-card>
+  </ng-template>
+
+  <!-- Release List -->
+  <ng-template [ngIf]="hasData && id !== 3">
+    <div class="overflow-auto vh-50" id="releasesList">
+      <app-releases-card *ngFor="let r of releases" [add]="false" [release]="r"></app-releases-card>
+    </div>
+  </ng-template>
+
+  <!--  -->
+  <div *ngIf="id === 3 && hasData">
+    <plotly-plot [data]="gDataMonth" [layout]="layoutMonth"></plotly-plot>
+    <plotly-plot [data]="gDataCategory" [layout]="layoutCategory"></plotly-plot>
+  </div>
+
+  <!-- No release info -->
+  <ng-template [ngIf]="!hasData && (!addRelease && !addCard)">
+    <app-no-data (buttonClick)="showAdd($event)" [actionText2]="actionText2" [actionText]="actionText" [id]="id"
+                 [text]="text" [type]="type"></app-no-data>
+  </ng-template>
+</nz-card>
+
+<ng-template #addAction>
+  <button (click)="showAdd(id)" class="border-0" nz-button>
+    <i nz-icon nzTheme="outline" nzType="plus-circle"></i>
+  </button>
+</ng-template>
