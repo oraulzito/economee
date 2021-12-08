@@ -1,4 +1,4 @@
-<app-card class="header-panel rounded-3 m-4" nz-row nzJustify="center">
+<app-card class="m-4" nz-row nzJustify="center">
   <div class="logo text-center" nz-col nzMd="3"><h3>Economee</h3></div>
   <div nz-col nz-menu nzMd="18">
     <div nz-row>
@@ -12,19 +12,37 @@
       </div>
       <div nz-col nzMd="6"></div>
       <div nz-col nzMd="6">
-        <!--        <nz-date-picker nzMode="month"></nz-date-picker>-->
+        <!--        <nz-form-item>-->
+        <!--          <nz-input-group>-->
+        <!--            <nz-month-picker (ngModelChange)="onChange($event)" [(ngModel)]="date" [nzFormat]="'mm/yyyy'"-->
+        <!--                             nzBorderless></nz-month-picker>-->
+        <!--          </nz-input-group>-->
+        <!--        </nz-form-item>-->
       </div>
     </div>
   </div>
   <div class="text-center" nz-col nzMd="3">
-    <nz-avatar [nzDropdownMenu]="dropdown" [nzPlacement]="'bottomCenter'" [nzSize]="64" nz-dropdown
-               nzIcon="user"></nz-avatar>
-    <nz-dropdown-menu #dropdown="nzDropdownMenu">
-      <ul nz-menu>
-        <li nz-menu-item>1st menu item length</li>
-        <li nz-menu-item>2nd menu item length</li>
-        <li nz-menu-item>3rd menu item length</li>
-      </ul>
-    </nz-dropdown-menu>
+    <div *ngIf="isLogged$">
+      <nz-avatar [nzDropdownMenu]="dropdown" [nzPlacement]="'bottomCenter'" [nzSize]="32" nz-dropdown
+                 nzIcon="user"></nz-avatar>
+      <nz-dropdown-menu #dropdown="nzDropdownMenu">
+        <ul nz-menu>
+          <li nz-menu-item>
+            <a [href]="'/dashboard/configuration'" class="text-decoration-none">
+              Perfil
+              <i nz-icon nzTheme="outline" nzType="user"></i>
+            </a>
+          </li>
+          <li (click)="logout()" class="btn-danger text-white" nz-menu-item>
+            Logout
+            <i nz-icon nzTheme="outline" nzType="logout"></i>
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+    </div>
+    <div *ngIf="!isLogged$">
+      <button class="alert-warning" nz-button nzType="default">Cadastro</button>
+      <button class="alert-success" nz-button nzType="default">Entrar</button>
+    </div>
   </div>
 </app-card>

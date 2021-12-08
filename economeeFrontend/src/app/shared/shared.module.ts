@@ -9,12 +9,14 @@ import {NzAvatarModule} from 'ng-zorro-antd/avatar';
 import {NzGridModule} from 'ng-zorro-antd/grid';
 import {CardComponent} from './components/card/card.component';
 import {NzIconModule} from 'ng-zorro-antd/icon';
-import {NzTransitionPatchModule} from 'ng-zorro-antd/core/transition-patch/transition-patch.module';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {FormsModule} from '@angular/forms';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
+import {CommonModule} from '@angular/common';
+import {NzTransitionPatchModule} from 'ng-zorro-antd/core/transition-patch/transition-patch.module';
+import {NzButtonModule} from 'ng-zorro-antd/button';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
     NzFormModule,
     NzInputModule,
     NzDropDownModule,
+    CommonModule,
+    NzButtonModule,
   ],
   exports: [
     HeaderComponent,

@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {SessionService} from '../../../core/state/session/session.service';
 import {Router} from '@angular/router';
+import {SessionQuery} from '../../../core/state/session/session.query';
 
 @Component({
   selector: 'app-header',
@@ -8,10 +9,13 @@ import {Router} from '@angular/router';
   styleUrls: ['./header.component.less']
 })
 export class HeaderComponent implements OnInit {
+  isLogged$ = this.sessionQuery.isLoggedIn$;
+  date = new Date();
 
   constructor(
-    // private sessionService: SessionService,
-    // private router: Router,
+    private sessionQuery: SessionQuery,
+    private sessionService: SessionService,
+    private router: Router,
   ) {
   }
 
@@ -25,5 +29,9 @@ export class HeaderComponent implements OnInit {
     //   () => this.router.navigate(['/']),
     //   (err) => alert(err)
     // );
+  }
+
+  onChange(result: Date): void {
+    console.log('onChange: ', result);
   }
 }
