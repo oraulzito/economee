@@ -8,15 +8,13 @@ import {RouterModule} from '@angular/router';
 import {NzAvatarModule} from 'ng-zorro-antd/avatar';
 import {NzGridModule} from 'ng-zorro-antd/grid';
 import {CardComponent} from './components/card/card.component';
-import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 import {NzIconModule} from 'ng-zorro-antd/icon';
 import {NzTransitionPatchModule} from 'ng-zorro-antd/core/transition-patch/transition-patch.module';
 import {NzInputModule} from 'ng-zorro-antd/input';
-import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
-import {CommonModule} from '@angular/common';
 import {NzSelectModule} from 'ng-zorro-antd/select';
 import {FormsModule} from '@angular/forms';
 import {NzFormModule} from 'ng-zorro-antd/form';
+import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 
 @NgModule({
   declarations: [
@@ -31,16 +29,13 @@ import {NzFormModule} from 'ng-zorro-antd/form';
     RouterModule,
     NzAvatarModule,
     NzGridModule,
-    NzDropDownModule,
     NzIconModule,
-    NzTransitionPatchModule,
     NzInputModule,
-    NzDatePickerModule,
-    CommonModule,
     NzSelectModule,
     FormsModule,
     NzFormModule,
     NzInputModule,
+    NzDropDownModule,
   ],
   exports: [
     HeaderComponent,

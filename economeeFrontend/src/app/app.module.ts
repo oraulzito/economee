@@ -11,7 +11,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NG_ENTITY_SERVICE_CONFIG} from '@datorama/akita-ng-entity-service';
 
-import {en_US, NZ_I18N} from 'ng-zorro-antd/i18n';
+import {pt_BR, NZ_I18N} from 'ng-zorro-antd/i18n';
 import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 
 import {AppComponent} from './app.component';
@@ -25,7 +25,7 @@ import {WelcomeModule} from './features/welcome/welcome.module';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
-registerLocaleData(en);
+registerLocaleData(pt_BR);
 
 @NgModule({
   declarations: [
@@ -52,7 +52,7 @@ registerLocaleData(en);
     },
     {
       provide: NZ_I18N,
-      useValue: en_US
+      useValue: pt_BR
     }
   ],
   bootstrap: [AppComponent]

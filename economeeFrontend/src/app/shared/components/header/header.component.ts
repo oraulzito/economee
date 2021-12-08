@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {SessionService} from "../../../core/state/session/session.service";
-import {Router} from "@angular/router";
+import {SessionService} from '../../../core/state/session/session.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -10,8 +10,8 @@ import {Router} from "@angular/router";
 export class HeaderComponent implements OnInit {
 
   constructor(
-    private sessionService: SessionService,
-    private router: Router,
+    // private sessionService: SessionService,
+    // private router: Router,
   ) {
   }
 

@@ -4,9 +4,9 @@ import {UiState, UiStore} from './ui.store';
 
 @Injectable({providedIn: 'root'})
 export class UiQuery extends Query<UiState> {
-  loading$ = this.selectLoading();
-  error$ = this.selectError();
-  mobile$ = this.select(state => state.mobile);
+  isLoading$ = this.selectLoading();
+  hasErrors$ = this.selectError();
+  isMobile$ = this.select(state => state.mobile);
 
   constructor(protected store: UiStore) {
     super(store);

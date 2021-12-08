@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.mobile$ = this.uiQuery.mobile$;
+    this.mobile$ = this.uiQuery.isMobile$;
     this.onResize();
   }
 
