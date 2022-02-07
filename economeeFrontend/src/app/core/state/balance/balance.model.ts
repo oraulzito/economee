@@ -1,3 +1,5 @@
+import {Account} from "../account/account.model";
+
 export interface Balance {
   id: number | string;
   // TODO it should be date, but API return a string

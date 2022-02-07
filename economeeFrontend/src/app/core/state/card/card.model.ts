@@ -1,3 +1,5 @@
+import {Account} from "../account/account.model";
+
 export interface Card {
   id: number | string;
   name: string;
@@ -8,7 +10,5 @@ export interface Card {
 }
 
 export function createCard(params: Partial<Card>) {
-  return {
-
-  } as Card;
+  return {} as Card;
 }
