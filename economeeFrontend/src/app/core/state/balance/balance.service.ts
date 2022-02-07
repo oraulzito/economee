@@ -7,9 +7,9 @@ import {formatDate} from '@angular/common';
 import {BalanceQuery} from './balance.query';
 import {ReleaseService} from '../release/release.service';
 import {InvoiceService} from '../invoice/invoice.service';
-import {catchError, shareReplay, tap} from "rxjs/operators";
-import {setLoading} from "@datorama/akita";
-import {throwError} from "rxjs";
+import {catchError, shareReplay, tap} from 'rxjs/operators';
+import {setLoading} from '@datorama/akita';
+import {throwError} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {
@@ -26,7 +26,7 @@ export class BalanceService {
 
   // tslint:disable-next-line:typedef
   get() {
-    return this.http.get<Balance[]>('/api/balance/', this.uiService.httpHeaderOptions()).pipe(
+    return this.http.get<Balance[]>('/api/balance', this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.balanceStore),
       tap(balance => this.balanceStore.set(balance)),
@@ -35,7 +35,7 @@ export class BalanceService {
   }
 
   // tslint:disable-next-line:typedef
-  loadMonthBalance(actualDate?) {
+  setBalanceMonth(actualDate?) {
     if (actualDate === undefined) {
       // Get today's date
       actualDate = new Date();
@@ -60,8 +60,8 @@ export class BalanceService {
 
   // tslint:disable-next-line:typedef
   changeBalance(date) {
-    this.loadMonthBalance(date);
-    this.invoiceService.loadMonthInvoice(date);
+    this.setBalanceMonth(date);
+    this.invoiceService.setInvoiceMonth(date);
   }
 
 }

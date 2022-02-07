@@ -1,0 +1,21 @@
+<nz-list>
+  <nz-list-item *ngFor="let release of releases">
+    <nz-skeleton [nzParagraph]="{ rows: 4 }"></nz-skeleton>
+    <nz-list-item-meta [nzDescription]="release.description"
+                       [nzAvatar]="release.type==='ER'?
+                                     '../images/add_circle_black_24dp.svg'
+                                     :
+                                     '../images/add_circle_black_24dp.svg'">
+      <nz-list-item-meta-title>
+        <p>{{ release.value | currency: 'BRL' }}</p>
+        <span>{{ release.place }}</span>
+        <br>
+        <span>{{ release.date_release }}</span>
+        <br>
+        <span>Parcela {{ release.installment_number }} de {{ release.repeat_times }}</span>
+      </nz-list-item-meta-title>
+    </nz-list-item-meta>
+  </nz-list-item>
+</nz-list>
+
+<!--[nzTheme]="'twotone'-->

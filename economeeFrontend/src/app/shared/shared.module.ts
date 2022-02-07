@@ -15,8 +15,8 @@ import {FormsModule} from '@angular/forms';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 import {CommonModule} from '@angular/common';
-import {NzTransitionPatchModule} from 'ng-zorro-antd/core/transition-patch/transition-patch.module';
 import {NzButtonModule} from 'ng-zorro-antd/button';
+import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
 
 @NgModule({
   declarations: [
@@ -40,6 +40,7 @@ import {NzButtonModule} from 'ng-zorro-antd/button';
     NzDropDownModule,
     CommonModule,
     NzButtonModule,
+    NzDatePickerModule,
   ],
   exports: [
     HeaderComponent,

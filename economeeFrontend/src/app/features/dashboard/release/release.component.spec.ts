@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReleaseCardComponent } from './release-card.component';
+import { ReleaseComponent } from './release.component';
 
-describe('ReleaseCardComponent', () => {
-  let component: ReleaseCardComponent;
-  let fixture: ComponentFixture<ReleaseCardComponent>;
+describe('DashboardComponent', () => {
+  let component: ReleaseComponent;
+  let fixture: ComponentFixture<ReleaseComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ReleaseCardComponent ]
+      declarations: [ ReleaseComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReleaseCardComponent);
+    fixture = TestBed.createComponent(ReleaseComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

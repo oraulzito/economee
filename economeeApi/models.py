@@ -65,10 +65,9 @@ class Card(models.Model):
 # TODO create default release categories
 class ReleaseCategory(models.Model):
     name = models.CharField(max_length=124)
-    type = models.IntegerField(default=0)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True)
 
-    REQUIRED_FIELDS = ['name', 'type']
+    REQUIRED_FIELDS = ['name']
 
     def __str__(self):
         return '{}'.format(self.name)

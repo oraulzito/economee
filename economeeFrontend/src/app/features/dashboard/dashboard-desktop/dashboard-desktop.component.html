@@ -1,30 +1,29 @@
-<app-header></app-header>
-<div [nzGutter]="[20, 24]" class="m-4 vh-80" nz-row nzJustify="space-between">
-  <app-card nz-col nzMd="7">
-
+<div [nzGutter]="[20, 24]" nz-row nzJustify="space-around">
+  <app-card [nzMd]="7" nz-col >
+    <app-release [releaseType]=1  class="max-vh-80 overflow-auto"></app-release>
   </app-card>
-  <app-card nz-col nzMd="7">
-
+  <app-card [nzMd]="7" nz-col >
+    <app-release [releaseType]=2  class="max-vh-80 overflow-auto"></app-release>
   </app-card>
-  <div nz-col nzMd="10">
+  <div [nzMd]="10" nz-col>
     <div [nzGutter]="[20, 24]" class="vh-20" nz-row>
-      <app-card nz-col nzMd="12">
+      <app-card [nzMd]="12" nz-col>
 
       </app-card>
-      <app-card nz-col nzMd="12">
+      <app-card [nzMd]="12" nz-col>
 
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-30" nz-row>
-      <app-card nz-col nzMd="24">
+      <app-card [nzMd]="24" nz-col>
 
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-35" nz-row>
-      <app-card nz-col nzMd="12">
+      <app-card [nzMd]="12" nz-col>
 
       </app-card>
-      <app-card nz-col nzMd="12">
+      <app-card [nzMd]="12" nz-col>
 
       </app-card>
     </div>

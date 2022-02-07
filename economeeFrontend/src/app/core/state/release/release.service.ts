@@ -29,7 +29,7 @@ export class ReleaseService {
 
   // tslint:disable-next-line:typedef
   get() {
-    return this.http.get<Release[]>('/api/release/', this.uiService.httpHeaderOptions()).pipe(
+    return this.http.get<Release[]>('/api/release', this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.releaseStore),
       tap(releases => this.releaseStore.set(releases)),
@@ -60,12 +60,15 @@ export class ReleaseService {
   }
 
   // tslint:disable-next-line:typedef
-  getMonthReleases() {
-    return this.http.get<Release[]>('/api/release/?date_reference=' + this.balanceQuery.getActive().date_reference,
+  getMonthReleases(balance) {
+    return this.http.get<Release[]>('/api/release/?date_reference=' + balance.date_reference,
       this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.releaseStore),
-      tap(entities => this.releaseStore.set(entities)),
+      tap(entities => {
+        this.releaseStore.set(entities);
+        console.log(entities);
+      }),
       catchError(error => throwError(error))
     );
   }

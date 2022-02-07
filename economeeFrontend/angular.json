@@ -38,7 +38,8 @@
               "node_modules/bootstrap/dist/css/bootstrap-reboot.min.css",
               "node_modules/bootstrap/dist/css/bootstrap-utilities.min.css",
               "src/theme.less",
-              "src/styles.less"
+              "src/styles.less",
+              "src/assets/css/measures.less"
             ],
             "scripts": []
           },

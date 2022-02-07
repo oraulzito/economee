@@ -203,7 +203,6 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         releaseCategory = ReleaseCategory.objects.create(name=self.request.data.get('name'),
-                                                         type=self.request.data.get('type'),
                                                          user_id=self.request.user.id, )
         return HttpResponse(releaseCategory, content_type="application/json")
 
@@ -270,10 +269,12 @@ class ReleaseView(viewsets.ModelViewSet):
 
             repeat_times_balance = repeat_times
             if card_id:
-                if (date_repeat - pay_date).days < 10:
+                if (date_repeat - pay_date).days < 11:
                     repeat_times_balance = repeat_times + 2
-                else:
+                elif (date_repeat - pay_date).days < 10:
                     repeat_times_balance = repeat_times + 1
+                else:
+                    repeat_times_balance = repeat_times
 
             for n in range(repeat_times_balance):
                 """BALANCE"""
@@ -363,10 +364,10 @@ class ReleaseView(viewsets.ModelViewSet):
             date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=31).date()
         else:
             date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
-
+        logging.debug(date_reference_final)
         return Release.objects.filter(
             Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
-            date_release__range=(date_reference_init, date_reference_final)).all()
+            date_repeat__range=(date_reference_init, date_reference_final)).all()
 
     @action(detail=False, methods=['GET'])
     def balance(self, request):

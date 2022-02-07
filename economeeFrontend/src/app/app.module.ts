@@ -1,5 +1,3 @@
-import en from '@angular/common/locales/en';
-
 import {environment} from '../environments/environment';
 
 import {NgModule} from '@angular/core';
@@ -22,7 +20,11 @@ import {NzLayoutModule} from 'ng-zorro-antd/layout';
 import * as PlotlyJS from 'plotly.js-dist-min';
 import {PlotlyModule} from 'angular-plotly.js';
 import {DashboardModule} from './features/dashboard/dashboard.module';
-import {WelcomeModule} from './features/welcome/welcome.module';
+import {NotFoundModule} from "./features/not-found/not-found.module";
+import {AuthenticationModule} from "./features/authentication/authentication.module";
+import {SharedModule} from "./shared/shared.module";
+import {NzGridModule} from "ng-zorro-antd/grid";
+import {NzSpaceModule} from "ng-zorro-antd/space";
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -41,8 +43,12 @@ registerLocaleData(ptBr);
     AppRoutingModule,
     NzLayoutModule,
     DashboardModule,
-    WelcomeModule,
-    environment.production ? [] : AkitaNgDevtools.forRoot()
+    NotFoundModule,
+    AuthenticationModule,
+    environment.production ? [] : AkitaNgDevtools.forRoot(),
+    SharedModule,
+    NzGridModule,
+    NzSpaceModule,
   ],
   providers: [
     {

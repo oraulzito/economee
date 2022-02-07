@@ -1,17 +1,21 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AuthenticationGuard} from './core/guards/authentication.guard';
-import {WelcomeComponent} from './features/welcome/welcome.component';
 import {ProfileComponent} from './features/authentication/profile/profile.component';
 import {LoginComponent} from './features/authentication/login/login.component';
 import {SignInComponent} from './features/authentication/sign-in/sign-in.component';
 import {DashboardComponent} from './features/dashboard/dashboard.component';
+import {NotFoundComponent} from './features/not-found/not-found.component';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: WelcomeComponent,
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
+  {
+    path: '',
     canActivate: [AuthenticationGuard],
     children: [
       {
@@ -34,7 +38,11 @@ const routes: Routes = [
         component: ProfileComponent, // child route component that the router renders
       },
     ]
-  }
+  },
+  {
+    path: '**', pathMatch: 'full',
+    component: NotFoundComponent
+  },
 ];
 
 @NgModule({

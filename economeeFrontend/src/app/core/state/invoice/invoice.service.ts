@@ -48,7 +48,7 @@ export class InvoiceService {
   }
 
   // tslint:disable-next-line:typedef
-  loadMonthInvoice(invoiceDateReference?) {
+  setInvoiceMonth(invoiceDateReference?) {
     // Get the active card
     const activeCard = this.cardQuery.getActive();
 

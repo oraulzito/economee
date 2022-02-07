@@ -1,4 +1,4 @@
-<app-card class="m-4" nz-row nzJustify="center">
+<app-card nz-row nzAlign="middle">
   <div class="logo text-center" nz-col nzMd="3"><h3>Economee</h3></div>
   <div nz-col nz-menu nzMd="18">
     <div nz-row>
@@ -12,12 +12,12 @@
       </div>
       <div nz-col nzMd="6"></div>
       <div nz-col nzMd="6">
-        <!--        <nz-form-item>-->
-        <!--          <nz-input-group>-->
-        <!--            <nz-month-picker (ngModelChange)="onChange($event)" [(ngModel)]="date" [nzFormat]="'mm/yyyy'"-->
-        <!--                             nzBorderless></nz-month-picker>-->
-        <!--          </nz-input-group>-->
-        <!--        </nz-form-item>-->
+        <nz-form-item>
+          <nz-input-group>
+            <nz-month-picker (ngModelChange)="onChange($event)" [(ngModel)]="date" [nzFormat]="'mm/yyyy'"
+                             nzBorderless></nz-month-picker>
+          </nz-input-group>
+        </nz-form-item>
       </div>
     </div>
   </div>
