@@ -25,6 +25,7 @@ import {AuthenticationModule} from "./features/authentication/authentication.mod
 import {SharedModule} from "./shared/shared.module";
 import {NzGridModule} from "ng-zorro-antd/grid";
 import {NzSpaceModule} from "ng-zorro-antd/space";
+import { ReleaseModalComponent } from './features/dashboard/release-modal/release-modal.component';
 
 PlotlyModule.plotlyjs = PlotlyJS;
 
@@ -33,6 +34,7 @@ registerLocaleData(ptBr);
 @NgModule({
   declarations: [
     AppComponent,
+    ReleaseModalComponent,
   ],
   imports: [
     PlotlyModule,

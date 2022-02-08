@@ -70,6 +70,26 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
             }
           }
         },
@@ -81,8 +101,12 @@
           "configurations": {
             "production": {
               "browserTarget": "economee:build:production"
+            },
+            "development": {
+              "browserTarget": "economee:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -116,6 +140,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "economee:serve:production"
+            },
+            "development": {
+              "devServerTarget": "economee:serve:development"
             }
           }
         }
@@ -124,7 +151,7 @@
   },
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "less"
+      "style": "less"
     }
   },
   "defaultProject": "economee"

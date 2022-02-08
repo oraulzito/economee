@@ -17,6 +17,7 @@ import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
 import {CommonModule} from '@angular/common';
 import {NzButtonModule} from 'ng-zorro-antd/button';
 import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
+import {GraphicsModule} from "../features/graphics/graphics.module";
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
     CommonModule,
     NzButtonModule,
     NzDatePickerModule,
+    GraphicsModule
   ],
   exports: [
     HeaderComponent,

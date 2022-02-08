@@ -1,10 +1,4 @@
 <div [nzGutter]="[20, 24]" nz-row nzJustify="space-around">
-  <app-card [nzMd]="7" nz-col >
-    <app-release [releaseType]=1  class="max-vh-80 overflow-auto"></app-release>
-  </app-card>
-  <app-card [nzMd]="7" nz-col >
-    <app-release [releaseType]=2  class="max-vh-80 overflow-auto"></app-release>
-  </app-card>
   <div [nzMd]="10" nz-col>
     <div [nzGutter]="[20, 24]" class="vh-20" nz-row>
       <app-card [nzMd]="12" nz-col>
@@ -16,16 +10,23 @@
     </div>
     <div [nzGutter]="[20, 24]" class="vh-30" nz-row>
       <app-card [nzMd]="24" nz-col>
-
+        <app-progress-bar [id]="1"></app-progress-bar>
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-35" nz-row>
       <app-card [nzMd]="12" nz-col>
-
+        <app-graphic-pizza></app-graphic-pizza>
       </app-card>
       <app-card [nzMd]="12" nz-col>
-
+        <app-graphic-timeline></app-graphic-timeline>
       </app-card>
     </div>
   </div>
+
+  <app-card [nzMd]="7" nz-col>
+    <app-release [releaseType]=1 class="max-w-90 max-vh-80 overflow-auto p-2"></app-release>
+  </app-card>
+  <app-card [nzMd]="7" nz-col>
+    <app-release [releaseType]=2 class="max-w-90 max-vh-80 overflow-auto p-2"></app-release>
+  </app-card>
 </div>

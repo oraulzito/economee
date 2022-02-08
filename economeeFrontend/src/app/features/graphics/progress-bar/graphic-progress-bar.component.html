@@ -1,0 +1,21 @@
+<div nz-row>
+  <div nz-col nzSm="24">
+    <nz-progress [nzPercent]="100" [nzShowInfo]="false"
+                 [nzSuccessPercent]=successPercentage [nzType]="'line'"></nz-progress>
+  </div>
+  <div nz-col nzSm="24">
+    <div nz-row>
+      <div nz-col nzSm="12">
+        <p>
+          {{progressTitle1}}
+        </p>
+      </div>
+      <div nz-col nzSm="12">
+        <p class="text-end">
+          {{progressTitle2}}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -10,21 +10,27 @@ import {ReleaseComponent} from './release/release.component';
 import {NzListModule} from 'ng-zorro-antd/list';
 import {NzSkeletonModule} from 'ng-zorro-antd/skeleton';
 import {ScrollingModule} from "@angular/cdk/scrolling";
+import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzWaveModule} from "ng-zorro-antd/core/wave";
+import {NzButtonModule} from "ng-zorro-antd/button";
+import {GraphicsModule} from "../graphics/graphics.module";
 
 @NgModule({
   declarations: [
     DashboardComponent,
     DashboardDesktopComponent,
     DashboardMobileComponent,
-    ReleaseComponent
+    ReleaseComponent,
   ],
   imports: [
     CommonModule,
-    SharedModule,
     NzGridModule,
     NzListModule,
-    NzSkeletonModule,
-    ScrollingModule,
+    NzIconModule,
+    NzWaveModule,
+    NzButtonModule,
+    SharedModule,
+    GraphicsModule,
   ],
   providers: [],
   bootstrap: [DashboardComponent]

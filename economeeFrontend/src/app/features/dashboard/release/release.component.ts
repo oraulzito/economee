@@ -13,6 +13,7 @@ export class ReleaseComponent implements OnInit {
   releaseType: number;
 
   releases: Release[];
+  releasesLoading: boolean;
 
   constructor(
     private balanceQuery: BalanceQuery,
@@ -23,6 +24,10 @@ export class ReleaseComponent implements OnInit {
   ngOnInit(): void {
     this.balanceQuery.selectActive().subscribe(
       (b) => b ? this.queryReleases() : ''
+    );
+
+    this.releaseQuery.selectLoading().subscribe(
+      l => this.releasesLoading = l
     );
   }
 
