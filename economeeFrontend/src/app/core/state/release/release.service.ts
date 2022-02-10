@@ -11,6 +11,7 @@ import {AccountQuery} from '../account/account.query';
 import {CardQuery} from '../card/card.query';
 import {catchError, shareReplay, tap} from "rxjs/operators";
 import {throwError} from "rxjs";
+import {MonthlyGraphic} from "../graphics/monthly/monthly-graphic.model";
 
 @Injectable({providedIn: 'root'})
 export class ReleaseService {

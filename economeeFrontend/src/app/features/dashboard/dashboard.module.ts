@@ -14,6 +14,7 @@ import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzWaveModule} from "ng-zorro-antd/core/wave";
 import {NzButtonModule} from "ng-zorro-antd/button";
 import {GraphicsModule} from "../graphics/graphics.module";
+import {NzStatisticModule} from "ng-zorro-antd/statistic";
 
 @NgModule({
   declarations: [
@@ -22,16 +23,17 @@ import {GraphicsModule} from "../graphics/graphics.module";
     DashboardMobileComponent,
     ReleaseComponent,
   ],
-  imports: [
-    CommonModule,
-    NzGridModule,
-    NzListModule,
-    NzIconModule,
-    NzWaveModule,
-    NzButtonModule,
-    SharedModule,
-    GraphicsModule,
-  ],
+    imports: [
+        CommonModule,
+        NzGridModule,
+        NzListModule,
+        NzIconModule,
+        NzWaveModule,
+        NzButtonModule,
+        SharedModule,
+        GraphicsModule,
+        NzStatisticModule,
+    ],
   providers: [],
   bootstrap: [DashboardComponent]
 })

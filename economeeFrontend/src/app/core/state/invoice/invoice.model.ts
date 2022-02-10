@@ -6,7 +6,7 @@ export interface Invoice {
   date_reference: string;
   is_paid: boolean;
   card_id: Card['id'];
-  total_card_expenses: number;
+  total_invoice_value: number;
 }
 
 export function createInvoice(params: Partial<Invoice>) {

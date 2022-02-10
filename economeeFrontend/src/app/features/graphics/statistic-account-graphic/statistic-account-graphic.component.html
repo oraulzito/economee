@@ -1,0 +1,8 @@
+<nz-statistic
+  [nzValue]="data.value | currency: 'BRL'"
+  [nzTitle]="data.title"
+  [nzPrefix]="prefixTplOne"
+  [nzSuffix]="data.suffix"
+  [nzValueStyle]="{ color: data.color }"
+></nz-statistic>
+<ng-template #prefixTplOne><i nz-icon nzType="{{data.icon}}"></i></ng-template>

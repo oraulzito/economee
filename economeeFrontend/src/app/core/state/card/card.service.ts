@@ -7,6 +7,9 @@ import {UiService} from '../ui/ui.service';
 import {catchError, shareReplay, tap} from "rxjs/operators";
 import {AccountQuery} from "../account/account.query";
 import {throwError} from "rxjs";
+import {ReleaseQuery} from "../release/release.query";
+import {InvoiceQuery} from "../invoice/invoice.query";
+import {InvoiceStore} from "../invoice/invoice.store";
 
 @Injectable({providedIn: 'root'})
 export class CardService {
@@ -15,6 +18,9 @@ export class CardService {
     private uiService: UiService,
     private cardStore: CardStore,
     private accountQuery: AccountQuery,
+    private releaseQuery: ReleaseQuery,
+    private invoiceQuery: InvoiceQuery,
+    private invoiceStore: InvoiceStore,
     private http: HttpClient
   ) {
   }
@@ -77,6 +83,26 @@ export class CardService {
       setLoading(this.cardStore),
       tap(card => card === 1 ? this.cardStore.remove(id) : this.cardStore.setError("Not removed")),
       catchError((error) => throwError(error)),
+    );
+  }
+
+  calculateCardReleases(): void {
+    let cardExpenseValues = 0;
+    // Only card releases
+    this.releaseQuery.selectAll({
+      filterBy: [
+        ({type}) => type === 'ER',
+        ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
+      ]
+    }).subscribe(r => {
+        if (r) {
+          const cardExpenseValuesMap = r.map(results => results.value);
+          cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+        }
+        this.invoiceStore.updateActive({
+          total_invoice_value: cardExpenseValues
+        });
+      }
     );
   }
 }

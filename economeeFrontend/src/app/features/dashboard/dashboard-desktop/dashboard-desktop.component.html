@@ -1,16 +1,22 @@
 <div [nzGutter]="[20, 24]" nz-row nzJustify="space-around">
   <div [nzMd]="10" nz-col>
     <div [nzGutter]="[20, 24]" class="vh-20" nz-row>
-      <app-card [nzMd]="12" nz-col>
-
+      <app-card [nzMd]="6" nz-col>
+        <app-statistic-account-graphic [id]="1"></app-statistic-account-graphic>
       </app-card>
-      <app-card [nzMd]="12" nz-col>
-
+      <app-card [nzMd]="6" nz-col>
+        <app-statistic-account-graphic [id]="2"></app-statistic-account-graphic>
+      </app-card>
+      <app-card [nzMd]="6" nz-col>
+        <app-statistic-account-graphic [id]="3"></app-statistic-account-graphic>
+      </app-card>
+      <app-card [nzMd]="6" nz-col>
+        <app-statistic-account-graphic [id]="4"></app-statistic-account-graphic>
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-30" nz-row>
       <app-card [nzMd]="24" nz-col>
-        <app-progress-bar [id]="1"></app-progress-bar>
+        <app-graphic-timeline></app-graphic-timeline>
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-35" nz-row>

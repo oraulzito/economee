@@ -14,17 +14,23 @@ import {InvoiceStore} from '../invoice/invoice.store';
 import {InvoiceQuery} from '../invoice/invoice.query';
 import {catchError, shareReplay, tap} from "rxjs/operators";
 import {throwError} from "rxjs";
+import {CardQuery} from "../card/card.query";
+import {BalanceService} from "../balance/balance.service";
+import {CardService} from "../card/card.service";
 
 @Injectable({providedIn: 'root'})
 export class AccountService {
 
   constructor(
     private uiService: UiService,
+    private balanceService: BalanceService,
+    private cardService: CardService,
     private accountStore: AccountStore,
     private balanceStore: BalanceStore,
     private releaseStore: ReleaseStore,
     private releaseQuery: ReleaseQuery,
     private accountQuery: AccountQuery,
+    private cardQuery: CardQuery,
     private balanceQuery: BalanceQuery,
     private invoiceQuery: InvoiceQuery,
     private cardStore: CardStore,
@@ -88,70 +94,24 @@ export class AccountService {
 
   // tslint:disable-next-line:typedef
   totalAvailable() {
-    let expenseValues = 0.0;
-    let incomeValues = 0.0;
-    let cardExpenseValues = 0.0;
+    this.balanceService.calculateBalanceExpenses();
+    this.balanceService.calculateBalanceIncomes();
+    this.cardService.calculateCardReleases();
 
-    // Only balance expenses
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'ER',
-        ({balance_id}) => balance_id === this.balanceQuery.getActiveId(),
-        ({invoice_id}) => invoice_id === null
-      ]
-    }).subscribe(r => {
-        if (r) {
-          const expenseValuesMap = r.map(results => results.value);
-          expenseValues = expenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        }
-        this.balanceStore.updateActive({
-          total_releases_expenses: expenseValues
-        });
-      }
-    );
-
-    // Only balance incomes
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'IR',
-        ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
-      ]
-    }).subscribe(r => {
-        if (r) {
-          const incomeValuesMap = r.map(results => results.value);
-          incomeValues = incomeValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-        }
-        this.balanceStore.updateActive({
-          total_releases_incomes: incomeValues
-        });
-      }
-    );
-
-    // Only card releases
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'ER',
-        ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
-      ]
-    }).subscribe(r => {
-        if (r) {
-          const cardExpenseValuesMap = r.map(results => results.value);
-          cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-        }
-        this.invoiceStore.updateActive({
-          total_card_expenses: cardExpenseValues
-        });
-      }
-    );
+    let balanceExpenseReleasesValue = this.balanceQuery.getValue().total_releases_expenses;
+    let balanceIncomeReleasesValue = this.balanceQuery.getValue().total_releases_incomes;
+    let invoiceValue = this.cardQuery.getValue().total_invoice_value;
 
     let totalAvailable = 0.0;
 
     if (this.invoiceQuery.hasActive() && this.invoiceQuery.getActive().is_paid) {
-      totalAvailable = incomeValues - (expenseValues + cardExpenseValues);
+      totalAvailable = balanceIncomeReleasesValue - (balanceExpenseReleasesValue + invoiceValue);
     } else {
-      totalAvailable = incomeValues - expenseValues;
+      totalAvailable = balanceIncomeReleasesValue - balanceExpenseReleasesValue;
     }
 
     this.accountStore.updateActive({total_available: totalAvailable});
   }
+
+
 }

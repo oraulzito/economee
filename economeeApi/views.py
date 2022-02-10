@@ -364,7 +364,7 @@ class ReleaseView(viewsets.ModelViewSet):
             date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=31).date()
         else:
             date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
-        logging.debug(date_reference_final)
+        print(date_reference_final)
         return Release.objects.filter(
             Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
             date_repeat__range=(date_reference_init, date_reference_final)).all()
@@ -392,7 +392,7 @@ class ReleaseView(viewsets.ModelViewSet):
             category_id=category_id).all()
 
     @action(detail=False, methods=['GET'])
-    def month_graphic(self, request):
+    def monthly_graphic(self, request):
         income = []
         expense = []
         for e in Balance.objects.raw("""

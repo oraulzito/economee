@@ -10,6 +10,7 @@ import {InvoiceService} from '../invoice/invoice.service';
 import {catchError, shareReplay, tap} from 'rxjs/operators';
 import {setLoading} from '@datorama/akita';
 import {throwError} from 'rxjs';
+import {ReleaseQuery} from "../release/release.query";
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {
@@ -19,6 +20,7 @@ export class BalanceService {
     private balanceQuery: BalanceQuery,
     private balanceStore: BalanceStore,
     private releaseService: ReleaseService,
+    private releaseQuery: ReleaseQuery,
     private invoiceService: InvoiceService,
     private http: HttpClient
   ) {
@@ -62,6 +64,47 @@ export class BalanceService {
   changeBalance(date) {
     this.setBalanceMonth(date);
     this.invoiceService.setInvoiceMonth(date);
+  }
+
+  calculateBalanceExpenses(): void {
+    let expenseValues = 0;
+    // Only balance expenses
+    this.releaseQuery.selectAll({
+      filterBy: [
+        ({type}) => type === 'ER',
+        ({balance_id}) => balance_id === this.balanceQuery.getActiveId(),
+        ({invoice_id}) => invoice_id === null
+      ]
+    }).subscribe(r => {
+        if (r) {
+          let expenseValuesMap = r.map(results => results.value);
+          expenseValues = expenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        }
+        this.balanceStore.updateActive({
+          total_releases_expenses: expenseValues
+        });
+      }
+    );
+  }
+
+  calculateBalanceIncomes(): void {
+    let incomeValues = 0;
+    // Only balance incomes
+    this.releaseQuery.selectAll({
+      filterBy: [
+        ({type}) => type === 'IR',
+        ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
+      ]
+    }).subscribe(r => {
+        if (r) {
+          const incomeValuesMap = r.map(results => results.value);
+          incomeValues = incomeValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+        }
+        this.balanceStore.updateActive({
+          total_releases_incomes: incomeValues
+        });
+      }
+    );
   }
 
 }

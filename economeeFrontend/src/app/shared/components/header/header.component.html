@@ -2,6 +2,9 @@
   <div class="logo text-center" nz-col nzXs="8" nzMd="3"><h3>Economee</h3></div>
   <div nz-col nz-menu nzMd="18" class="height-inherit p-lg-4 p-md-3">
     <div nz-row>
+      <div nz-col nzMd="6" nzXs="14">
+        <app-statistic-account-graphic [id]="5"></app-statistic-account-graphic>
+      </div>
       <div nz-col nzMd="12" nzXs="14">
         <nz-input-group [nzSuffix]="suffixIconSearch">
           <input nz-input placeholder="input search text" type="text"/>
@@ -10,7 +13,7 @@
           <i nz-icon nzType="search"></i>
         </ng-template>
       </div>
-      <div nz-col nzMd="12" nzXs="8">
+      <div nz-col nzMd="6" nzXs="8">
         <nz-form-item>
           <nz-input-group>
             <nz-month-picker (ngModelChange)="onChange($event)" [(ngModel)]="date" [nzFormat]="'mm/yyyy'"
