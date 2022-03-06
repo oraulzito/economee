@@ -10,7 +10,7 @@ import {
   UrlTree
 } from '@angular/router';
 import {Observable} from 'rxjs';
-import {SessionQuery} from '../state/session/session.query';
+import {SessionQuery} from '../state/user/session/session.query';
 import {UiQuery} from '../state/ui/ui.query';
 
 @Injectable({

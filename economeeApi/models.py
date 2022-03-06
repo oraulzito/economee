@@ -1,15 +1,19 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.timezone import now
-from partial_date import PartialDateField
 
 from economee import settings
+
+RELEASE_CHOICES = [
+    (0, "Expense"),
+    (1, "Income"),
+]
 
 
 # Create your models here.
 class User(AbstractUser):
     dob = models.DateField(default=now)
-    # photo = models.ImageField(upload_to='uploads', blank=True, null=True)
+    photo = models.ImageField(upload_to='uploads', blank=True, null=True)
 
     REQUIRED_FIELDS = ['email', 'password', 'first_name']
 
@@ -30,9 +34,9 @@ class Currency(models.Model):
 class Account(models.Model):
     name = models.CharField(max_length=24)
     is_main_account = models.BooleanField(default=False)
-    # Owner attribute according to the class diagram
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
+    total_available = models.FloatField(default=0.0)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=settings.AUTH_USER_MODEL)
 
     REQUIRED_FIELDS = ['name', 'is_main_account', 'currency']
 
@@ -41,9 +45,11 @@ class Account(models.Model):
 
 
 class Balance(models.Model):
-    # Month reference, expected format MM/YYYY
-    date_reference = PartialDateField()
+    date_reference = models.DateField()
+    total_expenses = models.FloatField(default=0.0)
+    total_incomes = models.FloatField(default=0.0)
     account = models.ForeignKey(Account, related_name='balances', on_delete=models.CASCADE)
+
     REQUIRED_FIELDS = ['date_reference', 'account']
 
     def __str__(self):
@@ -53,7 +59,7 @@ class Balance(models.Model):
 class Card(models.Model):
     name = models.CharField(max_length=24)
     credit = models.FloatField(default=0.0)
-    pay_date = PartialDateField()
+    pay_date = models.DateField()
     account = models.ForeignKey(Account, related_name='cards', on_delete=models.CASCADE)
 
     REQUIRED_FIELDS = ['name', 'credit', 'pay_date', 'account']
@@ -65,7 +71,7 @@ class Card(models.Model):
 # TODO create default release categories
 class ReleaseCategory(models.Model):
     name = models.CharField(max_length=124)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True)
 
     REQUIRED_FIELDS = ['name']
 
@@ -73,51 +79,50 @@ class ReleaseCategory(models.Model):
         return '{}'.format(self.name)
 
 
+# TODO send a notification in the pay_date of the card, confirming if it's paid
 class Invoice(models.Model):
-    date_reference = PartialDateField()
-    # TODO send a notification in the pay_date of the card, confirming if it's paid
+    date_reference = models.DateField()
     is_paid = models.BooleanField(default=False)
+    total_value = models.FloatField(default=0.0)
     card = models.ForeignKey(Card, related_name='invoices', on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['date_reference', 'card', 'is_paid']
+    REQUIRED_FIELDS = ['date_reference', 'card']
 
     def __str__(self):
         return '{}'.format(self.date_reference)
 
 
 class Release(models.Model):
-    description = models.CharField(max_length=280)
     value = models.FloatField(default=0.0)
-    date_creation = models.DateField()
-    date_release = models.DateField()
-    date_repeat = models.DateField()
-    installment_value = models.FloatField(default=0.0)
-    installment_number = models.IntegerField(default=1)
-    repeat_times = models.IntegerField(default=1)
+    description = models.CharField(max_length=280)
     place = models.CharField(max_length=280, default='')
-    is_release_paid = models.BooleanField(default=False)
-    category = models.ForeignKey(ReleaseCategory, on_delete=models.DO_NOTHING)
-    balance = models.ForeignKey(Balance, related_name='releases', on_delete=models.DO_NOTHING, null=True)
-    invoice = models.ForeignKey(Invoice, related_name='releases', on_delete=models.DO_NOTHING, null=True)
+    date_creation = models.DateField(auto_now_add=True)
 
-    # TODO study this idea Projection release will not be used on the 'oficial' sum of the balance, it will be used
-    #  only in simulation on month expenses
-    PROJECTION_RELEASE = 'PR'
-    EXPENSE_RELEASE = 'ER'
-    INCOME_RELEASE = 'IR'
-    RELEASE_CHOICES = [
-        (PROJECTION_RELEASE, "Projection"),
-        (EXPENSE_RELEASE, "Expense"),
-        (INCOME_RELEASE, "Income"),
-    ]
+    category = models.ForeignKey(ReleaseCategory, related_name='releases', on_delete=models.DO_NOTHING)
 
-    # TODO make type an enum
-    type = models.CharField(
-        max_length=2, blank=True, choices=RELEASE_CHOICES,
+    type = models.IntegerField(
+        choices=RELEASE_CHOICES,
         verbose_name="Release Type",
     )
 
-    REQUIRED_FIELDS = ['description', 'value', 'type', 'date_release', 'type', 'is_release_paid', 'category']
+    REQUIRED_FIELDS = ['description', 'value', 'type', 'date_release', 'is_paid', 'place', 'category']
+
+    def __str__(self):
+        return self
+
+
+class RecurringRelease(models.Model):
+    date_release = models.DateField()
+    is_paid = models.BooleanField(default=False)
+    installment_number = models.IntegerField(default=1)
+    installment_times = models.IntegerField(default=1)
+    installment_value = models.FloatField(default=0.0)
+
+    release = models.ForeignKey(Release, related_name='recurring_release', on_delete=models.CASCADE)
+    balance = models.ForeignKey(Balance, related_name='recurring_release', on_delete=models.CASCADE)
+    invoice = models.ForeignKey(Invoice, related_name='recurring_release', on_delete=models.CASCADE, null=True)
+
+    REQUIRED_FIELDS = ['release', 'balance', 'installment']
 
     def __str__(self):
         return self

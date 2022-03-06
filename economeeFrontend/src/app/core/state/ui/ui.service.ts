@@ -2,7 +2,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {UiStore} from './ui.store';
 import isMobile from 'ismobilejs';
-import {SessionQuery} from '../session/session.query';
+import {SessionQuery} from '../user/session/session.query';
 
 @Injectable({providedIn: 'root'})
 export class UiService {

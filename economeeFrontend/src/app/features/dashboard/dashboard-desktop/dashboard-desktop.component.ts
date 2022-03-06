@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-dashboard-desktop',
@@ -6,8 +6,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard-desktop.component.less']
 })
 export class DashboardDesktopComponent implements OnInit {
+  @Input()
+  totalAvailableValue: number;
+  @Input()
+  totalExpensesValue: number;
+  @Input()
+  totalIncomesValue: number;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

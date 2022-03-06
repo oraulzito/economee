@@ -41,12 +41,12 @@ export class GraphicProgressBarComponent implements OnInit {
 
     switch (this.id) {
       case 1:
-        this.progressTitle1 = 'Total Gasto \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_expenses;
-        this.progressTitle2 = 'Total recebido \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_incomes;
+        // this.progressTitle1 = 'Total Gasto \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_expenses;
+        // this.progressTitle2 = 'Total recebido \n ' + this.account.currency.symbol + ' ' + this.balance.total_releases_incomes;
         break;
       case 2:
-        this.progressTitle1 = 'Crédito Gasto \n ' + this.account.currency.symbol + ' ' + this.invoice.total_invoice_value;
-        this.progressTitle2 = 'Crédito total \n ' + this.account.currency.symbol + ' ' + this.card.credit;
+        // this.progressTitle1 = 'Crédito Gasto \n ' + this.account.currency.symbol + ' ' + this.invoice.total_invoice_value;
+        // this.progressTitle2 = 'Crédito total \n ' + this.account.currency.symbol + ' ' + this.card.credit;
         break;
       default:
         break;

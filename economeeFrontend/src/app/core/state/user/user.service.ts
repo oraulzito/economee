@@ -4,9 +4,9 @@ import {ID} from '@datorama/akita';
 import {User} from './user.model';
 import {UserStore} from './user.store';
 import {UiService} from '../ui/ui.service';
-import {SessionStore} from '../session/session.store';
+import {SessionStore} from './session/session.store';
 import {Router} from "@angular/router";
-import {Session} from "../session/session.model";
+import {Session} from "./session/session.model";
 import {tap} from "rxjs/operators";
 
 @Injectable({providedIn: 'root'})
@@ -87,5 +87,4 @@ export class UserService {
            ID
   ) {
   }
-
 }

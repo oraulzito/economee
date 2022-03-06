@@ -1,12 +1,9 @@
-import {Account} from "../account/account.model";
-
 export interface Card {
   id: number | string;
   name: string;
+  pay_date: Date;
   credit: number;
-  // TODO it should be date, but API return a string
-  pay_date: string;
-  account_id: Account['id'];
+  credit_available: number;
 }
 
 export function createCard(params: Partial<Card>) {

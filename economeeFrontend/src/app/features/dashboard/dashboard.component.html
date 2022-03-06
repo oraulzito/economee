@@ -1,6 +1,14 @@
 <ng-template [ngIfElse]="mobileTemplate" [ngIf]="mobile$ | async">
-  <app-dashboard-mobile></app-dashboard-mobile>
+  <app-dashboard-mobile
+    [totalAvailableValue]="totalAvailableValue"
+    [totalExpensesValue]="totalExpensesValue"
+    [totalIncomesValue]="totalIncomesValue">
+  </app-dashboard-mobile>
 </ng-template>
 <ng-template #mobileTemplate>
-  <app-dashboard-desktop></app-dashboard-desktop>
+  <app-dashboard-desktop
+    [totalAvailableValue]="totalAvailableValue"
+    [totalExpensesValue]="totalExpensesValue"
+    [totalIncomesValue]="totalIncomesValue">
+  </app-dashboard-desktop>
 </ng-template>

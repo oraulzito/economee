@@ -10,6 +10,8 @@ import {throwError} from "rxjs";
 import {ReleaseQuery} from "../release/release.query";
 import {InvoiceQuery} from "../invoice/invoice.query";
 import {InvoiceStore} from "../invoice/invoice.store";
+import {CardQuery} from "./card.query";
+import {InvoiceService} from "../invoice/invoice.service";
 
 @Injectable({providedIn: 'root'})
 export class CardService {
@@ -17,7 +19,9 @@ export class CardService {
   constructor(
     private uiService: UiService,
     private cardStore: CardStore,
+    private cardQuery: CardQuery,
     private accountQuery: AccountQuery,
+    private invoiceService: InvoiceService,
     private releaseQuery: ReleaseQuery,
     private invoiceQuery: InvoiceQuery,
     private invoiceStore: InvoiceStore,
@@ -87,22 +91,41 @@ export class CardService {
   }
 
   calculateCardReleases(): void {
-    let cardExpenseValues = 0;
-    // Only card releases
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'ER',
-        ({invoice_id}) => invoice_id === this.invoiceQuery.getActiveId()
-      ]
-    }).subscribe(r => {
-        if (r) {
-          const cardExpenseValuesMap = r.map(results => results.value);
-          cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    // let cardExpenseValues = 0;
+    // // Only card releases
+    // this.releaseQuery.selectAll({
+    //   filterBy: [
+    //     ({type}) => type === 0,
+    //     ({recurring_releases}) => recurring_releases.(r => r.invoice = this.invoiceQuery.getActiveId())
+    //   ]
+    // }).subscribe(r => {
+    //     if (r) {
+    //       const cardExpenseValuesMap = r.map(results => results.value);
+    //       cardExpenseValues = cardExpenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    //     }
+    //     this.invoiceStore.updateActive({
+    //       total_invoice_value: cardExpenseValues
+    //     });
+    //   }
+    // );
+  }
+
+  setActiveCard(id?) {
+    if (id === undefined) {
+      this.cardQuery.selectFirst().subscribe(
+        c => {
+          if (c) {
+            this.setCardAndInvoice(c.id);
+          }
         }
-        this.invoiceStore.updateActive({
-          total_invoice_value: cardExpenseValues
-        });
-      }
-    );
+      )
+    } else {
+      this.setCardAndInvoice(id);
+    }
+  }
+
+  setCardAndInvoice(id) {
+    this.cardStore.setActive(id);
+    this.invoiceService.setActiveMonthInvoice();
   }
 }

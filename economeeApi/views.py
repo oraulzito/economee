@@ -1,23 +1,20 @@
 import json
-from datetime import date
-from datetime import datetime
+from datetime import datetime, date
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
-from partial_date import PartialDate
+from pygments.token import Token
 from rest_framework import viewsets, authentication
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .permissions import IsObjOwner, IsAccountOwner, Deny, IsAdmin
+from .permissions import IsObjOwner, IsAccountOwner, IsAdmin, Deny
 from .serializers import *
 
 
-# Create your views here.
-# FIXME make user delete work
+# TODO make user delete work (delete everything related to the user, make possible to download all the data as well)
 class UserView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = UserSerializer
@@ -34,59 +31,68 @@ class UserView(viewsets.ModelViewSet):
         return User.objects.filter(id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
-        user = User
-        account = Account
-        balance = Balance
-        if request.data.get('password') == request.data.get('repeat_password'):
-            # try:
-            user = User.objects.create(
-                email=request.data.get('email'),
-                password=make_password(request.data.get('password')),
-                username=request.data.get('username'),
-                first_name=request.data.get('first_name'),
-                last_name=request.data.get('last_name'),
-                dob=request.data.get('dob'),
-                # photo=request.data.get('photo'),
-            )
+        if UserView.compare_passwords(request.data.get('password'), request.data.get('repeat_password')):
+            try:
+                user = User.objects.create(
+                    email=request.data.get('email'),
+                    password=make_password(request.data.get('password')),
+                    username=request.data.get('username'),
+                    first_name=request.data.get('first_name'),
+                    last_name=request.data.get('last_name'),
+                    dob=request.data.get('dob'),
+                    photo=None
+                )
 
-            account = Account.objects.create(
-                name=request.data.get('account_name'),
-                currency_id=request.data.get('currency_id'),
-                is_main_account=True,
-                user=user,
-            )
+                account = AccountView.create_account(
+                    name=request.data.get('account_name'),
+                    currency_id=request.data.get('currency_id'),
+                    owner=user
+                )
 
-            date_reference = str(date.today())
-            date_reference = datetime.strptime(date_reference, '%Y-%m-%d').date()
-            date_reference = date_reference.replace(day=1)
-            date_reference = PartialDate(date_reference)
+                BalanceView.create_balance(account)
 
-            balance = Balance.objects.create(
-                date_reference=date_reference,
-                account=account
-            )
-            return JsonResponse({'key': str(Token.objects.get_or_create(user=user)[0])})
-            # except Exception:
-            #     return HttpResponse('Something went wrong', content_type="application/json")
+                return JsonResponse({'key': str(Token.objects.get_or_create(user=user)[0])})
+            except Exception:
+                return HttpResponse('Something went wrong', content_type="application/json")
         else:
             return HttpResponse('The password don\'t match', content_type="application/json")
+
+    @classmethod
+    def create_token(cls, user):
+        return str(Token.objects.get_or_create(user=user)[0])
+
+    @classmethod
+    def compare_passwords(cls, password1, password2):
+        return password1 == password2
+
+    @classmethod
+    def check_username(cls, username):
+        return bool(User.objects.filter(username).first())
+
+    @classmethod
+    def check_email(cls, email):
+        return bool(User.objects.filter(email).first())
 
     @action(detail=False, methods=['GET'])
     def check_username(self, request):
         return JsonResponse(
-            {'username_exists': bool(User.objects.filter(username=self.request.query_params.get('username')).first())})
+            {'username_exists': User.check_username(request.query_params.get('username'))})
 
     @action(detail=False, methods=['GET'])
     def check_email(self, request):
         return JsonResponse(
-            {'email_exists': bool(User.objects.filter(email=self.request.query_params.get('email')).first())})
+            {'email_exists': User.check_email(request.query_params.get('email'))})
 
 
-# TODO test CRUD
 # TODO lock delete action if it's the main account or the only account of the user.
 class AccountView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
-    serializer_class = AccountSerializer
+
+    def get_serializer_class(self):
+        if 'full' in self.request.query_params:
+            return FullAccountSerializer
+        else:
+            return AccountSerializer
 
     def get_permissions(self):
         permission_classes = []
@@ -97,8 +103,15 @@ class AccountView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Account.objects.filter(user=self.request.user.id).all()
+        return Account.objects.filter(owner=self.request.user).all()
 
+    @action(detail=False, methods=['GET'])
+    def main_account(self, request):
+        account = Account.objects.filter(owner=self.request.user, is_main_account=True).first()
+        account_serializer = FullAccountSerializer(account, many=False)
+        return JsonResponse(account_serializer.data)
+
+    # todo check if the user has already a main account, if it has change it
     def create(self, request, *args, **kwargs):
         account = Account.objects.create(
             name=request.data.get('name'),
@@ -108,6 +121,15 @@ class AccountView(viewsets.ModelViewSet):
         )
 
         return HttpResponse(account, content_type="application/json")
+
+    @classmethod
+    def create_account(cls, name, currency_id, owner):
+        return Account.objects.create(
+            name=name,
+            currency_id=currency_id,
+            is_main_account=True,
+            owner=owner,
+        )
 
 
 # TODO test CRUD
@@ -125,41 +147,45 @@ class BalanceView(viewsets.ModelViewSet):
             permission_classes = [Deny]
         return [permission() for permission in permission_classes]
 
-    def get_queryset(self):
-        if self.request.data.get('date_reference') is not None:
-            date_reference = datetime.strptime(self.request.data.get('date_reference'), '%Y-%m-%d').date()
+    @classmethod
+    def create_balance(cls, account, date_reference=None):
+        if date_reference is None:
+            date_reference = str(date.today())
+            date_reference = datetime.strptime(date_reference, '%Y-%m-%d').date()
             date_reference = date_reference.replace(day=1)
-            date_reference = PartialDate(date_reference)
-            # FIXME return only the object, not an array
-            return Balance.objects.filter(id=self.get_object().id,
-                                          date_reference=date_reference).all()
-        else:
-            return Balance.objects.filter(account__user=self.request.user.id).all()
 
-    def create(self, request, *args, **kwargs):
-        #  CHECK IF THE USER IT's THE ACCOUNT OWNER
-        account = Account.objects.filter(id=int(request.data.get('account_id')), user_id=request.user.id).first()
-        if account:
-            date_reference = datetime.strptime(self.request.data.get('date_reference'), '%Y-%m-%d').date()
-            date_reference = date_reference.replace(day=1)
-            date_reference = PartialDate(date_reference)
+        return Balance.objects.create(
+            date_reference=date_reference,
+            account=account
+        ).save()
 
-            balanceExists = Balance.objects.filter(account_id=self.request.data.get('account_id'),
-                                                   date_reference=date_reference).first()
+    @action(detail=False, methods=['GET'])
+    def full_balance(self, request):
+        date_reference = self.request.query_params.get('date_reference')
+        balance = Balance.objects.filter(
+            account__owner=self.request.user,
+            date_reference=date_reference
+        ).first()
 
-            if balanceExists is None and balanceExists != False:
-                balance = Balance.objects.create(
-                    date_reference=date_reference,
-                    account_id=self.request.data.get('account_id'),
-                )
-                return HttpResponse(balance, content_type="application/json")
-            else:
-                return HttpResponse("Your user already has a balance for this month", content_type="application/json")
-        else:
-            return HttpResponse('This account isn\`t yours', content_type="application/json")
+        releases = RecurringRelease.objects.filter(
+            balance_id=balance.id
+        ).all().distinct()
+
+        invoices = Invoice.objects.filter(
+            ~Q(recurring_release__invoice_id=None),
+            recurring_release__balance_id=balance.id
+        ).all().distinct()
+
+        return JsonResponse({
+            'id': balance.id,
+            'date_reference': balance.date_reference,
+            'total_expenses': balance.total_expenses,
+            'total_incomes': balance.total_incomes,
+            'releases': ReleaseRRSerializer(releases, many=True).data,
+            'invoices': InvoiceSerializer(invoices, many=True).data
+        })
 
 
-# TODO test CRUD
 class CardView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = CardSerializer
@@ -173,7 +199,7 @@ class CardView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return Card.objects.filter(account__user_id=self.request.user.id)
+        return Card.objects.filter(account__owner_id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
         card = Card.objects.create(
@@ -184,8 +210,9 @@ class CardView(viewsets.ModelViewSet):
         )
         return HttpResponse(card, content_type="application/json")
 
+    # FIXME make release category default read only
 
-# FIXME make release category read only
+
 class ReleaseCategoryView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = ReleaseCategorySerializer
@@ -199,15 +226,34 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        return ReleaseCategory.objects.filter(Q(user_id=self.request.user.id) | Q(user_id=None))
+        return ReleaseCategory.objects.filter(Q(owner_id=self.request.user.id) | Q(owner_id=None))
 
     def create(self, request, *args, **kwargs):
         releaseCategory = ReleaseCategory.objects.create(name=self.request.data.get('name'),
-                                                         user_id=self.request.user.id, )
+                                                         owner_id=self.request.user.id, )
         return HttpResponse(releaseCategory, content_type="application/json")
 
+    # FIXME make release category default read only
 
-# FIXME if the date change it has to change the balance/invoice ID as well
+
+class RecurringReleaseView(viewsets.ModelViewSet):
+    authentication_classes = [authentication.TokenAuthentication]
+    serializer_class = RecurringReleaseSerializer
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'create':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'list' or self.action == 'post' or self.action == 'delete':
+            permission_classes = [IsObjOwner, IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def get_queryset(self):
+        return RecurringRelease.objects.filter(balance__account__owner_id=self.request.user.id).all()
+
+    # TODO - Update release if the date of the release change, it has to change the balance/invoice ID as well
+
+
 class ReleaseView(viewsets.ModelViewSet):
     authentication_classes = [authentication.TokenAuthentication]
     serializer_class = ReleaseSerializer
@@ -221,69 +267,50 @@ class ReleaseView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-        # Get all releases
-        return Release.objects.filter(
-            Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user)).all()
+        if 'balance_id' in self.request.query_params:
+            return self.balance()
+        elif 'invoice_id' in self.request.query_params:
+            return self.invoice()
+        elif 'category_id' in self.request.query_params:
+            return self.category()
+        elif 'date_reference' in self.request.query_params:
+            return self.date_reference()
+        else:
+            return self.all_releases()
 
-    # FIXME if date_repeat is not sent use date_release
     def create(self, request, *args, **kwargs):
-        card_id = request.data.get('card_id')
-        account_id = request.data.get('account_id')
-
         #  CHECK IF THE USER IT's THE ACCOUNT OWNER
-        account = Account.objects.filter(id=account_id, user_id=request.user.id).first()
+        account_id = request.data.get('account_id')
+        account = Account.objects.filter(id=account_id, owner_id=request.user.id).first()
 
         if account:
-            card = None
-            pay_date = datetime
-            date_reference_invoice = datetime
+            today_date = date.today()
+            card_id = request.data.get('card_id')
+
             invoices = []
             balances = []
-            installments = []
-            repeat_times = int(request.data.get('repeat_times'))
 
-            # Change date repeat to STR, to then change the day to the correct invoice and balance day
-            if request.data.get('place'):
-                place = request.data.get('place')
-            else:
-                place = ''
+            value = float(request.data.get('value'))
+            release_type = request.data.get('type')
+            installment_times = int(request.data.get('installment_times')) if request.data.get(
+                'installment_times') is not None else 1
+            installment_value = float(request.data.get('value')) / installment_times
+            date_release = self.date_to_database_format(request.data.get('date_release'))
 
-            if request.data.get('date_repeat'):
-                date_repeat = datetime.strptime(request.data.get('date_repeat'), '%Y-%m-%d').date()
-            else:
-                date_repeat = datetime.strptime(request.data.get('date_release'), '%Y-%m-%d').date()
-
-            date_release = datetime.strptime(request.data.get('date_release'), '%Y-%m-%d').date()
-
-            # If it's an card release
+            """CARD"""
+            "Date parse - check if the release will enter in actual, next or two months ahead"
             if card_id is not None:
-                # check if the card is from user, and if it exists
-                card = Card.objects.filter(id=card_id, account=account).first()
+                if (date_release - today_date).days < 10:
+                    date_release = date_release + relativedelta(months=+ 1)
 
-                if card is not None:
-                    # format the pay date to datetime and replace the release day to the invoice pay date
-                    pay_date = datetime.strptime(str(card.pay_date), '%Y-%m-%d').date()
-                    pay_date = pay_date.replace(month=datetime.now().month)
-                else:
-                    return HttpResponse('This card isn\`t yours', content_type="application/json")
-
-            repeat_times_balance = repeat_times
-            if card_id:
-                if (date_repeat - pay_date).days < 11:
-                    repeat_times_balance = repeat_times + 2
-                elif (date_repeat - pay_date).days < 10:
-                    repeat_times_balance = repeat_times + 1
-                else:
-                    repeat_times_balance = repeat_times
-
-            for n in range(repeat_times_balance):
-                """BALANCE"""
-                # add the month
+            """BALANCE"""
+            "Check if there's a balance created for the actual month of the release, " \
+            "if it has just update the total values"
+            for n in range(installment_times):
                 # Balance day must always be the 1º day of the month
-                date_reference_balance = date_release.replace(day=1)
-                date_reference_balance = PartialDate(date_reference_balance + relativedelta(months=+n))
+                date_reference_balance = self.date_replace_and_add_month(date_release, 1, n)
 
-                # check if there's an balance already created for that month
+                # check if there's a balance already created for that month
                 balance = Balance.objects.filter(account=account, date_reference=date_reference_balance).first()
 
                 # If balance does not exist, create a new one with the value, else just add the expense or
@@ -293,68 +320,131 @@ class ReleaseView(viewsets.ModelViewSet):
                         date_reference=date_reference_balance,
                         account_id=int(request.data.get('account_id'))
                     )
-                    balance.save()
+
+                self.update_balance_total(balance, release_type, installment_value)
 
                 balances.append(balance)
-                installments.append(n + 1)
 
             # Card releases, create or add values to the invoice
-            if card is not None:
-                """INVOICE"""
-                # check if there's a invoice already created for that month
-                # if the purchase is done 10 days before the pay date the release will just be released 40 days
-                # after (or the next next invoice)
-                date_reference_invoice = date_release.replace(day=pay_date.day)
-                if (pay_date - date_release).days < 10:
-                    date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+1))
-                    date_release = date_release + relativedelta(months=+1)
-                    date_repeat = date_repeat + relativedelta(months=+1)
+            if card_id is not None:
 
-                for n in range(repeat_times):
-                    date_reference_invoice = date_release.replace(day=pay_date.day)
-                    date_reference_invoice = PartialDate(date_reference_invoice + relativedelta(months=+n))
+                # check if the card is from user, and if it exists
+                card = Card.objects.filter(id=card_id, account=account).first()
 
-                    invoice = Invoice.objects.filter(card_id=card_id,
-                                                     date_reference=date_reference_invoice).first()
+                if card:
+                    """INVOICE"""
+                    for n in range(installment_times):
+                        date_reference_invoice = self.date_replace_and_add_month(date_release, card.pay_date.day, n)
 
-                    if invoice is None:
-                        # if invoice does not exist, create a new one
-                        invoice = Invoice.objects.create(
-                            date_reference=date_reference_invoice,
-                            card_id=int(card_id),
-                            is_paid=False,
-                        )
+                        invoice = Invoice.objects.filter(
+                            card_id=card_id,
+                            date_reference=date_reference_invoice
+                        ).first()
+
+                        if invoice is None:
+                            # if invoice does not exist, create a new one
+                            invoice = Invoice.objects.create(
+                                date_reference=date_reference_invoice,
+                                card_id=int(card_id),
+                                is_paid=False,
+                                total_value=installment_value
+                            )
+                        else:
+                            invoice.total_value += installment_value
                         invoice.save()
-                    invoices.append(invoice)
+                        invoices.append(invoice)
 
             # Create the release
-            releases = [Release(
-                description=request.data.get('description'),
-                place=place,
-                value=float(request.data.get('value')),
-                installment_value=float(request.data.get('value')) / repeat_times,
+            release = Release.objects.create(
+                value=value,
+                type=release_type,
                 date_creation=datetime.now(),
-                date_release=date_release + relativedelta(months=+i),
-                # TODO if date_repeat is different than date_release it has to have a code adjustment
-                date_repeat=date_repeat + relativedelta(months=+i + 1),
-                repeat_times=int(request.data.get('repeat_times')),
-                installment_number=i + 1,
-                type=request.data.get('type'),
-                is_release_paid=bool(request.data.get('is_release_paid')),
+                description=request.data.get('description'),
                 category_id=int(request.data.get('category_id')),
+                place=request.data.get('place') if request.data.get('place') is not None else ""
+            )
+
+            # Create the recurring release
+            recurring_releases = [RecurringRelease(
+                installment_number=i + 1,
+                installment_value=installment_value,
+                installment_times=installment_times,
+                date_release=date_release + relativedelta(months=+i),
+                is_paid=bool(request.data.get('is_paid')) if card_id and i == 0 is not None else False,
+                release=release,
                 balance=balances[i],
-                invoice=invoices[i] if card_id is not None else None
-            ) for i in range(repeat_times)]
+                invoice=invoices[i] if card_id is not None else None,
+            ) for i in range(installment_times)]
 
-            created_releases = Release.objects.bulk_create(releases)
+            RecurringRelease.objects.bulk_create(recurring_releases)
 
-            serializer = self.get_serializer(releases, many=True).data
-            return HttpResponse(json.dumps(serializer))
+            self.update_account_total(account, release_type, installment_value)
+
+            date_release.replace(day=1)
+
+            rr = RecurringRelease.objects.filter(
+                release_id=release.id,
+                balance__date_reference=date_release
+            ).first()
+
+            return JsonResponse(ReleaseRRSerializer(rr).data)
         else:
-            return HttpResponse('This account isn\`t yours', content_type="application/json")
+            return HttpResponse("This account isn't yours", content_type="application/json")
 
-    @action(detail=False, methods=['GET'])
-    def date_reference(self, request):
+    @classmethod
+    def update_balance_total(cls, balance, release_type, installment_value):
+        if release_type == 0:
+            balance.total_expenses += installment_value
+        elif release_type == 1:
+            balance.total_incomes += installment_value
+        balance.save()
+
+    @classmethod
+    def update_account_total(cls, account, release_type, installment_value):
+        if release_type == 0:
+            account.total_available -= installment_value
+        elif release_type == 1:
+            account.total_available += installment_value
+        account.save()
+
+    # FIXME REFACTOR
+    @classmethod
+    def date_replace_and_add_month(cls, date_reference, day, n):
+        date_reference_invoice = date_reference.replace(day=day)
+        return date_reference_invoice + relativedelta(months=+n)
+
+    @classmethod
+    def date_to_database_format(cls, from_date):
+        from_date = str(from_date).split("T")[0]
+        return datetime.strptime(from_date, '%Y-%m-%d').date()
+
+    def balance(self):
+        balance_id = self.request.query_params.get('balance_id')
+        # Get releases of a specific balance
+        return Release.objects.filter(
+            recurring_release__balance__account__owner=self.request.user,
+            recurring_release__balance_id=balance_id,
+            recurring_release__invoice_id=None
+        ).all().distinct()
+
+    def invoice(self):
+        invoice_id = self.request.query_params.get('invoice_id')
+        # Get releases of a specific invoice
+        return Release.objects.filter(
+            recurring_release__invoice__card__account__owner=self.request.user,
+            recurring_release__invoice_id=invoice_id
+        ).all().distinct()
+
+    def category(self):
+        category_id = self.request.query_params.get('category_id')
+        # Get releases of specific category
+        return Release.objects.filter(
+            Q(recurring_release__invoice__card__account__owner=self.request.user) |
+            Q(recurring_release__balance__account__owner=self.request.user),
+            category_id=category_id
+        ).all().distinct()
+
+    def date_reference(self):
         date_reference = self.request.query_params.get('date_reference')
         date_reference_init = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=1).date()
 
@@ -364,59 +454,55 @@ class ReleaseView(viewsets.ModelViewSet):
             date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=31).date()
         else:
             date_reference_final = datetime.strptime(date_reference, '%Y-%m-%d').replace(day=30).date()
-        print(date_reference_final)
-        return Release.objects.filter(
-            Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
-            date_repeat__range=(date_reference_init, date_reference_final)).all()
 
-    @action(detail=False, methods=['GET'])
-    def balance(self, request):
-        balance_id = self.request.query_params.get('balance_id')
-        # Get releases of a specific balance
         return Release.objects.filter(
-            balance__account__user=self.request.user,
-            balance_id=balance_id).all()
+            Q(recurring_release__invoice__card__account__owner=self.request.user) |
+            Q(recurring_release__balance__account__owner=self.request.user),
+            recurring_release__date_release__range=(date_reference_init, date_reference_final)
+        ).all().distinct()
 
-    @action(detail=False, methods=['GET'])
-    def invoice(self, request):
-        invoice_id = self.request.query_params.get('invoice_id')
-        # Get releases of a specific invoice
-        return Release.objects.filter(invoice__card__account__user=self.request.user, invoice_id=invoice_id).all()
-
-    @action(detail=False, methods=['GET'])
-    def category(self, request):
-        category_id = self.request.query_params.get('category_id')
-        # Get releases of specific category
+    def all_releases(self):
         return Release.objects.filter(
-            Q(invoice__card__account__user=self.request.user) | Q(balance__account__user=self.request.user),
-            category_id=category_id).all()
+            recurring_release__balance__account__owner=self.request.user
+        ).all().distinct()
 
     @action(detail=False, methods=['GET'])
     def monthly_graphic(self, request):
         income = []
         expense = []
+
+        # TODO check if it`s necessary add the user id on this query
         for e in Balance.objects.raw("""
-                                select bal.id, bal.date_reference,
-                                     sum(rel.installment_value) as total
-                                    from "economeeApi_release" as rel
-                                             left join "economeeApi_balance" as bal
-                                                       on rel.balance_id = bal.id
-                                    where rel.type = 'ER'
-                                      and bal.account_id = %s
-                                    group by bal.id order by bal.date_reference;
-                                           """, [request.query_params.get('account_id')]):
+                                select bal.id,
+                                       bal.date_reference,
+                                       sum(rr.installment_value) as total
+                                from "economeeApi_release" as rel
+                                         left join "economeeApi_recurringrelease" as rr
+                                                   on rel.id = rr.release_id
+                                         inner join "economeeApi_balance" as bal
+                                                    on rr.balance_id = bal.id
+                                where rel.type = 0
+                                  and bal.account_id = %s
+                                group by bal.id
+                                order by bal.date_reference;
+                                           """, [self.request.query_params.get('account_id')]):
             expense.append({'id': e.id, 'date_reference': str(e.date_reference), 'total': e.total})
 
+        # TODO check if it`s necessary add the user id on this query
         for i in Balance.objects.raw("""
-                       select bal.id, bal.date_reference,
-                               sum(rel.installment_value) as total
+                        select bal.id,
+                               bal.date_reference,
+                               sum(rr.installment_value) as total
                         from "economeeApi_release" as rel
-                                 left join "economeeApi_balance" as bal
-                                           on rel.balance_id = bal.id
-                        where rel.type = 'IR'
-                          and bal.account_id = %s
-                        group by bal.id order by bal.date_reference;
-                        """, [request.query_params.get('account_id')]):
+                                 left join "economeeApi_recurringrelease" as rr
+                                           on rel.id = rr.release_id
+                                 inner join "economeeApi_balance" as bal
+                                            on rr.balance_id = bal.id
+                        where rel.type = 1
+                          and bal.account_id = %s                          
+                        group by bal.id
+                        order by bal.date_reference;
+                        """, [self.request.query_params.get('account_id')]):
             income.append({'id': i.id, 'date_reference': str(i.date_reference), 'total': i.total})
 
         return JsonResponse({'incomes': income, 'expenses': expense})
@@ -426,16 +512,22 @@ class ReleaseView(viewsets.ModelViewSet):
         r = []
 
         for e in Balance.objects.raw("""
-                                select rc.id, rc.name, sum(r.installment_value) as total
-                                    from "economeeApi_release" r
-                                         INNER JOIN "economeeApi_balance" b on b.id = r.balance_id
+                                select rc.id, rc.name, sum(rr.installment_value) as total
+                                from "economeeApi_release" r
+                                         INNER JOIN "economeeApi_recurringrelease" rr on r.id = rr.release_id
+                                         INNER JOIN "economeeApi_balance" b on b.id = rr.balance_id
                                          INNER JOIN "economeeApi_account" a on a.id = %s
                                          INNER JOIN "economeeApi_releasecategory" rc on rc.id = r.category_id
-                                    where a.user_id = %s
-                                    and balance_id = %s
-                                    GROUP BY rc.id, rc.name
-                                           """, [request.query_params.get('account_id'), self.request.user.id,
-                                                 request.query_params.get('balance_id')]):
+                                where a.owner_id = %s
+                                  and balance_id = %s
+                                GROUP BY rc.id, rc.name;
+                                           """,
+                                     [
+                                         self.request.query_params.get('account_id'),
+                                         self.request.user.id,
+                                         self.request.query_params.get('balance_id')
+                                     ]
+                                     ):
             r.append({"id": e.id, "name": e.name, "total": e.total})
         return HttpResponse(json.dumps(r))
 
@@ -457,10 +549,10 @@ class InvoiceView(viewsets.ModelViewSet):
     def get_queryset(self):
         card_id = self.request.query_params.get('card_id')
 
-        if card_id is not None:
-            return Invoice.objects.filter(card__account__user=self.request.user, card_id=card_id).all()
+        if card_id != None:
+            return Invoice.objects.filter(card__account__owner=self.request.user, card_id=card_id).all()
         else:
-            return Invoice.objects.filter(card__account__user=self.request.user).all()
+            return Invoice.objects.filter(card__account__owner=self.request.user).all()
 
 
 class CurrencyView(viewsets.ModelViewSet):

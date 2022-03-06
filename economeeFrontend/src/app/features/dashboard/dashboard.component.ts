@@ -4,8 +4,9 @@ import {UiQuery} from '../../core/state/ui/ui.query';
 import {Observable} from 'rxjs';
 import {UiState} from '../../core/state/ui/ui.store';
 import {ReleaseService} from '../../core/state/release/release.service';
-import {BalanceQuery} from '../../core/state/balance/balance.query';
 import {AccountService} from "../../core/state/account/account.service";
+import {AccountQuery} from "../../core/state/account/account.query";
+import {ReleaseQuery} from "../../core/state/release/release.query";
 
 @Component({
   selector: 'app-dashboard',
@@ -14,23 +15,26 @@ import {AccountService} from "../../core/state/account/account.service";
 })
 export class DashboardComponent implements OnInit {
   mobile$: Observable<UiState>;
+  totalAvailableValue: number;
+  totalExpensesValue: number;
+  totalIncomesValue: number;
 
   constructor(
+    private accountQuery: AccountQuery,
     private accountService: AccountService,
-    private balanceQuery: BalanceQuery,
     private releaseService: ReleaseService,
+    private releaseQuery: ReleaseQuery,
     private uiService: UiService,
     private uiQuery: UiQuery,
   ) {
   }
 
   ngOnInit(): void {
-    this.accountService.get().subscribe();
     this.mobile$ = this.uiQuery.isMobile$;
-    this.balanceQuery.selectActive().subscribe(
-      (b) => b ? this.releaseService.getMonthReleases(b).subscribe() : console.log('n chamou')
-    );
     this.onResize();
+    //
+    // this.accountService.getTotalExpenses();
+    // this.accountService.getTotalIncomes();
   }
 
   @HostListener('window:resize')

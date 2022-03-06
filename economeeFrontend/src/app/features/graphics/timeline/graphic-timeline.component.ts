@@ -19,7 +19,12 @@ export class GraphicTimelineComponent implements OnInit {
 
   ngOnInit() {
     this.accountQuery.selectActive().subscribe(
-      (a) => a ? this.monthlyGraphicService.getMonthlyGraphic(a).subscribe() : ''
+      (a) => {},
+      () => {
+      },
+      () => {
+        this.monthlyGraphicService.getMonthlyGraphic().subscribe();
+      },
     );
   }
 

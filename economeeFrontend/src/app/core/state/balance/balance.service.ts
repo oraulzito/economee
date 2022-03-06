@@ -1,110 +1,178 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Balance} from './balance.model';
 import {BalanceStore} from './balance.store';
-import {UiService} from '../ui/ui.service';
-import {formatDate} from '@angular/common';
-import {BalanceQuery} from './balance.query';
-import {ReleaseService} from '../release/release.service';
-import {InvoiceService} from '../invoice/invoice.service';
-import {catchError, shareReplay, tap} from 'rxjs/operators';
-import {setLoading} from '@datorama/akita';
-import {throwError} from 'rxjs';
 import {ReleaseQuery} from "../release/release.query";
+import {AccountStore} from "../account/account.store";
+import {RANGE_BALANCE} from "../ui/ui.model";
+import {UiQuery} from "../ui/ui.query";
+import {AccountQuery} from "../account/account.query";
+import {InvoiceQuery} from "../invoice/invoice.query";
+import {BalanceQuery} from "./balance.query";
+import {tap, throwError} from "rxjs";
+import {catchError, shareReplay} from "rxjs/operators";
+import {setLoading} from "@datorama/akita";
+import {Balance} from "./balance.model";
+import {ReleaseStore} from "../release/release.store";
+import {InvoiceStore} from "../invoice/invoice.store";
+import {UiService} from "../ui/ui.service";
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {
+  initialDateBalance: Date;
+  finalDateBalance: Date;
+  rangeDateBalance: RANGE_BALANCE;
 
   constructor(
-    private uiService: UiService,
-    private balanceQuery: BalanceQuery,
+    private accountStore: AccountStore,
     private balanceStore: BalanceStore,
-    private releaseService: ReleaseService,
+    private releaseStore: ReleaseStore,
+    private invoiceStore: InvoiceStore,
+    private accountQuery: AccountQuery,
+    private balanceQuery: BalanceQuery,
+    private invoiceQuery: InvoiceQuery,
     private releaseQuery: ReleaseQuery,
-    private invoiceService: InvoiceService,
-    private http: HttpClient
+    private uiService: UiService,
+    private uiQuery: UiQuery,
+    private http: HttpClient,
   ) {
+    this.uiQuery.initialDateBalance$.subscribe(r => this.initialDateBalance = r);
+    this.uiQuery.finalDateBalance$.subscribe(r => this.finalDateBalance = r);
+    this.uiQuery.rangeDateBalance$.subscribe(r => this.rangeDateBalance = r);
   }
 
-  // tslint:disable-next-line:typedef
-  get() {
-    return this.http.get<Balance[]>('/api/balance', this.uiService.httpHeaderOptions()).pipe(
+  getFullBalanceMonth(date_reference) {
+    return this.http.get<Balance>('/api/balance/full_balance?date_reference=' + date_reference,
+      this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      setLoading(this.balanceStore),
-      tap(balance => this.balanceStore.set(balance)),
+      setLoading(this.accountStore),
+      tap(balance => {
+        this.releaseStore.set(balance['releases']);
+        this.invoiceStore.set(balance['invoices']);
+      }),
       catchError((error) => throwError(error)),
     );
   }
 
-  // tslint:disable-next-line:typedef
-  setBalanceMonth(actualDate?) {
-    if (actualDate === undefined) {
-      // Get today's date
-      actualDate = new Date();
+  setActiveMonthBalance(balance_id?, date_balance?: string) {
+    if (balance_id === undefined) {
+      if (date_balance === undefined) {
+        date_balance = this.formatDateForBalance();
+      } else {
+        date_balance = this.formatDateForBalance(date_balance);
+      }
+
+      this.balanceQuery.selectEntity(r => r.date_reference == date_balance).subscribe(
+        r => {
+          if (r)
+            this.setActiveAndGetData(r.id)
+        }
+      );
+    } else {
+      this.setActiveAndGetData(balance_id)
+    }
+  }
+
+  formatDateForBalance(date?) {
+    let todayMonthDate = new Date();
+
+    if (date !== undefined) {
+      todayMonthDate = new Date(date);
     }
 
-    // Change the day to the first day of the month
-    const firstDayOfMonth = new Date(actualDate.getFullYear(), actualDate.getMonth(), 1);
+    todayMonthDate = new Date(todayMonthDate.getFullYear(), todayMonthDate.getMonth(), 1);
 
-    // Format to SQL date format
-    // const date = DateTime.fromSQL(firstDayOfMonth).toISODate();
-    const date = formatDate(firstDayOfMonth.toString(), 'YYYY-MM-dd', 'en-US');
+    return todayMonthDate.toISOString().split('T')[0];
+  }
 
-    // Get and set active the balance referred to the current month
-    this.balanceQuery.selectEntity(b => b.date_reference === date).subscribe(
-      b => {
-        if (b) {
-          this.balanceStore.setActive(b.id);
-        }
-      }
-    );
+  setActiveAndGetData(id) {
+    this.balanceStore.setActive(id);
+    this.getFullBalanceMonth(this.balanceQuery.getActive().date_reference).subscribe();
+  }
+
+  calculateExpenses() {
+    // let total = 0;
+    // this.releaseQuery.selectAll({
+    //   filterBy: state =>
+    //     state.date_release >= this.initialDateBalance &&
+    //     state.date_release <= this.finalDateBalance &&
+    //     state.type === RELEASE_TYPE.EXPENSE_RELEASE &&
+    //     state.card_id === null
+    // }).subscribe(
+    //   r => {
+    //     r.map(r => total += r.value)
+    //     this.balanceStore.update({total_expenses: r});
+    //   }
+    // );
+  }
+
+  calculatePaidExpenses() {
+    // let total = 0;
+    // this.releaseQuery.selectAll({
+    //   filterBy: state =>
+    //     state.date_release >= this.initialDateBalance &&
+    //     state.date_release <= this.finalDateBalance &&
+    //     state.type === RELEASE_TYPE.EXPENSE_RELEASE &&
+    //     state.card_id === null &&
+    //     state.is_release_paid
+    // }).subscribe(
+    //   r => {
+    //     r.map(r => total += r.value)
+    //     this.balanceStore.update({total_paid_expenses: r});
+    //   }
+    // );
+  }
+
+  calculateIncomes() {
+    // let total = 0;
+    // this.releaseQuery.selectAll({
+    //   filterBy: state =>
+    //     state.date_release >= this.initialDateBalance &&
+    //     state.date_release <= this.finalDateBalance &&
+    //     state.type === RELEASE_TYPE.INCOME_RELEASE
+    // }).subscribe(
+    //   r => {
+    //     r.map(r => total += r.card_id ? r.installment_value : r.value)
+    //     this.balanceStore.update({total_incomes: r});
+    //   }
+    // );
+  }
+
+  calculatePaidIncomes() {
+    // let total = 0;
+    // this.releaseQuery.selectAll({
+    //   filterBy: state =>
+    //     state.date_release >= this.initialDateBalance &&
+    //     state.date_release <= this.finalDateBalance &&
+    //     state.type === RELEASE_TYPE.INCOME_RELEASE &&
+    //     state.is_release_paid
+    // }).subscribe(
+    //   r => {
+    //     r.map(r => total += r.card_id ? r.installment_value : r.value)
+    //     this.balanceStore.update({total_paid_incomes: r});
+    //   }
+    // );
+  }
+
+  calculateInvoices() {
+
   }
 
   // tslint:disable-next-line:typedef
-  changeBalance(date) {
-    this.setBalanceMonth(date);
-    this.invoiceService.setInvoiceMonth(date);
-  }
+  calculateTotalAvailable() {
+    let totalAvailable = 0;
+    let expenses = this.balanceQuery.getActive().total_expenses;
+    let incomes = this.balanceQuery.getActive().total_incomes;
 
-  calculateBalanceExpenses(): void {
-    let expenseValues = 0;
-    // Only balance expenses
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'ER',
-        ({balance_id}) => balance_id === this.balanceQuery.getActiveId(),
-        ({invoice_id}) => invoice_id === null
-      ]
-    }).subscribe(r => {
-        if (r) {
-          let expenseValuesMap = r.map(results => results.value);
-          expenseValues = expenseValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        }
-        this.balanceStore.updateActive({
-          total_releases_expenses: expenseValues
-        });
-      }
-    );
-  }
+    // TODO
+    // let invoices = this.balanceQuery.getActive().total_invoices;
+    // if (this.invoiceQuery.hasActive() && this.invoiceQuery.getActive().is_paid) {
+    //   totalAvailable = (expenses + invoices) - incomes;
+    // } else {
+    totalAvailable = expenses - incomes;
+    // }
 
-  calculateBalanceIncomes(): void {
-    let incomeValues = 0;
-    // Only balance incomes
-    this.releaseQuery.selectAll({
-      filterBy: [
-        ({type}) => type === 'IR',
-        ({balance_id}) => balance_id === this.balanceQuery.getActiveId()
-      ]
-    }).subscribe(r => {
-        if (r) {
-          const incomeValuesMap = r.map(results => results.value);
-          incomeValues = incomeValuesMap.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-        }
-        this.balanceStore.updateActive({
-          total_releases_incomes: incomeValues
-        });
-      }
-    );
+    this.balanceStore.updateActive({total_available: totalAvailable});
+    this.balanceStore.updateActive({total_available: totalAvailable});
   }
 
 }

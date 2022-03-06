@@ -1,17 +1,17 @@
-<div [nzGutter]="[20, 24]" nz-row nzJustify="space-around">
+<div [nzGutter]="[20, 24]" nz-row nzJustify="space-around" class="max-vh-60">
   <div [nzMd]="10" nz-col>
-    <div [nzGutter]="[20, 24]" class="vh-20" nz-row>
+    <div [nzGutter]="[20, 24]" class="vh-25" nz-row>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [id]="1"></app-statistic-account-graphic>
+        <app-statistic-account-graphic [value]="totalIncomesValue" [id]="1"></app-statistic-account-graphic>
       </app-card>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [id]="2"></app-statistic-account-graphic>
+        <app-statistic-account-graphic [value]="totalExpensesValue" [id]="2"></app-statistic-account-graphic>
       </app-card>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [id]="3"></app-statistic-account-graphic>
+        <app-statistic-account-graphic [value]="0" [id]="3"></app-statistic-account-graphic>
       </app-card>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [id]="4"></app-statistic-account-graphic>
+        <app-statistic-account-graphic [value]="0" [id]="4"></app-statistic-account-graphic>
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-30" nz-row>
@@ -30,9 +30,9 @@
   </div>
 
   <app-card [nzMd]="7" nz-col>
-    <app-release [releaseType]=1 class="max-w-90 max-vh-80 overflow-auto p-2"></app-release>
+    <app-release-list [releaseType]=1 class="max-w-90 max-vh-80 overflow-auto p-2"></app-release-list>
   </app-card>
   <app-card [nzMd]="7" nz-col>
-    <app-release [releaseType]=2 class="max-w-90 max-vh-80 overflow-auto p-2"></app-release>
+    <app-release-list [releaseType]=2 class="max-w-90 max-vh-80 overflow-auto p-2"></app-release-list>
   </app-card>
 </div>
