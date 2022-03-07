@@ -1,13 +1,15 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ReleaseQuery} from '../../../core/state/release/release.query';
-import {Release, RELEASE_TYPE} from '../../../core/state/release/release.model';
 import {BalanceQuery} from "../../../core/state/balance/balance.query";
 import {CardQuery} from "../../../core/state/card/card.query";
-import {Card} from "../../../core/state/card/card.model";
 import {CardService} from "../../../core/state/card/card.service";
 import {InvoiceQuery} from "../../../core/state/invoice/invoice.query";
 import {ReleaseService} from "../../../core/state/release/release.service";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {getEntityType} from "@datorama/akita";
+import {ReleaseState} from "../../../core/state/release/release.store";
+import {Observable} from "rxjs";
+import {CardState} from "../../../core/state/card/card.store";
 
 @Component({
   selector: 'app-release-list',
@@ -18,9 +20,10 @@ export class ReleaseListComponent implements OnInit {
   @Input()
   releaseType: number;
 
-  card: Card;
-  cards: Card[];
-  releases: Release[];
+  card_name: Observable<string | ''>;
+  card: Observable<getEntityType<CardState> | ''>;
+  cards: Observable<getEntityType<CardState>[]>;
+  releases: Observable<getEntityType<ReleaseState>[]>;
   releasesLoading: boolean;
   isModalVisible = false;
   isPaidForm: FormGroup;
@@ -37,65 +40,58 @@ export class ReleaseListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.balanceQuery.selectActive().subscribe(
-      (b) => b ? this.loadReleases() : ''
-    );
+    this.isPaidForm = this.fb.group({
+      is_paid: new FormControl()
+    });
 
     this.releaseQuery.selectLoading().subscribe(
       l => this.releasesLoading = l
     );
 
-    this.cardQuery.selectAll().subscribe(c => this.cards = c);
-
-    this.cardQuery.selectActive().subscribe(r => this.card = r);
-
-    this.isPaidForm = this.fb.group({
-      is_paid: new FormControl()
-    });
-  }
-
-  loadReleases(): void {
-    this.releaseQuery.selectAll().subscribe(r => this.queryReleases(r));
+    this.queryReleases(this.releaseType);
+    this.card = this.cardQuery.activeCard$;
+    this.card_name = this.cardQuery.activeCardName$;
+    this.cards = this.cardQuery.allCards$;
   }
 
   changeActiveCard(id) {
     this.cardService.setActiveCard(id);
-    this.loadReleases();
-  }
-
-  queryReleases(r) {
-    switch (this.releaseType) {
-      case 1:
-        //all debit
-        this.releases = r.filter(r => r.invoice_id === null)
-        break;
-      case 2:
-        // card releases
-        this.releases = r.filter(r => r.invoice_id !== null && r.invoice_id === this.invoiceQuery.getActiveId())
-        break;
-      case 3:
-        // debit expenses
-        this.releases = r.filter(r => r.type == RELEASE_TYPE.EXPENSE)
-        break;
-      case 4:
-        // debit incomes
-        this.releases = r.filter(r => r.type == RELEASE_TYPE.INCOME)
-        break;
-    }
+    this.queryReleases(this.releaseType);
   }
 
   delete(id) {
     this.releaseService.remove(id).subscribe();
-    this.loadReleases();
+    this.queryReleases(this.releaseType);
   }
 
   pay(id, isPaid) {
     this.releaseService.pay(id, isPaid).subscribe();
-    this.loadReleases();
+    this.queryReleases(this.releaseType);
   }
 
   openModalRelease() {
     this.isModalVisible = !this.isModalVisible;
+  }
+
+  queryReleases(releaseType) {
+    switch (releaseType) {
+      case 1:
+        //all debit
+        this.releases = this.releaseQuery.loadReleasesDebit$;
+        break;
+      case 2:
+        // card releases
+        this.releases = this.releaseQuery.loadReleasesCard$;
+        break;
+      case 3:
+        // debit expenses
+        this.releases = this.releaseQuery.loadReleasesDebitExpense$;
+        break;
+      case 4:
+        // debit incomes
+        this.releases = this.releaseQuery.loadReleasesDebitIncome$;
+        break;
+    }
   }
 }
 

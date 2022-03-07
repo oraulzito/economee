@@ -1,7 +1,8 @@
 <nz-list [nzHeader]="headerList"
          [nzLoading]="releasesLoading"
+         [nzNoResult]="templateNoData"
          nzItemLayout="vertical">
-  <nz-list-item *ngFor="let release of releases" nz-row>
+  <nz-list-item *ngFor="let release of releases | async" nz-row>
     <nz-list-item-meta nz-col nzXs="14">
       <nz-list-item-meta-avatar [nzSrc]="release.type === 1 ?
                                      'assets/images/add_circle_black_24dp.svg'
@@ -48,17 +49,18 @@
     </ul>
   </nz-list-item>
 </nz-list>
+
 <ng-template #headerList>
   <div nz-row nzAlign="middle" nzJustify="space-between">
     <h5 nz-col="14">{{releaseType === 1 ? 'Gastos e Ganhos' : 'Fatura do cartão'}}</h5>
     <div *ngIf="releaseType == 2" nz-col="8">
       <button [nzDropdownMenu]="menu4" nz-button nz-dropdown>
-        {{card.name}}
+        {{card_name | async}}
         <i nz-icon nzType="down"></i>
       </button>
       <nz-dropdown-menu #menu4="nzDropdownMenu">
         <ul nz-menu>
-          <li (click)="changeActiveCard(c.id)" *ngFor="let c of cards" nz-menu-item>{{c.name}}</li>
+          <li (click)="changeActiveCard(c.id)" *ngFor="let c of cards | async" nz-menu-item>{{c.name}}</li>
         </ul>
       </nz-dropdown-menu>
     </div>
@@ -68,5 +70,9 @@
   </div>
 </ng-template>
 
-<app-release-modal [isVisible]=isModalVisible></app-release-modal>
+<ng-template #templateNoData>
+  <app-no-data-component></app-no-data-component>
+</ng-template>
+
+<app-release-modal [isVisible]=isModalVisible [releaseType]=releaseType></app-release-modal>
 <!--[nzTheme]="'twotone'-->

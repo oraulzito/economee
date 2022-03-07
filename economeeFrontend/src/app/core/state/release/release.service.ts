@@ -76,7 +76,7 @@ export class ReleaseService {
   // }
 
   // tslint:disable-next-line:typedef
-  add(form, card) {
+  add(form) {
     const body = {
       date_release: form.date_release,
       description: form.description,
@@ -87,7 +87,7 @@ export class ReleaseService {
       value: form.value,
       account_id: this.accountQuery.getActiveId(),
       balance_id: this.balanceQuery.getActiveId(),
-      card_id: card ? this.cardQuery.getActive().id : null,
+      card_id: form.card_id,
       category_id: form.category_id,
     };
 

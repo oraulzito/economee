@@ -9,6 +9,7 @@ import {ReleaseCategory} from "../../../core/state/release/category/release-cate
 import {ReleaseCategoryQuery} from "../../../core/state/release/category/release-category.query";
 import {Observable} from "rxjs";
 import {CardQuery} from "../../../core/state/card/card.query";
+import {ReleaseQuery} from "../../../core/state/release/release.query";
 
 
 @Component({
@@ -20,6 +21,7 @@ export class ReleaseModalComponent implements OnInit {
   @Input() isVisible: boolean;
   @Input() card: Card;
   @Input() release?: Release;
+  @Input() releaseType: number;
   @Output() saved = new EventEmitter();
 
   currency: Observable<string | undefined>;
@@ -30,6 +32,7 @@ export class ReleaseModalComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private cardQuery: CardQuery,
+    private releaseQuery: ReleaseQuery,
     private releaseService: ReleaseService,
     private accountQuery: AccountQuery,
     private releaseCategoryQuery: ReleaseCategoryQuery
@@ -42,9 +45,7 @@ export class ReleaseModalComponent implements OnInit {
 
   ngOnInit() {
     this.currency = this.accountQuery.currencySymbol$;
-    this.cardQuery.selectActive().subscribe(
-      r => this.card = r
-    )
+
     this.releaseCategoryQuery.selectLoading().subscribe(cl => {
       this.categoriesLoading = cl;
       this.categories = this.releaseCategoryQuery.getAll();
@@ -60,10 +61,9 @@ export class ReleaseModalComponent implements OnInit {
       installment_times: new FormControl(),
       place: new FormControl(),
       type: new FormControl(),
-      card: new FormControl(this.card)
+      card_id: new FormControl(this.releaseType == 2 ? this.cardQuery.getActive() : null)
     });
   }
-
 
   // tslint:disable-next-line:typedef
   editRelease(id) {
@@ -77,11 +77,10 @@ export class ReleaseModalComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   saveRelease() {
-    return this.releaseService.add(this.releaseForm.value, this.card).subscribe(
-      r => {
-        this.saved.emit(false);
-      },
-      (e) => this.saved.emit(true)
+    return this.releaseService.add(this.releaseForm.value).subscribe(
+      r => console.log(r),
+      (e) => this.saved.emit(true),
+      () => this.isVisible = false
     );
   }
 

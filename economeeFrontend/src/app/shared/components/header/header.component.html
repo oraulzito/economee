@@ -5,7 +5,7 @@
       <div [nzMd]="6" [nzXs]="14" nz-col>
         <app-statistic-account-graphic
           [id]="5"
-          [value]="total_available">
+          [value]="total_available | async">
         </app-statistic-account-graphic>
       </div>
       <div [nzMd]="6" [nzXs]="8" nz-col>
