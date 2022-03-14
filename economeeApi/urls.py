@@ -15,7 +15,7 @@ Including another URLconf
 """
 from rest_framework import routers
 
-from . import views
+from economeeApi import views
 
 router = routers.DefaultRouter()
 router.register(r'account', views.AccountView, 'Account')
