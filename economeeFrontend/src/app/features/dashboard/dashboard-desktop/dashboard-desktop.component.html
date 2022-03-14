@@ -2,16 +2,16 @@
   <div [nzMd]="10" nz-col>
     <div [nzGutter]="[20, 24]" class="vh-25" nz-row>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [value]="totalIncomesValue" [id]="1"></app-statistic-account-graphic>
+        <app-statistic-money-panel [value]="totalIncomesValue" [id]="1"></app-statistic-money-panel>
       </app-card>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [value]="totalExpensesValue" [id]="2"></app-statistic-account-graphic>
+        <app-statistic-money-panel [value]="totalExpensesValue" [id]="2"></app-statistic-money-panel>
       </app-card>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [value]="0" [id]="3"></app-statistic-account-graphic>
+        <app-statistic-money-panel [value]="0" [id]="3"></app-statistic-money-panel>
       </app-card>
       <app-card [nzMd]="6" nz-col>
-        <app-statistic-account-graphic [value]="0" [id]="4"></app-statistic-account-graphic>
+        <app-statistic-money-panel [value]="0" [id]="4"></app-statistic-money-panel>
       </app-card>
     </div>
     <div [nzGutter]="[20, 24]" class="vh-30" nz-row>
@@ -24,7 +24,7 @@
         <app-graphic-pizza></app-graphic-pizza>
       </app-card>
       <app-card [nzMd]="12" nz-col>
-        <app-graphic-timeline></app-graphic-timeline>
+<!--        <app-graphic-timeline></app-graphic-timeline>-->
       </app-card>
     </div>
   </div>

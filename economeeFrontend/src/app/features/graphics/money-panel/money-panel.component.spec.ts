@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StatisticAccountGraphicComponent } from './statistic-account-graphic.component';
+import { MoneyPanelComponent } from './money-panel.component';
 
 describe('StatisticAccountGraphicComponent', () => {
-  let component: StatisticAccountGraphicComponent;
-  let fixture: ComponentFixture<StatisticAccountGraphicComponent>;
+  let component: MoneyPanelComponent;
+  let fixture: ComponentFixture<MoneyPanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StatisticAccountGraphicComponent ]
+      declarations: [ MoneyPanelComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(StatisticAccountGraphicComponent);
+    fixture = TestBed.createComponent(MoneyPanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

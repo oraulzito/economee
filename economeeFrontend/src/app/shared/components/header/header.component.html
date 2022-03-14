@@ -3,10 +3,10 @@
   <div [nzMd]="18" class="height-inherit p-lg-4 p-md-3" nz-col nz-menu>
     <div *ngIf="isLogged$" nz-row>
       <div [nzMd]="6" [nzXs]="14" nz-col>
-        <app-statistic-account-graphic
+        <app-statistic-money-panel
           [id]="5"
           [value]="total_available | async">
-        </app-statistic-account-graphic>
+        </app-statistic-money-panel>
       </div>
       <div [nzMd]="6" [nzXs]="8" nz-col>
         <nz-date-picker (ngModelChange)="onMonthChange($event)"

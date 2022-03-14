@@ -16,7 +16,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    canActivate: [AuthenticationGuard],
+    // canActivate: [AuthenticationGuard],
     children: [
       {
         path: 'signIn', // child route path
@@ -31,7 +31,7 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    // canActivate: [AuthenticationGuard],
+    canActivate: [AuthenticationGuard],
     children: [
       {
         path: 'profile', // child route path

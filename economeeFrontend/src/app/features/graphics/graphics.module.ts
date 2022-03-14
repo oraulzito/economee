@@ -1,20 +1,24 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+
 import {GraphicPizzaComponent} from "./pizza/graphic-pizza.component";
 import {GraphicTimelineComponent} from "./timeline/graphic-timeline.component";
 import {GraphicProgressBarComponent} from "./progress-bar/graphic-progress-bar.component";
+import {MoneyPanelComponent} from "./money-panel/money-panel.component";
+
 import {NzProgressModule} from "ng-zorro-antd/progress";
 import {NzGridModule} from "ng-zorro-antd/grid";
-import {StatisticAccountGraphicComponent} from './statistic-account-graphic/statistic-account-graphic.component';
 import {NzStatisticModule} from "ng-zorro-antd/statistic";
 import {NzIconModule} from "ng-zorro-antd/icon";
+import {PlotlySharedModule} from "angular-plotly.js";
+
 
 @NgModule({
   declarations: [
     GraphicPizzaComponent,
     GraphicTimelineComponent,
     GraphicProgressBarComponent,
-    StatisticAccountGraphicComponent,
+    MoneyPanelComponent,
   ],
   imports: [
     CommonModule,
@@ -22,13 +26,14 @@ import {NzIconModule} from "ng-zorro-antd/icon";
     NzGridModule,
     NzStatisticModule,
     NzIconModule,
+    PlotlySharedModule,
   ],
   providers: [],
   exports: [
     GraphicPizzaComponent,
     GraphicTimelineComponent,
     GraphicProgressBarComponent,
-    StatisticAccountGraphicComponent
+    MoneyPanelComponent
   ],
   bootstrap: []
 })

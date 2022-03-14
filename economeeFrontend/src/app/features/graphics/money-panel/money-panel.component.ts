@@ -4,11 +4,11 @@ import {Observable} from "rxjs";
 import {BalanceQuery} from "../../../core/state/balance/balance.query";
 
 @Component({
-  selector: 'app-statistic-account-graphic',
-  templateUrl: './statistic-account-graphic.component.html',
-  styleUrls: ['./statistic-account-graphic.component.less']
+  selector: 'app-statistic-money-panel',
+  templateUrl: './money-panel.component.html',
+  styleUrls: ['./money-panel.component.less']
 })
-export class StatisticAccountGraphicComponent implements OnInit {
+export class MoneyPanelComponent implements OnInit {
   @Input()
   id: number;
 

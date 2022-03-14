@@ -17,7 +17,7 @@ import {UiQuery} from '../state/ui/ui.query';
   providedIn: 'root'
 })
 export class AuthenticationGuard implements CanActivate, CanLoad {
-  isLooged;
+  isLoged;
 
   constructor(
     private router: Router,
@@ -25,14 +25,14 @@ export class AuthenticationGuard implements CanActivate, CanLoad {
     private uiQuery: UiQuery
   ) {
     this.sessionQuery.isLoggedIn$.subscribe((e) => {
-      this.isLooged = e;
+      this.isLoged = e;
     });
   }
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this.isLooged) {
+    if (this.isLoged) {
       if (this.uiQuery.getValue().url.includes('welcome') || this.uiQuery.getValue().url === '/') {
         this.router.navigate(['dashboard']).then();
       }
@@ -50,9 +50,9 @@ export class AuthenticationGuard implements CanActivate, CanLoad {
     route: Route,
     segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
     if (this.uiQuery.getValue().url.includes('welcome') || this.uiQuery.getValue().url === '/') {
-      return !this.isLooged;
+      return !this.isLoged;
     } else {
-      return this.isLooged;
+      return this.isLoged;
     }
   }
 }

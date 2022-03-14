@@ -33,6 +33,7 @@ import {SharedModule} from "./shared/shared.module";
 import {ReleaseModule} from "./features/release/release.module";
 import {NzSpinModule} from "ng-zorro-antd/spin";
 import en from '@angular/common/locales/en';
+
 PlotlyModule.plotlyjs = PlotlyJS;
 
 registerLocaleData(ptBr);
