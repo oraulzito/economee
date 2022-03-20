@@ -1,30 +1,34 @@
-<div [nzGutter]="[20, 24]" nz-row nzJustify="space-around" class="max-vh-60">
+<div [nzGutter]="[20, 24]" class="max-vh-60" nz-row nzJustify="space-around">
   <div [nzMd]="10" nz-col>
-    <div [nzGutter]="[20, 24]" class="vh-25" nz-row>
-      <app-card [nzMd]="6" nz-col>
-        <app-statistic-money-panel [value]="totalIncomesValue" [id]="1"></app-statistic-money-panel>
+    <div [nzGutter]="[16, 16]" nz-row>
+      <app-card [nzMd]="8" nz-col>
+        <app-statistic-money-panel [id]="5"></app-statistic-money-panel>
       </app-card>
-      <app-card [nzMd]="6" nz-col>
-        <app-statistic-money-panel [value]="totalExpensesValue" [id]="2"></app-statistic-money-panel>
+      <app-card [nzMd]="8" [nzXs]="12" nz-col>
+        <app-statistic-money-panel [id]="1"></app-statistic-money-panel>
       </app-card>
-      <app-card [nzMd]="6" nz-col>
-        <app-statistic-money-panel [value]="0" [id]="3"></app-statistic-money-panel>
+      <app-card [nzMd]="8" [nzXs]="12" nz-col>
+        <app-statistic-money-panel [id]="2"></app-statistic-money-panel>
       </app-card>
-      <app-card [nzMd]="6" nz-col>
-        <app-statistic-money-panel [value]="0" [id]="4"></app-statistic-money-panel>
+      <app-card [nzMd]="8" [nzXs]="12" nz-col>
+        <app-statistic-money-panel [id]="3"></app-statistic-money-panel>
       </app-card>
-    </div>
-    <div [nzGutter]="[20, 24]" class="vh-30" nz-row>
+      <app-card [nzMd]="8" [nzXs]="12" nz-col>
+        <app-statistic-money-panel [id]="4"></app-statistic-money-panel>
+      </app-card>
+      <app-card [nzMd]="8" [nzXs]="12" nz-col>
+        <app-statistic-money-panel [id]="6"></app-statistic-money-panel>
+      </app-card>
+
       <app-card [nzMd]="24" nz-col>
-        <app-graphic-timeline></app-graphic-timeline>
+        <app-timeline-chart></app-timeline-chart>
       </app-card>
-    </div>
-    <div [nzGutter]="[20, 24]" class="vh-35" nz-row>
-      <app-card [nzMd]="12" nz-col>
-        <app-graphic-pizza></app-graphic-pizza>
+
+      <app-card [nzMd]="12" [nzXs]="24" nz-col>
+        <app-pizza-chart></app-pizza-chart>
       </app-card>
-      <app-card [nzMd]="12" nz-col>
-<!--        <app-graphic-timeline></app-graphic-timeline>-->
+      <app-card [nzMd]="12" [nzXs]="24" nz-col>
+        <!--        <app-chart-timeline></app-chart-timeline>-->
       </app-card>
     </div>
   </div>
