@@ -86,7 +86,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReleaseRRSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(source='release.id', read_only=True)
+    release_id = serializers.PrimaryKeyRelatedField(source='release.id', read_only=True)
     type = serializers.IntegerField(source='release.type', read_only=True)
     value = serializers.FloatField(source='release.value', read_only=True)
     place = serializers.StringRelatedField(source='release.place', read_only=True)
@@ -98,6 +98,7 @@ class ReleaseRRSerializer(serializers.HyperlinkedModelSerializer):
         model = RecurringRelease
         fields = [
             'id',
+            'release_id',
             'type',
             'value',
             'place',
