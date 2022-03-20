@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MoneyPanelComponent } from './money-panel.component';
 
-describe('StatisticAccountGraphicComponent', () => {
+describe('StatisticAccountChartComponent', () => {
   let component: MoneyPanelComponent;
   let fixture: ComponentFixture<MoneyPanelComponent>;
 

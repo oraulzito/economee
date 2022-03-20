@@ -19,7 +19,8 @@ import {RouterModule} from '@angular/router';
 import {CardComponent} from './components/card/card.component';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {GraphicsModule} from "../features/graphics/graphics.module";
+import {NzTypographyModule} from "ng-zorro-antd/typography";
+import {ChartsModule} from "../features/charts/charts.module";
 
 @NgModule({
   declarations: [
@@ -32,7 +33,7 @@ import {GraphicsModule} from "../features/graphics/graphics.module";
     RouterModule,
     FormsModule,
     CommonModule,
-    GraphicsModule,
+    ChartsModule,
     NzLayoutModule,
     NzMenuModule,
     NzAvatarModule,
@@ -45,6 +46,7 @@ import {GraphicsModule} from "../features/graphics/graphics.module";
     NzDropDownModule,
     NzButtonModule,
     NzDatePickerModule,
+    NzTypographyModule,
   ],
   exports: [
     HeaderComponent,

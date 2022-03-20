@@ -10,15 +10,18 @@ import {NzListModule} from 'ng-zorro-antd/list';
 import {NzIconModule} from "ng-zorro-antd/icon";
 import {NzWaveModule} from "ng-zorro-antd/core/wave";
 import {NzButtonModule} from "ng-zorro-antd/button";
-import {GraphicsModule} from "../graphics/graphics.module";
+
 import {NzStatisticModule} from "ng-zorro-antd/statistic";
 import {ReleaseModule} from "../release/release.module";
+import {ChartsModule} from "../charts/charts.module";
+import {MoneyPanelComponent} from "../charts/money-panel/money-panel.component";
 
 @NgModule({
   declarations: [
     DashboardComponent,
     DashboardDesktopComponent,
     DashboardMobileComponent,
+    MoneyPanelComponent,
   ],
   imports: [
     CommonModule,
@@ -28,7 +31,7 @@ import {ReleaseModule} from "../release/release.module";
     NzWaveModule,
     NzButtonModule,
     SharedModule,
-    GraphicsModule,
+    ChartsModule,
     NzStatisticModule,
     ReleaseModule
   ],

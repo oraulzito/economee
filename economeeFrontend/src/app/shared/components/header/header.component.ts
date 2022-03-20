@@ -22,7 +22,7 @@ import {ReleaseCategoryService} from "../../../core/state/release/category/relea
 })
 export class HeaderComponent implements OnInit {
   isLogged$ = this.sessionQuery.isLoggedIn$;
-  date_balance = new Date();
+  date_balance: string;
   total_available = this.accountQuery.totalAvailable$;
 
   account: Observable<Account>;
@@ -46,7 +46,7 @@ export class HeaderComponent implements OnInit {
       this.releaseCategoryService.get().subscribe();
       this.accountService.get().subscribe();
       this.accountService.getMainAccount().subscribe();
-      this.balanceQuery.dateReference$.subscribe(d => this.date_balance = d);
+      this.balanceQuery.dateReference$.subscribe(d => this.date_balance = new Date(d).getFullYear() + '/' + new Date(d).getMonth());
     }
   }
 
