@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GraphicPizzaComponent } from './graphic-pizza.component';
+import { TimelineChartComponent } from './timeline-chart.component';
 
-describe('GraphicPizzaComponent', () => {
-  let component: GraphicPizzaComponent;
-  let fixture: ComponentFixture<GraphicPizzaComponent>;
+describe('ChartTimelineComponent', () => {
+  let component: TimelineChartComponent;
+  let fixture: ComponentFixture<TimelineChartComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GraphicPizzaComponent ]
+      declarations: [ TimelineChartComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GraphicPizzaComponent);
+    fixture = TestBed.createComponent(TimelineChartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

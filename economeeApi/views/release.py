@@ -5,7 +5,6 @@ from django.utils.datetime_safe import datetime, date
 from django_rest.permissions import IsAuthenticated
 from rest_framework import authentication, viewsets
 from rest_framework.decorators import action
-from rest_framework.utils import json
 
 from economeeApi.models import Release, Account, RecurringRelease, Balance, Card, Invoice
 from economeeApi.serializers import ReleaseRRSerializer
@@ -16,11 +15,7 @@ class ReleaseView(viewsets.ModelViewSet):
     serializer_class = ReleaseRRSerializer
 
     def get_permissions(self):
-        permission_classes = []
-        if self.action == 'create':
-            permission_classes = [IsAuthenticated]
-        else:
-            permission_classes = [IsAuthenticated]
+        permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
@@ -107,7 +102,7 @@ class ReleaseView(viewsets.ModelViewSet):
                                 total_value=installment_value
                             )
                         else:
-                            invoice.total_value += installment_value
+                            self.update_invoice_total(invoice, release_type, installment_value)
                         invoice.save()
                         invoices.append(invoice)
 
@@ -145,25 +140,37 @@ class ReleaseView(viewsets.ModelViewSet):
         else:
             return HttpResponse("This account isn't yours", content_type="application/json")
 
-    def update_balance_total(cls, balance, release_type, installment_value):
+    @classmethod
+    def update_invoice_total(cls, invoice, release_type, value):
         if release_type == 0:
-            balance.total_expenses += installment_value
+            invoice.total_expenses += value
         elif release_type == 1:
-            balance.total_incomes += installment_value
+            invoice.total_incomes -= value
+        invoice.save()
+
+    @classmethod
+    def update_balance_total(cls, balance, release_type, value):
+        if release_type == 0:
+            balance.total_expenses += value
+        elif release_type == 1:
+            balance.total_incomes += value
         balance.save()
 
-    def update_account_total(cls, account, release_type, installment_value):
+    @classmethod
+    def update_account_total(cls, account, release_type, value):
         if release_type == 0:
-            account.total_available -= installment_value
+            account.total_available -= value
         elif release_type == 1:
-            account.total_available += installment_value
+            account.total_available += value
         account.save()
 
     # FIXME REFACTOR
+    @classmethod
     def date_replace_and_add_month(cls, date_reference, day, n):
         date_reference_invoice = date_reference.replace(day=day)
         return date_reference_invoice + relativedelta(months=+n)
 
+    @classmethod
     def date_to_database_format(cls, from_date):
         from_date = str(from_date).split("T")[0]
         return datetime.strptime(from_date, '%Y-%m-%d').date()
@@ -216,100 +223,25 @@ class ReleaseView(viewsets.ModelViewSet):
             recurring_release__balance__account__owner=self.request.user
         ).all().distinct()
 
-    @action(detail=False, methods=['GET'])
-    def graphics_monthly(self, request):
-        income = []
-        expense = []
-        results_expenses = Balance.objects.raw("""
-                                select bal.id,
-                                       bal.date_reference,
-                                       sum(rr.installment_value) as total
-                                from "economeeApi_release" as rel
-                                         left join "economeeApi_recurringrelease" as rr
-                                                   on rel.id = rr.release_id
-                                         inner join "economeeApi_balance" as bal
-                                                    on rr.balance_id = bal.id
-                                where rel.type = 0
-                                  and bal.account_id = %s
-                                group by bal.id
-                                order by bal.date_reference;
-                                           """, [self.request.query_params.get('account_id')])
-        # TODO check if it`s necessary add the user id on this query
-        for e in results_expenses:
-            expense.append({'id': e.id, 'date_reference': str(e.date_reference), 'total': e.total})
+    @action(detail=False, methods=['PATCH'])
+    def pay(self, request, **kwargs):
+        try:
+            instance = kwargs.get('pk')
 
-        results_incomes = Balance.objects.raw("""
-                        select bal.id,
-                               bal.date_reference,
-                               sum(rr.installment_value) as total
-                        from "economeeApi_release" as rel
-                                 left join "economeeApi_recurringrelease" as rr
-                                           on rel.id = rr.release_id
-                                 inner join "economeeApi_balance" as bal
-                                            on rr.balance_id = bal.id
-                        where rel.type = 1
-                          and bal.account_id = %s
-                          and a.owner_id = %s
-                        group by bal.id
-                        order by bal.date_reference;
-                        """,
-                                              [
-                                                  self.request.query_params.get('account_id'),
-                                                  self.request.user.id
-                                              ])
-        # TODO check if it`s necessary add the user id on this query
-        for i in results_incomes:
-            income.append({'id': i.id, 'date_reference': str(i.date_reference), 'total': i.total})
+            recurring_releases = RecurringRelease.objects.filter(
+                id=instance
+            ).first()
 
-        return JsonResponse({'incomes': income, 'expenses': expense})
+            recurring_releases.is_paid = not recurring_releases.is_paid
 
-    @action(detail=False, methods=['GET'])
-    def graphics_category(self, request):
-        result = []
-        results = Balance.objects.raw("""
-                                        select rc.id, rc.name, sum(rr.installment_value) as total
-                                        from "economeeApi_release" r
-                                                 INNER JOIN "economeeApi_recurringrelease" rr on r.id = rr.release_id
-                                                 INNER JOIN "economeeApi_balance" b on b.id = rr.balance_id
-                                                 INNER JOIN "economeeApi_account" a on a.id = %s
-                                                 INNER JOIN "economeeApi_releasecategory" rc on rc.id = r.category_id
-                                        where a.id = %s
-                                          and balance_id = %s
-                                          and a.owner_id = %s
-                                        GROUP BY rc.id, rc.name;
-                                                   """,
-                                      [
-                                          self.request.query_params.get('account_id'),
-                                          self.request.query_params.get('balance_id'),
-                                          self.request.user.id
-                                      ])
-        for result in results:
-            result.append({"id": result.id, "name": result.name, "total": result.total})
-        return HttpResponse(json.dumps(result))
+            recurring_releases.save()
 
-    @action(detail=False, methods=['GET'])
-    def graphics_timeline(self, request):
-        result = []
-        results = Balance.objects.raw("""
-                                select b.id, b.date_reference, b.total_expenses, b.total_incomes
-                                    from "economeeApi_balance" b
-                                             INNER JOIN "economeeApi_account" a on a.id = b.account_id
-                                where a.owner_id = %s
-                                  and a.id = %s
-                                  and b.date_reference BETWEEN (current_date - interval '5 months')
-                                    and (current_date + interval '6 months')
-                                           """,
-                                      [
-                                          self.request.user.id,
-                                          self.request.query_params.get('account_id')
-                                      ])
-        for r in results:
-            result.append({
-                "date_reference": str(r.date_reference),
-                "total_expenses": r.total_expenses,
-                "total_incomes": r.total_incomes
-            })
-        return HttpResponse(json.dumps(result))
+            if recurring_releases.is_paid:
+                return JsonResponse({'success': 'release paid'}, status=200)
+            else:
+                return JsonResponse({'success': 'release unpaid'}, status=200)
+        except Exception:
+            return JsonResponse({'error': 'something bad'}, status=400)
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -332,42 +264,62 @@ class ReleaseView(viewsets.ModelViewSet):
                 balance = Balance.objects.filter(
                     id=recurringRelease.balance_id
                 ).first()
-                self.update_balance_total(balance, 1 if release.type == 0 else 0, recurringRelease.installment_value)
+                self.update_balance_total(balance, release.type, -recurringRelease.installment_value)
                 recurringRelease.delete()
 
             release.delete()
-            return JsonResponse({'suceess': 'release deleted'}, status=200)
+            return JsonResponse({'success': 'release deleted'}, status=200)
         except Exception:
             return JsonResponse({'error': 'something bad'}, status=400)
 
+    def update(self, request, **kwargs):
+        try:
+            instance = kwargs.get('pk')
 
-def update(self, request, **kwargs):
-    try:
-        instance = kwargs.get('pk')
-
-        release = Release.objects.filter(
-            id=instance
-        ).first()
-
-        value = request.data.get('value')
-
-        if release.value != value:
-            recurring_releases = RecurringRelease.objects.filter(
-                release_id=instance
-            ).all()
-
-            account = Account.objects.filter(
-                owner_id=self.request.user.id
+            release = Release.objects.filter(
+                id=instance
             ).first()
-            self.update_account_total(account, recurring_releases[0].type, recurring_releases[0].installment_value)
 
-            for recurringRelease in recurring_releases:
-                balance = Balance.objects.filer(
-                    id=recurringRelease.balance_id
+            value = request.data.get('value')
+
+            if release.value != value:
+                recurring_releases = RecurringRelease.objects.filter(
+                    release_id=instance
+                ).all()
+
+                account = Account.objects.filter(
+                    owner_id=self.request.user.id
                 ).first()
-                self.update_balance_total(balance, recurringRelease.type, recurringRelease.installment_value)
+                self.update_account_total(account, recurring_releases[0].type, recurring_releases[0].installment_value)
 
-        release.update(request)
-        return JsonResponse({'suceess': 'release updated'}, status=200)
-    except Exception:
-        return JsonResponse({'error': 'something bad'}, status=400)
+                installment_value = value / release.installment_times
+
+                for recurringRelease in recurring_releases:
+                    balance = Balance.objects.filer(
+                        id=recurringRelease.balance_id
+                    ).first()
+                    self.update_balance_total(balance, recurringRelease.type, recurringRelease.installment_value)
+
+                    # Create the recurring release
+                    RecurringRelease.objects.update(
+                        installment_value=installment_value,
+                        is_paid=bool(request.data.get('is_paid')),
+                    )
+
+                    # TODO update those fields will require specific logic
+                    # installment_times = installment_times,
+                    # date_release = release_date + relativedelta(months=+i),
+
+                # Create the release
+                Release.objects.update(
+                    value=value,
+                    type=request.data.get('type') if release.type != request.data.get('type') else release.type,
+                    description=request.data.get('description') if release.description != request.data.get(
+                        'description') else release.description,
+                    category_id=int(request.data.get('category_id')) if release.category_id != request.data.get(
+                        'category_id') else release.category_id,
+                    place=request.data.get('place') if release.place != request.data.get('place') else release.place
+                )
+            return JsonResponse({'success': 'release updated'}, status=200)
+        except Exception:
+            return JsonResponse({'error': 'something bad'}, status=400)

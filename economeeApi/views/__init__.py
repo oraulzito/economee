@@ -1,6 +1,7 @@
 from .account import *
 from .balance import *
 from .card import *
+from .charts import *
 from .currency import *
 from .invoice import *
 from .recurringRelease import *

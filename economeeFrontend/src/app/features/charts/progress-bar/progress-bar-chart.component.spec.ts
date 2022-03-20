@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GraphicTimelineComponent } from './graphic-timeline.component';
+import { ProgressBarChartComponent } from './progress-bar-chart.component';
 
-describe('GraphicTimelineComponent', () => {
-  let component: GraphicTimelineComponent;
-  let fixture: ComponentFixture<GraphicTimelineComponent>;
+describe('ProgressBarComponent', () => {
+  let component: ProgressBarChartComponent;
+  let fixture: ComponentFixture<ProgressBarChartComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GraphicTimelineComponent ]
+      declarations: [ ProgressBarChartComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GraphicTimelineComponent);
+    fixture = TestBed.createComponent(ProgressBarChartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

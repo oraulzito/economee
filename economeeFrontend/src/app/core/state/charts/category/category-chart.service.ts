@@ -2,32 +2,34 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {setLoading} from '@datorama/akita';
 import {catchError, shareReplay, tap} from 'rxjs/operators';
-import {CategoryGraphicsStore} from './category-graphics.store';
+import {CategoryChartStore} from './category-chart-store.service';
 import {throwError} from "rxjs";
 import {UiService} from "../../ui/ui.service";
-import {CategoryGraphic} from "./category-graphics.model";
-import {Account} from "../../account/account.model";
-import {Balance} from "../../balance/balance.model";
+import {CategoryChart} from "./category-chart.model";
+import {AccountQuery} from "../../account/account.query";
+import {BalanceQuery} from "../../balance/balance.query";
 
 @Injectable({providedIn: 'root'})
-export class CategoryGraphicsService {
+export class CategoryChartService {
 
   constructor(
-    private categoryStore: CategoryGraphicsStore,
+    private accountQuery: AccountQuery,
+    private balanceQuery: BalanceQuery,
+    private categoryStore: CategoryChartStore,
     private uiService: UiService,
     private http: HttpClient
   ) {
   }
 
 // tslint:disable-next-line:typedef
-  getCategoryGraphic(account: Account, balance: Balance) {
-    return this.http.get<CategoryGraphic[]>('/api/release/category_graphic?account_id=' + account.id + '&balance_id=' + balance.id,
+  getCategoryChart(balance_id) {
+    return this.http.get<CategoryChart[]>('/api/charts/category?account_id='
+      + this.accountQuery.getActiveId() + '&balance_id=' + balance_id,
       this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.categoryStore),
       tap(entities => {
         this.categoryStore.set(entities);
-        console.log(entities);
       }),
       catchError(error => throwError(error))
     );

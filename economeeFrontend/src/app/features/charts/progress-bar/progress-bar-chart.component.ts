@@ -10,11 +10,11 @@ import {InvoiceQuery} from "../../../core/state/invoice/invoice.query";
 
 
 @Component({
-  selector: 'app-progress-bar',
-  templateUrl: './graphic-progress-bar.component.html',
-  styleUrls: ['./graphic-progress-bar.component.less']
+  selector: 'app-progress-bar-chart',
+  templateUrl: './progress-bar-chart.component.html',
+  styleUrls: ['./progress-bar-chart.component.less']
 })
-export class GraphicProgressBarComponent implements OnInit {
+export class ProgressBarChartComponent implements OnInit {
 
   @Input() id;
   @Input() progressTitle1?: string = '';

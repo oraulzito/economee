@@ -16,9 +16,6 @@ import {AkitaNgDevtools} from '@datorama/akita-ngdevtools';
 import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 
-import * as PlotlyJS from 'plotly.js-dist-min';
-import {PlotlyModule} from 'angular-plotly.js';
-
 import {NzLayoutModule} from 'ng-zorro-antd/layout';
 import {NzGridModule} from "ng-zorro-antd/grid";
 import {NzSpaceModule} from "ng-zorro-antd/space";
@@ -34,8 +31,6 @@ import {ReleaseModule} from "./features/release/release.module";
 import {NzSpinModule} from "ng-zorro-antd/spin";
 import en from '@angular/common/locales/en';
 
-PlotlyModule.plotlyjs = PlotlyJS;
-
 registerLocaleData(ptBr);
 registerLocaleData(en);
 
@@ -44,7 +39,6 @@ registerLocaleData(en);
     AppComponent,
   ],
   imports: [
-    PlotlyModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
