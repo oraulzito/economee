@@ -15,6 +15,7 @@ import {Balance} from "./balance.model";
 import {ReleaseStore} from "../release/release.store";
 import {InvoiceStore} from "../invoice/invoice.store";
 import {UiService} from "../ui/ui.service";
+import {actionType} from "../actionType";
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {
@@ -173,6 +174,37 @@ export class BalanceService {
 
     this.balanceStore.updateActive({total_available: totalAvailable});
     this.balanceStore.updateActive({total_available: totalAvailable});
+  }
+
+  updateBalanceTotalValues(release, action) {
+    let value = 0;
+    if (action === actionType.REMOVE || action === actionType.UPDATE) {
+      if (release.type == 0) {
+        value = this.balanceQuery.getActive().total_incomes - release.installment_value
+      } else {
+        value = this.balanceQuery.getActive().total_expenses - release.installment_value
+      }
+
+      if (release.type == 0) {
+        this.balanceStore.updateActive({total_expenses: value});
+      } else {
+        this.balanceStore.updateActive({total_incomes: value});
+      }
+    }
+
+    if (action === actionType.ADD || action === actionType.UPDATE) {
+      if (release.type == 0) {
+        value = this.balanceQuery.getActive().total_expenses + release.installment_value
+      } else {
+        value = this.balanceQuery.getActive().total_incomes + release.installment_value
+      }
+
+      if (release.type == 0) {
+        this.balanceStore.updateActive({total_expenses: value});
+      } else {
+        this.balanceStore.updateActive({total_incomes: value});
+      }
+    }
   }
 
 }

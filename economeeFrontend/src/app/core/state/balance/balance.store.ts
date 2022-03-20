@@ -12,5 +12,4 @@ export class BalanceStore extends EntityStore<BalanceState> {
   constructor() {
     super();
   }
-
 }

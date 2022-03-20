@@ -18,6 +18,7 @@ import {UiQuery} from "../ui/ui.query";
 import {BalanceStore} from "../balance/balance.store";
 import {BalanceService} from "../balance/balance.service";
 import {InvoiceService} from "../invoice/invoice.service";
+import {actionType} from "../actionType";
 
 @Injectable({providedIn: 'root'})
 export class AccountService {
@@ -140,6 +141,27 @@ export class AccountService {
     this.cardStore.set(account['cards']);
     this.cardService.setActiveCard();
     this.accountStore.setActive(account);
+  }
+
+  updateAccountTotalAvailable(release, action) {
+    let value = 0;
+    if (action === actionType.REMOVE || action === actionType.UPDATE) {
+      if (release.type == 0) {
+        value = this.accountQuery.getActive().total_available + release.installment_value;
+      } else {
+        value = this.accountQuery.getActive().total_available - release.installment_value;
+      }
+      this.accountStore.updateActive({total_available: value});
+    }
+
+    if (action === actionType.ADD || action === actionType.UPDATE) {
+      if (release.type == 0) {
+        value = this.accountQuery.getActive().total_available - release.installment_value;
+      } else {
+        value = this.accountQuery.getActive().total_available + release.installment_value;
+      }
+      this.accountStore.updateActive({total_available: value});
+    }
   }
 
 }
