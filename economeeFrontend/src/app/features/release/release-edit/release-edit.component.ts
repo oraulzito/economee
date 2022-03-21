@@ -1,5 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Card} from "../../../core/state/card/card.model";
+import {Component, Input, OnInit} from '@angular/core';
 import {Release} from "../../../core/state/release/release.model";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 
@@ -13,16 +12,13 @@ import {ReleaseQuery} from "../../../core/state/release/release.query";
 
 
 @Component({
-  selector: 'app-release-modal',
-  templateUrl: './release-modal.component.html',
-  styleUrls: ['./release-modal.component.less']
+  selector: 'app-release-edit',
+  templateUrl: './release-edit.component.html',
+  styleUrls: ['./release-edit.component.less']
 })
-export class ReleaseModalComponent implements OnInit {
+export class ReleaseEditComponent implements OnInit {
   @Input() isVisible: boolean;
-  @Input() card: Card;
-  @Input() release?: Release;
-  @Input() releaseType: number;
-  @Output() saved = new EventEmitter();
+  @Input() release: Release;
 
   currency: Observable<string | undefined>;
   releaseForm: FormGroup;
@@ -40,7 +36,7 @@ export class ReleaseModalComponent implements OnInit {
   }
 
   //FIXME change R$ to this.currency
-  formatterCurrency = (value: number): string => `R$ ${value}`;
+  parserDollar = (value: string): string => value.replace('R$ ', '');
   formatterInstallments = (value: number): string => `${value} X`;
 
   ngOnInit() {
@@ -52,46 +48,25 @@ export class ReleaseModalComponent implements OnInit {
     });
 
     this.releaseForm = this.fb.group({
-      installment_value: new FormControl(),
-      value: new FormControl(),
-      description: new FormControl(),
-      date_release: new FormControl(),
-      is_paid: new FormControl(),
-      category_id: new FormControl(),
-      installment_times: new FormControl(),
-      place: new FormControl(),
-      type: new FormControl(),
-      card_id: new FormControl(this.releaseType == 2 ? this.cardQuery.getActive() : null)
+      installment_value: new FormControl(this.release.installment_value),
+      value: new FormControl(this.release.value),
+      description: new FormControl(this.release.description),
+      date_release: new FormControl(this.release.date_release),
+      is_paid: new FormControl(this.release.is_paid),
+      category_id: new FormControl(this.release.category.id),
+      installment_times: new FormControl(this.release.installment_times),
+      place: new FormControl(this.release.place),
+      type: new FormControl(this.release.type),
+      invoice_id: new FormControl(this.release.invoice_id)
     });
   }
 
   // tslint:disable-next-line:typedef
-  editRelease(id) {
-    this.releaseService.update(id, this.releaseForm.value).subscribe();
-  }
-
-  // tslint:disable-next-line:typedef
-  deleteRelease(id) {
-    this.releaseService.remove(id);
-  }
-
-  // tslint:disable-next-line:typedef
-  saveRelease() {
-    return this.releaseService.add(this.releaseForm.value).subscribe(
-      r => console.log(r),
-      (e) => this.saved.emit(true),
-      () => this.isVisible = false
+  editRelease() {
+    this.releaseService.update(this.release.id, this.releaseForm.value).subscribe(
+      r => this.isVisible = false,
+      e => alert(e)
     );
-  }
-
-  // tslint:disable-next-line:typedef
-  cancelRelease() {
-    this.saved.emit(true);
-  }
-
-  handleOk(): void {
-
-    this.isVisible = false;
   }
 
   handleCancel(): void {

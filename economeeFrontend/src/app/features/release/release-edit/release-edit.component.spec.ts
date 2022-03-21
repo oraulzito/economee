@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReleaseModalComponent } from './release-modal.component';
+import { ReleaseEditComponent } from './release-edit.component';
 
-describe('ReleaseModalComponent', () => {
-  let component: ReleaseModalComponent;
-  let fixture: ComponentFixture<ReleaseModalComponent>;
+describe('ReleaseEditComponent', () => {
+  let component: ReleaseEditComponent;
+  let fixture: ComponentFixture<ReleaseEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ReleaseModalComponent ]
+      declarations: [ ReleaseEditComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReleaseModalComponent);
+    fixture = TestBed.createComponent(ReleaseEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

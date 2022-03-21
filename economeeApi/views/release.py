@@ -122,7 +122,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 installment_value=installment_value,
                 installment_times=installment_times,
                 date_release=release_date + relativedelta(months=+i),
-                is_paid=bool(request.data.get('is_paid')) if card_id and i == 0 != None else False,
+                is_paid=bool(request.data.get('is_paid')) if not card_id else False,
                 release=release,
                 balance=balances[i],
                 invoice=invoices[i] if card_id is not None else None,
@@ -143,9 +143,9 @@ class ReleaseView(viewsets.ModelViewSet):
     @classmethod
     def update_invoice_total(cls, invoice, release_type, value):
         if release_type == 0:
-            invoice.total_expenses += value
+            invoice.total_value += value
         elif release_type == 1:
-            invoice.total_incomes -= value
+            invoice.total_value -= value
         invoice.save()
 
     @classmethod
@@ -223,10 +223,10 @@ class ReleaseView(viewsets.ModelViewSet):
             recurring_release__balance__account__owner=self.request.user
         ).all().distinct()
 
-    @action(detail=False, methods=['PATCH'])
+    @action(detail=False, methods=['patch'], url_path='pay/(?P<recurring_release_id>[^/.]+)')
     def pay(self, request, **kwargs):
         try:
-            instance = kwargs.get('pk')
+            instance = kwargs.get('recurring_release_id')
 
             recurring_releases = RecurringRelease.objects.filter(
                 id=instance

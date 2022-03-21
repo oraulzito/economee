@@ -4,6 +4,7 @@ import {Invoice} from "../invoice/invoice.model";
 
 export interface Release {
   id: number | string;
+  release_id: number | string;
   description: string;
   place: string;
   value: number;

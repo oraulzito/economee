@@ -12,16 +12,25 @@ import {CardQuery} from '../card/card.query';
 import {catchError, shareReplay, tap} from "rxjs/operators";
 import {throwError} from "rxjs";
 import {Invoice} from "../invoice/invoice.model";
+import {AccountStore} from "../account/account.store";
+import {BalanceStore} from "../balance/balance.store";
+import {actionType} from "../actionType";
+import {AccountService} from "../account/account.service";
+import {BalanceService} from "../balance/balance.service";
 
 @Injectable({providedIn: 'root'})
 export class ReleaseService {
 
   constructor(
+    private accountService: AccountService,
+    private balanceService: BalanceService,
     private uiService: UiService,
+    private accountStore: AccountStore,
+    private balanceStore: BalanceStore,
     private releaseStore: ReleaseStore,
-    private cardQuery: CardQuery,
-    private balanceQuery: BalanceQuery,
     private accountQuery: AccountQuery,
+    private balanceQuery: BalanceQuery,
+    private cardQuery: CardQuery,
     private invoiceQuery: InvoiceQuery,
     private releaseQuery: ReleaseQuery,
     private http: HttpClient
@@ -80,7 +89,7 @@ export class ReleaseService {
     const body = {
       date_release: form.date_release,
       description: form.description,
-      is_paid: form.is_release_paid,
+      is_paid: form.is_paid,
       place: form.place,
       installment_times: form.installment_times,
       type: form.type,
@@ -91,9 +100,13 @@ export class ReleaseService {
       category_id: form.category_id,
     };
 
-    return this.http.post<[Release]>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
+    return this.http.post<Release>('/api/release/', body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      tap(entities => this.releaseStore.add(entities)),
+      tap(entity => {
+        this.releaseStore.add(entity);
+        this.accountService.updateAccountTotalAvailable(entity, actionType.ADD);
+        this.balanceService.updateBalanceTotalValues(entity, actionType.ADD);
+      }),
       catchError(error => throwError(error))
     );
   }
@@ -101,40 +114,46 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   update(id, form) {
     const body = {
-      installment_value: form.installment_value,
       value: form.value,
       description: form.description,
-      date_release: form.date_release,
-      is_release_paid: form.is_release_paid,
+      is_paid: form.is_paid,
       category_id: form.category_id,
-      type: form.type,
-      date_repeat: form.date_release,
-      account_id: this.accountQuery.getActiveId(),
-      repeat_times: form.repeat_times
+      type: form.type
     };
 
     return this.http.patch('/api/release/' + id, body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      tap(entities => entities === 1 ? this.releaseStore.update(id, body) : this.releaseStore.setError("Not updated")),
+      tap(entities => {
+        if (entities === 1) {
+          this.releaseStore.update(id, body)
+          this.accountService.updateAccountTotalAvailable(body, actionType.UPDATE);
+          this.balanceService.updateBalanceTotalValues(body, actionType.UPDATE);
+        } else {
+          this.releaseStore.setError("Not updated")
+        }
+      }),
       catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
-  pay(id, isPaid) {
-    const body = {
-      is_paid: isPaid
-    };
-
-    return this.http.patch('/api/release/pay/' + id, body, this.uiService.httpHeaderOptions()).pipe(
+  pay(id) {
+    let release = this.releaseQuery.getEntity(id);
+    return this.http.patch('/api/release/pay/' + id + '/', null, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      tap(entities => entities === 1 ? this.releaseStore.update(id, body) : this.releaseStore.setError("Not updated")),
+      tap(entities => entities === 1 ? this.releaseStore.update(id, {is_paid: !release.is_paid}) : this.releaseStore.setError("Not updated")),
       catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
   remove(id: ID) {
+    this.releaseQuery.selectEntity(state => state.release_id == id).subscribe(
+      release => {
+        this.accountService.updateAccountTotalAvailable(release, actionType.REMOVE);
+        this.balanceService.updateBalanceTotalValues(release, actionType.REMOVE);
+      }
+    );
     return this.http.delete<number>('/api/release/' + id, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       tap(entities => entities === 1 ? this.releaseStore.remove(id) : this.releaseStore.setError("Not removed")),

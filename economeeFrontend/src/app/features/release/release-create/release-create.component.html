@@ -7,9 +7,8 @@
             <nz-form-item>
               <nz-form-label>Valor</nz-form-label>
               <nz-input-number
-                [ngModel]="release? release.installment_value:0"
-                [nzFormatter]="formatterCurrency"
-                [nzMin]="1"
+                [nzMin]="0"
+                [nzParser]="parserDollar"
                 formControlName="value"
                 type="number">
               </nz-input-number>
@@ -22,7 +21,6 @@
             <nz-form-item>
               <nz-form-label>Data</nz-form-label>
               <nz-date-picker
-                [ngModel]="release? release.date_release :''"
                 formControlName="date_release"
                 type="date">
               </nz-date-picker>
@@ -35,10 +33,10 @@
           <h6>
             <nz-form-item>
               <nz-form-label>Descrição</nz-form-label>
-              <input [ngModel]="release? release.description :''"
-                     formControlName="description"
-                     nz-input
-                     type="text">
+              <input
+                formControlName="description"
+                nz-input
+                type="text">
             </nz-form-item>
           </h6>
         </div>
@@ -49,9 +47,11 @@
             <nz-form-item>
               <nz-form-label>Local</nz-form-label>
               <nz-input-group [nzPrefix]="prefixLocal">
-                <input [ngModel]="release? release.place: ''" formControlName="place"
-                       nz-input
-                       type="text">
+                <input
+
+                  formControlName="place"
+                  nz-input
+                  type="text">
               </nz-input-group>
               <ng-template #prefixLocal>
                 <i nz-icon nzTheme="outline" nzType="environment"></i>
@@ -65,7 +65,6 @@
             <nz-form-item>
               <nz-form-label>Parcelas</nz-form-label>
               <nz-input-number
-                [ngModel]="release? release.installment_times:1"
                 [nzFormatter]="formatterInstallments"
                 [nzMin]="1"
                 formControlName="installment_times"
@@ -82,9 +81,10 @@
       <div nz-row nzAlign="middle" nzJustify="space-around">
         <div nz-col nzSm="8">
           <nz-form-item>
-            <nz-select [ngModel]="release? release.category.id :0" [nzDropdownRender]="renderTemplate"
-                       class="text-center category"
-                       formControlName="category_id">
+            <nz-select
+              [nzDropdownRender]="renderTemplate"
+              class="text-center category"
+              formControlName="category_id">
               <nz-option [nzLabel]="'Categoria'" [nzValue]="0" nzDisabled></nz-option>
               <nz-option *ngFor="let c of categories" [nzLabel]=c.name [nzValue]=c.id></nz-option>
             </nz-select>
@@ -96,7 +96,7 @@
 
         <div nz-col nzSm="8">
           <nz-form-item>
-            <nz-select [ngModel]="release? release.type:0" class="text-center type" formControlName="type">
+            <nz-select class=" text-center type" formControlName="type">
               <nz-option [nzLabel]="'Tipo'" nzDisabled></nz-option>
               <nz-option [nzLabel]="'Gasto'" [nzValue]="0"></nz-option>
               <nz-option [nzLabel]="'Ganho'" [nzValue]="1"></nz-option>
@@ -106,7 +106,7 @@
 
         <div nz-col nzSm="8">
           <nz-form-item>
-            <nz-select [ngModel]="release? release.is_paid: 0" class="text-center paid"
+            <nz-select class="text-center paid"
                        formControlName="is_paid">
               <nz-option [nzLabel]="'Está Pago?'" [nzValue]="0" nzDisabled></nz-option>
               <nz-option [nzLabel]="'Pago'" [nzValue]=true></nz-option>

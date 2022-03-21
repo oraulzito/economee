@@ -10,6 +10,7 @@ import {getEntityType} from "@datorama/akita";
 import {ReleaseState} from "../../../core/state/release/release.store";
 import {Observable} from "rxjs";
 import {CardState} from "../../../core/state/card/card.store";
+import {Release} from "../../../core/state/release/release.model";
 
 @Component({
   selector: 'app-release-list',
@@ -20,12 +21,14 @@ export class ReleaseListComponent implements OnInit {
   @Input()
   releaseType: number;
 
-  card_name: Observable<string | ''>;
-  card: Observable<getEntityType<CardState> | ''>;
-  cards: Observable<getEntityType<CardState>[]>;
-  releases: Observable<getEntityType<ReleaseState>[]>;
+  card_name: string;
+  card: getEntityType<CardState>;
+  cards: getEntityType<CardState>[];
+  releases: getEntityType<ReleaseState>[];
+  release: Release;
   releasesLoading: boolean;
-  isModalVisible = false;
+  isCreationModalVisible = false;
+  isEditModalVisible = false;
   isPaidForm: FormGroup;
 
   constructor(
@@ -49,9 +52,15 @@ export class ReleaseListComponent implements OnInit {
     );
 
     this.queryReleases(this.releaseType);
-    this.card = this.cardQuery.activeCard$;
-    this.card_name = this.cardQuery.activeCardName$;
-    this.cards = this.cardQuery.allCards$;
+    this.cardQuery.activeCard$.subscribe(
+      r => this.card = r
+    );
+    this.cardQuery.activeCardName$.subscribe(
+      r => this.card_name = r
+    );
+    this.cardQuery.allCards$.subscribe(
+      r => this.cards = r
+    );
   }
 
   changeActiveCard(id) {
@@ -59,37 +68,50 @@ export class ReleaseListComponent implements OnInit {
     this.queryReleases(this.releaseType);
   }
 
+  create() {
+    this.isCreationModalVisible = !this.isCreationModalVisible;
+  }
+
+  edit(id) {
+    this.release = this.releaseQuery.getEntity(id);
+    this.isEditModalVisible = !this.isEditModalVisible;
+  }
+
   delete(id) {
     this.releaseService.remove(id).subscribe();
     this.queryReleases(this.releaseType);
   }
 
-  pay(id, isPaid) {
-    this.releaseService.pay(id, isPaid).subscribe();
+  pay(id) {
+    this.releaseService.pay(id).subscribe();
     this.queryReleases(this.releaseType);
-  }
-
-  openModalRelease() {
-    this.isModalVisible = !this.isModalVisible;
   }
 
   queryReleases(releaseType) {
     switch (releaseType) {
       case 1:
         //all debit
-        this.releases = this.releaseQuery.loadReleasesDebit$;
+        this.releaseQuery.loadReleasesDebit$.subscribe(
+          r => this.releases = r
+        );
         break;
       case 2:
         // card releases
-        this.releases = this.releaseQuery.loadReleasesCard$;
+        this.releaseQuery.loadReleasesCard$.subscribe(
+          r => this.releases = r
+        );
         break;
       case 3:
         // debit expenses
-        this.releases = this.releaseQuery.loadReleasesDebitExpense$;
+        this.releaseQuery.loadReleasesDebitExpense$.subscribe(
+          r => this.releases = r
+        );
         break;
       case 4:
         // debit incomes
-        this.releases = this.releaseQuery.loadReleasesDebitIncome$;
+        this.releaseQuery.loadReleasesDebitIncome$.subscribe(
+          r => this.releases = r
+        );
         break;
     }
   }

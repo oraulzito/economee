@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
-import {ReleaseModalComponent} from "./release-modal/release-modal.component";
+import {ReleaseCreateComponent} from "./release-create/release-create.component";
 import {ReleaseListComponent} from "./release-list/release-list.component";
 import {SharedModule} from "../../shared/shared.module";
 import {ReactiveFormsModule} from "@angular/forms";
@@ -20,11 +20,13 @@ import {NzModalModule} from "ng-zorro-antd/modal";
 import {NzInputNumberModule} from "ng-zorro-antd/input-number";
 import {NzDividerModule} from "ng-zorro-antd/divider";
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
+import {ReleaseEditComponent} from "./release-edit/release-edit.component";
 
 @NgModule({
   declarations: [
-    ReleaseModalComponent,
+    ReleaseCreateComponent,
     ReleaseListComponent,
+    ReleaseEditComponent,
   ],
   imports: [
     CommonModule,

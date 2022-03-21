@@ -19,7 +19,7 @@ export class ReleaseQuery extends QueryEntity<ReleaseState> {
   });
   loadReleasesDebitIncome$ = this.selectAll({
     filterBy: r => r.type === 1
-  });
+  })
 
   constructor(
     protected store: ReleaseStore,
