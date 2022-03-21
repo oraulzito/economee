@@ -42,6 +42,7 @@ export class PizzaChartComponent implements OnInit {
     this.categoryChartsQuery.selectAll().subscribe(
       (values) => {
         if (values) {
+          this.data = [];
           values.forEach(value => {
             this.data.push({
               'name': value.name,

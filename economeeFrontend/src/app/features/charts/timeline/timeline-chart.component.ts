@@ -43,7 +43,9 @@ export class TimelineChartComponent implements OnInit {
   }
 
   constructChart() {
-    this.timelineQuery.selectAll().subscribe(
+    this.timelineQuery.selectAll({
+      sortBy: 'date_reference',
+    }).subscribe(
       (values) => {
         if (values) {
           values.forEach(value => {
