@@ -1,24 +1,25 @@
 <div class="bg-white rounded-3" nz-row nzAlign="middle" nzJustify="space-between">
-  <div [nzMd]="3" [nzXs]="8" class="logo text-center" nz-col><h3>Economee</h3></div>
+  <div [nzMd]="4" [nzXs]="8" class="logo text-center" nz-col><h3>Economee</h3></div>
   <div [nzMd]="6" [nzXs]="8" nz-col>
     <!--        <nz-date-picker (ngModelChange)="onMonthChange($event)"-->
     <!--                        [(ngModel)]="date_balance"-->
     <!--                        nzMode="month"-->
     <!--        >-->
     <!--        </nz-date-picker>-->
-    <input (change)="onMonthChange($event)"
-           type="month"
-           value="{{date_balance}}">
+    <input
+      (change)="onMonthChange($event)"
+      type="month"
+      value="{{date_balance}}">
   </div>
   <div [nzMd]="12" [nzXs]="14" nz-col>
-    <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input nz-input placeholder="input search text" type="text"/>
-    </nz-input-group>
-    <ng-template #suffixIconSearch>
-      <i nz-icon nzType="search"></i>
-    </ng-template>
+    <!--    <nz-input-group [nzSuffix]="suffixIconSearch">-->
+    <!--      <input nz-input placeholder="input search text" type="text"/>-->
+    <!--    </nz-input-group>-->
+    <!--    <ng-template #suffixIconSearch>-->
+    <!--      <i nz-icon nzType="search"></i>-->
+    <!--    </ng-template>-->
   </div>
-  <div [nzMd]="3" [nzXs]="24" class="text-center" nz-col>
+  <div [nzMd]="2" [nzXs]="24" class="text-center" nz-col>
     <div *ngIf="isLogged$">
       <nz-avatar [nzDropdownMenu]="dropdown" [nzPlacement]="'bottomCenter'" [nzSize]="32" nz-dropdown
                  nzIcon="user"></nz-avatar>
