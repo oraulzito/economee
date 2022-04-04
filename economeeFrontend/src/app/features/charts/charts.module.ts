@@ -10,6 +10,7 @@ import {BarChartModule, PieChartModule} from "@swimlane/ngx-charts";
 import {PizzaChartComponent} from "./pizza/pizza-chart.component";
 import {ProgressBarChartComponent} from "./progress-bar/progress-bar-chart.component";
 import {TimelineChartComponent} from "./timeline/timeline-chart.component";
+import {NgChartsModule} from "ng2-charts";
 
 
 @NgModule({
@@ -18,15 +19,16 @@ import {TimelineChartComponent} from "./timeline/timeline-chart.component";
     ProgressBarChartComponent,
     TimelineChartComponent
   ],
-  imports: [
-    CommonModule,
-    NzProgressModule,
-    NzGridModule,
-    NzStatisticModule,
-    NzIconModule,
-    BarChartModule,
-    PieChartModule,
-  ],
+    imports: [
+        CommonModule,
+        NzProgressModule,
+        NzGridModule,
+        NzStatisticModule,
+        NzIconModule,
+        BarChartModule,
+        PieChartModule,
+        NgChartsModule,
+    ],
   providers: [],
   exports: [
     PizzaChartComponent,

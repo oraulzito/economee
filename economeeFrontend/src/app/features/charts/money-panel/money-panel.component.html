@@ -1,8 +1,10 @@
-<nz-statistic
-  [nzPrefix]="prefixTplOne"
-  [nzSuffix]="data.suffix"
-  [nzTitle]="data.title"
-  [nzValueStyle]="{ color: data.color }"
-  [nzValue]="data.value | currency: 'BRL'"
-></nz-statistic>
-<ng-template #prefixTplOne><i nz-icon nzType="{{data.icon}}"></i></ng-template>
+<div class="text-center">
+  <nz-statistic
+    [nzPrefix]="prefixTplOne"
+    [nzSuffix]="data.suffix"
+    [nzTitle]="data.title"
+    [nzValueStyle]="{ color: data.color }"
+    [nzValue]="data.value | currency: this.currency"
+  ></nz-statistic>
+  <ng-template #prefixTplOne><i nz-icon nzType="{{data.icon}}"></i></ng-template>
+</div>

@@ -18,6 +18,7 @@ export class MoneyPanelComponent implements OnInit {
   value?: number;
 
   data: { value?: Observable<number> | number; color: string; icon: string; title: string; suffix: string; prefix?: 'R$' };
+  currency: string;
 
   constructor(
     private accountQuery: AccountQuery,
@@ -28,12 +29,13 @@ export class MoneyPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.accountQuery.currencySymbol$.subscribe(c => this.currency = c);
     let balance_total = 0;
     switch (this.id) {
       case 1:
         this.data = {
-          title: 'Valor recebido no mês',
-          icon: 'arrow-up',
+          title: 'Receitas',
+          icon: '',
           color: '#3F8600',
           value: this.value,
           suffix: '',
@@ -42,8 +44,8 @@ export class MoneyPanelComponent implements OnInit {
         break;
       case 2:
         this.data = {
-          title: 'Valor gasto no mês',
-          icon: 'arrow-down',
+          title: 'Despesas',
+          icon: '',
           color: '#CF1322',
           value: this.value,
           suffix: '',
@@ -52,7 +54,7 @@ export class MoneyPanelComponent implements OnInit {
         break;
       case 3:
         this.data = {
-          title: 'Sobrará com todos os gastos pagos',
+          title: 'Balanço mensal com despesas pagas',
           icon: '',
           color: '#3F8600',
           value: 0,
@@ -72,7 +74,7 @@ export class MoneyPanelComponent implements OnInit {
         break;
       case 4:
         this.data = {
-          title: 'Sobrará com gastos ainda não pagos',
+          title: 'Balanço mensal com despesas não pagas',
           icon: '',
           color: '#CF1322',
           value: 0,
@@ -93,7 +95,7 @@ export class MoneyPanelComponent implements OnInit {
         break;
       case 5:
         this.data = {
-          title: 'Disponível',
+          title: 'Saldo atual',
           icon: '',
           color: '#3F8600',
           suffix: '',
@@ -102,7 +104,7 @@ export class MoneyPanelComponent implements OnInit {
         break;
       case 6:
         this.data = {
-          title: 'Soma dos valores das faturas',
+          title: 'Somatório das faturas',
           icon: '',
           color: '#3F8600',
           suffix: '',

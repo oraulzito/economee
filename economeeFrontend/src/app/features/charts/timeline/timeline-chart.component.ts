@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {AccountQuery} from "../../../core/state/account/account.query";
 import {TimelineChartService} from "../../../core/state/charts/timeline/timeline-chart.service";
 import {TimelineChartQuery} from "../../../core/state/charts/timeline/timeline-chart-query.service";
-
+import {ChartConfiguration, ChartData, ChartType} from "chart.js";
+import {BaseChartDirective} from "ng2-charts";
 
 @Component({
   selector: 'app-timeline-chart',
@@ -11,17 +12,28 @@ import {TimelineChartQuery} from "../../../core/state/charts/timeline/timeline-c
 })
 export class TimelineChartComponent implements OnInit {
 
-  view: any[] = [700, 400];
-  data: any[] = [];
-  legendTitle: string;
-  xAxisLabel: string;
-  yAxisLabel: string;
-  legend: boolean;
-  showXAxisLabel: boolean;
-  showYAxisLabel: boolean;
-  xAxis: boolean;
-  yAxis: boolean;
-  gradient: boolean;
+  public barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    // We use these empty structures as placeholders for dynamic theming.
+    scales: {
+      x: {},
+      y: {
+        min: 10
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+      },
+    }
+  };
+
+  public barChartType: ChartType = 'bar';
+  public barChartData: ChartData<'bar'>;
+
+  private labels = [];
+  private valueIncomes = [];
+  private valueExpenses = [];
 
   constructor(
     private timelineService: TimelineChartService,
@@ -32,53 +44,36 @@ export class TimelineChartComponent implements OnInit {
       a => {
         if (a)
           this.timelineService.get().subscribe(
-            () => this.constructChart()
+            () => this.constructChartData()
           )
       }
     );
   }
 
   ngOnInit() {
-
   }
 
-  constructChart() {
+  constructChartData() {
     this.timelineQuery.selectAll({
       sortBy: 'date_reference',
     }).subscribe(
       (values) => {
         if (values) {
           values.forEach(value => {
-            let series = [{
-              'name': 'Gastos',
-              'value': value.total_expenses
-            }, {
-              'name': 'Ganhos',
-              'value': value.total_incomes
-            }];
-
-            this.data.push(
-              {
-                'name': new Date(value.date_reference).toLocaleString('PT-br', {month: 'short'}) + '/' + new Date(value.date_reference).getFullYear(),
-                'series': series
-              }
-            )
+            this.labels.push(new Date(value.date_reference).toLocaleString('PT-br', {month: 'short'}) + '/' + new Date(value.date_reference).getFullYear());
+            this.valueIncomes.push(value.total_incomes);
+            this.valueExpenses.push(value.total_expenses);
           });
-          this.data = [...this.data];
         }
-      }
-    );
+      });
 
-    this.legendTitle = "Linha do tempo de gastos e ganhos";
-    this.xAxisLabel = "Mês";
-    this.yAxisLabel = "Valor Gasto";
-    this.legend = true;
-    this.showXAxisLabel = true;
-    this.showYAxisLabel = true;
-    this.xAxis = true;
-    this.yAxis = true;
-    this.gradient = true;
-
+    this.barChartData = {
+      labels: [...this.labels],
+      datasets: [
+        {data: [...this.valueExpenses], label: 'Gastos'},
+        {data: [...this.valueIncomes], label: 'Ganhos'}
+      ]
+    }
   }
 
 }

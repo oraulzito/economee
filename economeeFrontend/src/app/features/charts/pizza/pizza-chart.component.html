@@ -1,7 +1,6 @@
-<ngx-charts-pie-chart
-  [gradient]="gradient"
-  [legendTitle]="legendTitle"
-  [legend]="legend"
-  [results]="data"
-  [view]="view">
-</ngx-charts-pie-chart>
+<canvas [data]="pieChartData"
+        [options]="pieChartOptions"
+        [plugins]="pieChartPlugins"
+        [type]="pieChartType"
+        baseChart>
+</canvas>

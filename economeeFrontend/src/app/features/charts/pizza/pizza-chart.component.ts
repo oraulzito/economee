@@ -3,6 +3,8 @@ import {CategoryChartService} from "../../../core/state/charts/category/category
 import {CategoryChartQuery} from "../../../core/state/charts/category/category-chart-query.service";
 import {BalanceQuery} from "../../../core/state/balance/balance.query";
 import {AccountQuery} from "../../../core/state/account/account.query";
+import {ChartData, ChartOptions, ChartType} from "chart.js";
+import DatalabelsPlugin from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-pizza-chart',
@@ -10,11 +12,16 @@ import {AccountQuery} from "../../../core/state/account/account.query";
   styleUrls: ['./pizza-chart.component.less']
 })
 export class PizzaChartComponent implements OnInit {
-  view: any[] = [350, 250];
-  data: any[] = [];
-  legendTitle: string;
-  legend: boolean;
-  gradient: boolean;
+  // Pie
+  pieChartOptions: ChartOptions = {
+    responsive: true,
+  };
+  pieChartLabels = [];
+  pieChartData: ChartData<'pie'>;
+  pieChartType: ChartType = 'pie';
+  pieChartLegend = true;
+  pieChartPlugins = [DatalabelsPlugin];
+  values = [];
 
   constructor(
     private categoryChartsService: CategoryChartService,
@@ -42,21 +49,17 @@ export class PizzaChartComponent implements OnInit {
     this.categoryChartsQuery.selectAll().subscribe(
       (values) => {
         if (values) {
-          this.data = [];
           values.forEach(value => {
-            this.data.push({
-              'name': value.name,
-              'value': value.total
-            })
+            this.pieChartLabels.push(value.name);
+            this.values.push(value.total)
           });
-          this.data = [...this.data];
+          this.pieChartData = {
+            labels: this.pieChartLabels,
+            datasets:
+              [{'data': this.values}]
+          }
         }
       }
     );
-
-    this.legendTitle = "Gastos por categoria";
-    this.legend = true;
-    this.gradient = true;
-
   }
 }
