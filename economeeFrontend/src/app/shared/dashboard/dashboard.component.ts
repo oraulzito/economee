@@ -32,7 +32,6 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.mobile$ = this.uiQuery.isMobile$;
     this.onResize();
-    //
     // this.accountService.getTotalExpenses();
     // this.accountService.getTotalIncomes();
   }

@@ -1,8 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
-import {Observable} from "rxjs";
-
-import {Account} from "../../../core/state/account/account.model";
 import {Balance} from "../../../core/state/balance/balance.model";
 
 import {SessionQuery} from "../../../core/state/user/session/session.query";
@@ -14,6 +11,8 @@ import {SessionService} from "../../../core/state/user/session/session.service";
 import {ReleaseService} from "../../../core/state/release/release.service";
 import {BalanceService} from "../../../core/state/balance/balance.service";
 import {ReleaseCategoryService} from "../../../core/state/release/category/release-category.service";
+import {UiQuery} from "../../../core/state/ui/ui.query";
+import {format} from "date-fns";
 
 @Component({
   selector: 'app-header',
@@ -22,14 +21,16 @@ import {ReleaseCategoryService} from "../../../core/state/release/category/relea
 })
 export class HeaderComponent implements OnInit {
   isLogged$ = this.sessionQuery.isLoggedIn$;
-  date_balance: string;
-  total_available = this.accountQuery.totalAvailable$;
+  actualUrl$ = '/';
+  isLogged;
+  accountName$ = this.accountQuery.activeAccountName$;
 
-  account: Observable<Account>;
-  balance: Observable<Balance>;
+  balanceDate;
+  balance: Balance;
 
   constructor(
     private router: Router,
+    private uiQuery: UiQuery,
     private sessionQuery: SessionQuery,
     private sessionService: SessionService,
     private balanceQuery: BalanceQuery,
@@ -42,11 +43,19 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.isLogged$) {
+    this.uiQuery.actualUrl$.subscribe(url => this.actualUrl$ = url);
+
+    this.sessionQuery.isLoggedIn$.subscribe(
+      ili => this.isLogged = ili
+    );
+
+    if (this.isLogged) {
       this.releaseCategoryService.get().subscribe();
       this.accountService.get().subscribe();
       this.accountService.getMainAccount().subscribe();
-      this.balanceQuery.dateReference$.subscribe(d => this.date_balance = new Date(d).getFullYear() + '/' + new Date(d).getMonth());
+      this.balanceQuery.dateReference$.subscribe(d => {
+        this.balanceDate = format(new Date(d), 'mm/yyyy');
+      });
     }
   }
 
