@@ -1,16 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ReleaseQuery} from '../../../core/state/release/release.query';
 import {BalanceQuery} from "../../../core/state/balance/balance.query";
 import {CardQuery} from "../../../core/state/card/card.query";
-import {CardService} from "../../../core/state/card/card.service";
 import {InvoiceQuery} from "../../../core/state/invoice/invoice.query";
 import {ReleaseService} from "../../../core/state/release/release.service";
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {getEntityType} from "@datorama/akita";
-import {ReleaseState} from "../../../core/state/release/release.store";
-import {Observable} from "rxjs";
-import {CardState} from "../../../core/state/card/card.store";
 import {Release} from "../../../core/state/release/release.model";
+import {ReleaseCategoryQuery} from "../../../core/state/release/category/release-category.query";
+import {CurrencyQuery} from "../../../core/state/currency/currency.query";
+import {AccountQuery} from "../../../core/state/account/account.query";
+import {getEntityType} from "@datorama/akita";
+import {CurrencyState} from "../../../core/state/currency/currency.store";
 
 @Component({
   selector: 'app-release-list',
@@ -18,18 +17,17 @@ import {Release} from "../../../core/state/release/release.model";
   styleUrls: ['./release-list.component.less']
 })
 export class ReleaseListComponent implements OnInit {
-  @Input()
-  releaseType: number;
+  @Input() releases;
+  @Input() listType;
 
-  card_name: string;
-  card: getEntityType<CardState>;
-  cards: getEntityType<CardState>[];
-  releases: getEntityType<ReleaseState>[];
-  release: Release;
+  @Output() releaseEditEventEmitter = new EventEmitter<Release>();
+
+  categories;
+  releaseEdit: Release;
   releasesLoading: boolean;
-  isCreationModalVisible = false;
-  isEditModalVisible = false;
-  isPaidForm: FormGroup;
+  releaseQueryName: string;
+  currency: number | string;
+  currencies: getEntityType<CurrencyState>[];
 
   constructor(
     private balanceQuery: BalanceQuery,
@@ -37,83 +35,33 @@ export class ReleaseListComponent implements OnInit {
     private invoiceQuery: InvoiceQuery,
     private releaseService: ReleaseService,
     private releaseQuery: ReleaseQuery,
-    private cardService: CardService,
-    private fb: FormBuilder,
+    private categoryQuery: ReleaseCategoryQuery,
+    private currencyQuery: CurrencyQuery,
+    private accountQuery: AccountQuery
   ) {
   }
 
   ngOnInit(): void {
-    this.isPaidForm = this.fb.group({
-      is_paid: new FormControl()
-    });
-
-    this.releaseQuery.selectLoading().subscribe(
-      l => this.releasesLoading = l
-    );
-
-    this.queryReleases(this.releaseType);
-    this.cardQuery.activeCard$.subscribe(
-      r => this.card = r
-    );
-    this.cardQuery.activeCardName$.subscribe(
-      r => this.card_name = r
-    );
-    this.cardQuery.allCards$.subscribe(
-      r => this.cards = r
-    );
-  }
-
-  changeActiveCard(id) {
-    this.cardService.setActiveCard(id);
-    this.queryReleases(this.releaseType);
-  }
-
-  create() {
-    this.isCreationModalVisible = !this.isCreationModalVisible;
+    this.releaseQuery.selectLoading().subscribe(l => this.releasesLoading = l);
+    this.categoryQuery.selectAll().subscribe(c => this.categories = c);
+    this.accountQuery.currencySymbol$.subscribe(c => this.currency = c);
   }
 
   edit(id) {
-    this.release = this.releaseQuery.getEntity(id);
-    this.isEditModalVisible = !this.isEditModalVisible;
+    this.releaseEdit = this.releaseQuery.getEntity(id);
+    this.releaseEditEventEmitter.emit(this.releaseEdit);
   }
 
   delete(id) {
     this.releaseService.remove(id).subscribe();
-    this.queryReleases(this.releaseType);
+    this.releaseQuery.queryReleases(this.listType);
   }
 
   pay(id) {
     this.releaseService.pay(id).subscribe();
-    this.queryReleases(this.releaseType);
+    this.releaseQuery.queryReleases(this.listType);
   }
 
-  queryReleases(releaseType) {
-    switch (releaseType) {
-      case 1:
-        //all debit
-        this.releaseQuery.loadReleasesDebit$.subscribe(
-          r => this.releases = r
-        );
-        break;
-      case 2:
-        // card releases
-        this.releaseQuery.loadReleasesCard$.subscribe(
-          r => this.releases = r
-        );
-        break;
-      case 3:
-        // debit expenses
-        this.releaseQuery.loadReleasesDebitExpense$.subscribe(
-          r => this.releases = r
-        );
-        break;
-      case 4:
-        // debit incomes
-        this.releaseQuery.loadReleasesDebitIncome$.subscribe(
-          r => this.releases = r
-        );
-        break;
-    }
-  }
+
 }
 

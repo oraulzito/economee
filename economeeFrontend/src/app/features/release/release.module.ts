@@ -1,10 +1,11 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import {ReactiveFormsModule} from "@angular/forms";
 
 import {ReleaseCreateComponent} from "./release-create/release-create.component";
 import {ReleaseListComponent} from "./release-list/release-list.component";
+import {ReleaseComponent} from './release/release.component';
 import {SharedModule} from "../../shared/shared.module";
-import {ReactiveFormsModule} from "@angular/forms";
 
 import {NzGridModule} from 'ng-zorro-antd/grid';
 import {NzListModule} from 'ng-zorro-antd/list';
@@ -21,12 +22,21 @@ import {NzInputNumberModule} from "ng-zorro-antd/input-number";
 import {NzDividerModule} from "ng-zorro-antd/divider";
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
 import {ReleaseEditComponent} from "./release-edit/release-edit.component";
+import {ScrollingModule} from "@angular/cdk/scrolling";
+import {NzPageHeaderModule} from "ng-zorro-antd/page-header";
+import {NzTabsModule} from "ng-zorro-antd/tabs";
+import {NoDataComponent} from "../../shared/components/no-data/no-data.component";
+import {NzResultModule} from "ng-zorro-antd/result";
+import {NzTypographyModule} from "ng-zorro-antd/typography";
+
 
 @NgModule({
   declarations: [
     ReleaseCreateComponent,
     ReleaseListComponent,
     ReleaseEditComponent,
+    NoDataComponent,
+    ReleaseComponent,
   ],
   imports: [
     CommonModule,
@@ -45,11 +55,18 @@ import {ReleaseEditComponent} from "./release-edit/release-edit.component";
     NzModalModule,
     NzInputNumberModule,
     NzDividerModule,
-    NzDatePickerModule
+    NzDatePickerModule,
+    ScrollingModule,
+    NzPageHeaderModule,
+    NzTabsModule,
+    NzResultModule,
+    NzTypographyModule
   ],
   providers: [],
   exports: [
-    ReleaseListComponent
+    ReleaseListComponent,
+    ReleaseCreateComponent,
+    ReleaseComponent
   ],
   bootstrap: []
 })

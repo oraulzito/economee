@@ -1,86 +1,71 @@
-<nz-list [nzHeader]="headerList"
-         [nzLoading]="releasesLoading"
-         [nzNoResult]="templateNoData"
-         nzItemLayout="vertical">
-  <nz-list-item *ngFor="let release of releases" nz-row>
-    <nz-list-item-meta nz-col nzXs="14">
-      <nz-list-item-meta-avatar [nzSrc]="release.type === 1 ?
-                                     'assets/images/add_circle_black_24dp.svg'
-                                     :
-                                     'assets/images/remove_circle_black_24dp.svg'">
-      </nz-list-item-meta-avatar>
-      <nz-list-item-meta-title>
-        <p>{{ release.installment_value | currency: 'BRL' }}</p>
-      </nz-list-item-meta-title>
-      <nz-list-item-meta-description>
-        {{ release.description }}
-      </nz-list-item-meta-description>
-    </nz-list-item-meta>
+<cdk-virtual-scroll-viewport class="demo-infinite-container" itemSize="80">
+  <nz-list
+    [nzLoading]="releasesLoading"
+    [nzNoResult]="templateNoData"
+    nzItemLayout="vertical">
+    <nz-list-item *ngFor="let release of releases| async" class="border-1 rounded-3 shadow mx-2 my-3 p-3">
+      <div nz-row>
+        <nz-list-item-meta [nzXs]="14" nz-col>
+          <nz-list-item-meta-title>
+            <p>{{ release.installment_value | currency: this.currency }}</p>
+          </nz-list-item-meta-title>
+          <nz-list-item-meta-description>
+            <span>{{ release.description }}</span><br>
+          </nz-list-item-meta-description>
+        </nz-list-item-meta>
 
-    <div nz-col nzXs="10">
-      Local: {{ release.place }}
-      <br>
-      Data: {{ release.date_release |  date: 'dd/MM/yyyy'}}
-      <br>
-      Parcela {{ release.installment_number }} de {{ release.installment_times }}
-    </div>
+        <div [nzXs]="10" nz-col>
+          Local: {{ release.place }}
+          <br>
+          Data: {{ release.date_release |  date: 'dd/MM/yyyy'}}
+          <br>
+          Parcela {{ release.installment_number }} de {{ release.installment_times }}
+        </div>
 
-    <ul nz-col nz-list-item-actions nzXs="24">
-      <nz-list-item-action>
-        <button (click)="edit(release.id)" nz-button nzType="text">
-          <i nz-icon nzTheme="outline" nzType="edit"></i>
-          Editar
-        </button>
-      </nz-list-item-action>
-      <nz-list-item-action>
-        <button (click)="delete(release.release_id)" nz-button nzType="text">
-          <i nz-icon nzTheme="outline" nzType="delete"></i>
-          Deletar
-        </button>
-      </nz-list-item-action>
-      <nz-list-item-action>
-        <button (click)="pay(release.id)" *ngIf="!release.is_paid" nz-button nzType="text">
-          <i nz-icon nzTheme="outline" nzType="wallet"></i>
-          Pagar
-        </button>
-        <button (click)="pay(release.id)" *ngIf="release.is_paid" nz-button nzType="text">
-          <i nz-icon nzTheme="outline" nzType="wallet"></i>
-          Remover pagamento
-        </button>
-      </nz-list-item-action>
-    </ul>
-  </nz-list-item>
-</nz-list>
+        <div [nzXs]="24" nz-col>
+          <ul nz-list-item-actions>
+            <nz-list-item-action>
+              <span *ngIf="release.type === 1">Receita</span>
+              <span *ngIf="release.type === 2">Despesa</span><br>
+            </nz-list-item-action>
+            <nz-list-item-action>
+              <span>{{categories[release.category_id].name}}</span><br>
+            </nz-list-item-action>
+          </ul>
+        </div>
 
-<ng-template #headerList>
-  <div nz-row nzAlign="middle" nzJustify="space-between">
-    <h5 nz-col="14">{{releaseType === 1 ? 'Gastos e Ganhos' : 'Fatura do cartão'}}</h5>
-
-    <div *ngIf="releaseType == 2" nz-col="8">
-      <button [nzDropdownMenu]="menu4" nz-button nz-dropdown>
-        {{card_name}}
-        <i nz-icon nzType="down"></i>
-      </button>
-      <nz-dropdown-menu #menu4="nzDropdownMenu">
-        <ul nz-menu>
-          <li (click)="changeActiveCard(c.id)" *ngFor="let c of cards" nz-menu-item>{{c.name}}</li>
-        </ul>
-      </nz-dropdown-menu>
-    </div>
-
-    <button nz-button nz-col="2">
-      <i (click)="create()" nz-icon nzType="plus-circle"></i>
-    </button>
-  </div>
-</ng-template>
+        <div [nzXs]="24" nz-col>
+          <ul nz-list-item-actions>
+            <nz-list-item-action>
+              <button (click)="edit(release.id)" nz-button nzType="text">
+                <i nz-icon nzTheme="outline" nzType="edit"></i>
+                Editar
+              </button>
+            </nz-list-item-action>
+            <nz-list-item-action>
+              <button (click)="delete(release.release_id)" nz-button nzType="text">
+                <i nz-icon nzTheme="outline" nzType="delete"></i>
+                Deletar
+              </button>
+            </nz-list-item-action>
+            <nz-list-item-action>
+              <button (click)="pay(release.id)" *ngIf="!release.is_paid" nz-button nzType="text">
+                <i nz-icon nzTheme="outline" nzType="wallet"></i>
+                Pagar
+              </button>
+              <button (click)="pay(release.id)" *ngIf="release.is_paid" nz-button nzType="text">
+                <i nz-icon nzTheme="outline" nzType="wallet"></i>
+                Reembolsar
+              </button>
+            </nz-list-item-action>
+          </ul>
+        </div>
+      </div>
+    </nz-list-item>
+  </nz-list>
+</cdk-virtual-scroll-viewport>
 
 <ng-template #templateNoData>
-  <app-no-data-component></app-no-data-component>
+  <app-no-data></app-no-data>
 </ng-template>
-<div *ngIf="isEditModalVisible">
-  <app-release-edit [isVisible]=isEditModalVisible [release]="release"></app-release-edit>
-</div>
-<div *ngIf="isCreationModalVisible">
-  <app-release-create [isVisible]=isCreationModalVisible [releaseType]=releaseType></app-release-create>
-</div>
-<!--[nzTheme]="'twotone'-->
+

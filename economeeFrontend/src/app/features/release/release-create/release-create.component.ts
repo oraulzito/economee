@@ -58,7 +58,7 @@ export class ReleaseCreateComponent implements OnInit {
       installment_times: new FormControl(),
       place: new FormControl(),
       type: new FormControl(),
-      card_id: new FormControl(this.releaseType == 2 ? this.cardQuery.getActiveId() : null)
+      card_id: new FormControl(this.releaseType == 1 ? this.cardQuery.getActiveId() : null)
     });
   }
 
