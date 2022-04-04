@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django_rest.permissions import IsAuthenticated
 from rest_framework import viewsets, authentication
 
-from economeeApi.models import Card
+from economeeApi.models import Card, Invoice
 from economeeApi.permissions import IsObjOwner
 from economeeApi.serializers import CardSerializer
 
@@ -29,6 +29,15 @@ class CardView(viewsets.ModelViewSet):
             pay_date=self.request.data.get('pay_date'),
             account_id=self.request.data.get('account_id'),
         )
+
+        # create an invoice for the card
+        Invoice.object.create(
+            card=card,
+            total_value=card.credit,
+            date_reference=card.pay_date,
+            is_paid=False
+        )
+
         return HttpResponse(card, content_type="application/json")
 
     # FIXME make release category default read only
