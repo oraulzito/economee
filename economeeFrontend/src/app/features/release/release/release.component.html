@@ -1,0 +1,51 @@
+<nz-page-header class="site-page-header">
+  <nz-page-header-title>{{releaseType !== 0 ? 'Receitas e despesas' : 'Fatura do cartão'}}</nz-page-header-title>
+
+  <nz-page-header-extra>
+    <button nz-button nz-col="4">
+      <i (click)="createRelease()" nz-icon nzType="plus-circle"></i>
+    </button>
+  </nz-page-header-extra>
+
+  <nz-page-header-footer>
+    <div *ngIf="releaseType == 1 ">
+      <nz-tabset [nzSelectedIndex]="releaseType" nzCentered>
+        <nz-tab (nzClick)="changeActiveReleaseList(rl.id)" *ngFor="let rl of listOptions" nzTitle="{{rl.name}}">
+          <ng-template nz-tab>
+            <app-release-list
+              (releaseEditEventEmitter)="editRelease($event)"
+              [listType]="rl.id"
+              [releases]="releaseItems">
+            </app-release-list>
+          </ng-template>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+    <div *ngIf="releaseType == 0">
+      <nz-tabset [nzSelectedIndex]="cardID">
+        <nz-tab (nzClick)="changeActiveCard(c.id)" *ngFor="let c of cards" nzTitle="{{c.name}}">
+          <ng-template nz-tab>
+            <app-release-list
+              (releaseEditEventEmitter)="editRelease($event)"
+              [listType]="0"
+              [releases]="releaseItems">
+            </app-release-list>
+          </ng-template>
+        </nz-tab>
+      </nz-tabset>
+    </div>
+  </nz-page-header-footer>
+</nz-page-header>
+
+<div *ngIf="isEditModalVisible">
+  <app-release-edit
+    [isVisible]=isEditModalVisible
+    [release]="releaseEditItem">
+  </app-release-edit>
+</div>
+<div *ngIf="isCreationModalVisible">
+  <app-release-create
+    [isVisible]=isCreationModalVisible
+    [releaseType]=releaseType>
+  </app-release-create>
+</div>
