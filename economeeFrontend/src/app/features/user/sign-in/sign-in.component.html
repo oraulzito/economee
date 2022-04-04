@@ -1,0 +1,8 @@
+<app-form (submit)="createUser()"
+          [formItems]="formItems"
+          [form]="signInForm"
+          [submitText]="'Enviar e entrar'">
+  <button nz-button nzType="link" (click)="back()">
+    Voltar
+  </button>
+</app-form>

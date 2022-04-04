@@ -4,6 +4,7 @@ import {NotFoundComponent} from './not-found.component';
 import {NzResultModule} from 'ng-zorro-antd/result';
 import {NzGridModule} from 'ng-zorro-antd/grid';
 import {NzButtonModule} from 'ng-zorro-antd/button';
+import {SharedModule} from "../../shared.module";
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import {NzButtonModule} from 'ng-zorro-antd/button';
     NzResultModule,
     NzGridModule,
     NzButtonModule,
+    SharedModule,
   ],
   providers: [],
   bootstrap: [NotFoundComponent]

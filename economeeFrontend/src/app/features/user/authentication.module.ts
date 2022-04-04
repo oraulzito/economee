@@ -11,6 +11,9 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {NzFormModule} from 'ng-zorro-antd/form';
 import {NzInputModule} from 'ng-zorro-antd/input';
 import {NzIconModule} from 'ng-zorro-antd/icon';
+import {NzSelectModule} from "ng-zorro-antd/select";
+import {NzInputNumberModule} from "ng-zorro-antd/input-number";
+import {NzCheckboxModule} from "ng-zorro-antd/checkbox";
 
 @NgModule({
   declarations: [
@@ -28,6 +31,9 @@ import {NzIconModule} from 'ng-zorro-antd/icon';
     NzFormModule,
     NzInputModule,
     NzIconModule,
+    NzSelectModule,
+    NzInputNumberModule,
+    NzCheckboxModule,
   ],
   providers: [],
   bootstrap: []

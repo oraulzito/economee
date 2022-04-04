@@ -1,0 +1,80 @@
+<h5>{{formTitle}}</h5>
+<form [formGroup]="form" [nzLayout]="'vertical'" class="p-lg-4 p-sm-1 overflow-auto max-vh-50" nz-form>
+  <div nz-row nzJustify="space-around">
+    <div *ngFor="let formItem of formItems" [nzMd]="formItem.size.md" [nzSm]="formItem.size.sm" nz-col>
+      <nz-form-item>
+        <h7>
+          <nz-form-label>{{formItem.label}}</nz-form-label>
+        </h7>
+        <nz-form-control [nzErrorTip]="errorTpl">
+          <nz-input-group [ngSwitch]=formItem.type [nzPrefixIcon]=formItem.icon>
+            <!-- Text -->
+            <input *ngSwitchCase="'text'"
+                   [formControlName]=formItem.name
+                   [max]="formItem.max?formItem.max:250"
+                   [min]="formItem.max?formItem.max:3"
+                   nz-input
+                   type="{{formItem.type}}">
+            <!-- Textarea -->
+            <input *ngSwitchCase="'textarea'"
+                   [formControlName]=formItem.name
+                   [max]="formItem.max?formItem.max:480"
+                   [min]="formItem.max?formItem.max:1"
+                   nz-input
+                   type="{{formItem.type}}">
+            <!-- Email -->
+            <input *ngSwitchCase="'email'"
+                   [formControlName]=formItem.name
+                   nz-input
+                   type="{{formItem.type}}">
+            <!-- Password -->
+            <input *ngSwitchCase="'password'"
+                   [formControlName]=formItem.name
+                   nz-input
+                   type="{{formItem.type}}">
+            <!-- Date -->
+            <nz-date-picker *ngSwitchCase="'date'"
+                            [formControlName]=formItem.name
+            ></nz-date-picker>
+            <nz-week-picker *ngSwitchCase="'week'"
+                            [formControlName]=formItem.name
+            ></nz-week-picker>
+            <nz-month-picker *ngSwitchCase="'month'"
+                             [formControlName]=formItem.name
+            ></nz-month-picker>
+            <nz-year-picker *ngSwitchCase="'year'"
+                            [formControlName]=formItem.name
+            ></nz-year-picker>
+            <!-- Number -->
+            <nz-input-number *ngSwitchCase="'number'"
+                             [formControlName]=formItem.name
+                             [nzMax]="formItem.max?formItem.max :0"
+                             [nzMin]="formItem.min?formItem.min :0"
+                             class="border-0 w-100 h-100 m-0 p-0"
+                             type="{{formItem.type}}"></nz-input-number>
+            <!-- Select -->
+            <nz-select *ngSwitchCase="'dropdown'"
+                       [formControlName]=formItem.name
+                       [nzPlaceHolder]=formItem.label
+                       class="w-100">
+              <nz-option *ngFor="let option of formItem.options"
+                         nzLabel="{{option.label}}"
+                         nzValue="{{option.value}}">
+              </nz-option>
+            </nz-select>
+            <ng-template #errorTpl let-control>
+              <ng-container *ngIf="control.hasError('required')">
+                {{formItem.errorTip.required}}
+              </ng-container>
+              <ng-container *ngIf="control.hasError('error')">
+                {{formItem.errorTip.error}}
+              </ng-container>
+            </ng-template>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <button [nzType]="'primary'" class="login-form-button login-form-margin" nz-button nz-col>{{submitText}}</button>
+  <ng-content></ng-content>
+</form>

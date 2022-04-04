@@ -23,13 +23,16 @@ import {NzModalModule} from "ng-zorro-antd/modal";
 import {NzInputModule} from "ng-zorro-antd/input";
 import {NzSelectModule} from "ng-zorro-antd/select";
 
-import {DashboardModule} from './features/dashboard/dashboard.module';
-import {NotFoundModule} from "./features/not-found/not-found.module";
-import {AuthenticationModule} from "./features/authentication/authentication.module";
+import {DashboardModule} from './shared/dashboard/dashboard.module';
+import {NotFoundModule} from "./shared/components/not-found/not-found.module";
+import {AuthenticationModule} from "./features/user/authentication.module";
 import {SharedModule} from "./shared/shared.module";
 import {ReleaseModule} from "./features/release/release.module";
 import {NzSpinModule} from "ng-zorro-antd/spin";
 import en from '@angular/common/locales/en';
+import {NgChartsModule} from "ng2-charts";
+import { WelcomeComponent } from './shared/welcome/welcome.component';
+import { ReleaseCategoriesComponent } from './features/release-categories/release-categories.component';
 
 registerLocaleData(ptBr);
 registerLocaleData(en);
@@ -37,6 +40,8 @@ registerLocaleData(en);
 @NgModule({
   declarations: [
     AppComponent,
+    WelcomeComponent,
+    ReleaseCategoriesComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +63,7 @@ registerLocaleData(en);
     ReactiveFormsModule,
     NzSelectModule,
     NzSpinModule,
+    NgChartsModule
   ],
   providers: [
     {

@@ -17,7 +17,7 @@ import {UiQuery} from '../state/ui/ui.query';
   providedIn: 'root'
 })
 export class AuthenticationGuard implements CanActivate, CanLoad {
-  isLoged;
+  isLogged;
 
   constructor(
     private router: Router,
@@ -25,34 +25,38 @@ export class AuthenticationGuard implements CanActivate, CanLoad {
     private uiQuery: UiQuery
   ) {
     this.sessionQuery.isLoggedIn$.subscribe((e) => {
-      this.isLoged = e;
+      this.isLogged = e;
     });
   }
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (this.isLoged) {
-      if (this.uiQuery.getValue().url.includes('welcome') || this.uiQuery.getValue().url === '/') {
-        this.router.navigate(['dashboard']).then();
+    if (this.isLogged) {
+      //if the actual url is not dashboard, redirect to dashboard
+      if (state.url !== '/dashboard') {
+        this.router.navigate(['/dashboard']).then();
+      } else {
+        return true;
       }
-      return true;
     } else {
-      if (this.uiQuery.getValue().url.includes('dashboard')) {
-        this.router.navigate(['welcome/login']).then();
-        return false;
+      // If the user is not logged in and the actual url is not "dashboard", allow them to continue to the url
+      if (state.url !== '/dashboard') {
+        return true;
+      } else {
+        // If the user is not logged in and the actual url is "dashboard", redirect to the login page
+        this.router.navigateByUrl('login').then();
       }
-      return true;
     }
   }
 
   canLoad(
     route: Route,
     segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.uiQuery.getValue().url.includes('welcome') || this.uiQuery.getValue().url === '/') {
-      return !this.isLoged;
+    if (this.uiQuery.getValue().actualUrl.includes('welcome') || this.uiQuery.getValue().actualUrl === '/') {
+      return !this.isLogged;
     } else {
-      return this.isLoged;
+      return this.isLogged;
     }
   }
 }

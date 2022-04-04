@@ -17,10 +17,13 @@ import {FooterComponent} from './components/footer/footer.component';
 import {PanelComponent} from './components/panel/panel.component';
 import {RouterModule} from '@angular/router';
 import {CardComponent} from './components/card/card.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {NzTypographyModule} from "ng-zorro-antd/typography";
 import {ChartsModule} from "../features/charts/charts.module";
+import {NzPageHeaderModule} from "ng-zorro-antd/page-header";
+import {FormComponent} from './components/form/form.component';
+import {NzInputNumberModule} from "ng-zorro-antd/input-number";
 
 @NgModule({
   declarations: [
@@ -28,6 +31,7 @@ import {ChartsModule} from "../features/charts/charts.module";
     FooterComponent,
     PanelComponent,
     CardComponent,
+    FormComponent,
   ],
   imports: [
     RouterModule,
@@ -47,12 +51,16 @@ import {ChartsModule} from "../features/charts/charts.module";
     NzButtonModule,
     NzDatePickerModule,
     NzTypographyModule,
+    NzPageHeaderModule,
+    ReactiveFormsModule,
+    NzInputNumberModule,
   ],
   exports: [
     HeaderComponent,
     FooterComponent,
     PanelComponent,
-    CardComponent
+    CardComponent,
+    FormComponent
   ],
   providers: [],
   bootstrap: []

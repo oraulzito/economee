@@ -1,0 +1,15 @@
+<app-form
+  (submit)='submitForm()'
+  *ngIf="!loadingLogin"
+  [formItems]="formItems"
+  [form]="loginForm"
+  [submitText]="'Login'">
+  <p>Ou <a (click)="register()" class="link-primary">registre-se</a> agora</p>
+</app-form>
+<div *ngIf="error">
+  <p class="error">{{error['message']}}</p>
+</div>
+<div *ngIf="loadingLogin">
+  <h2 nz-icon nzTheme="outline" nzType="loading"></h2>
+</div>
+

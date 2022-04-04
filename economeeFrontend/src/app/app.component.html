@@ -1,8 +1,12 @@
-<div class="vh-100 vw-100 background-economee container-fluid">
-  <div class="vh-15 p-3">
-    <app-header></app-header>
-  </div>
-  <div class="vh-85 px-3 py-0">
+<div
+  class="background-economee container-fluid"
+  nz-row nzAlign="middle" nzJustify="space-around">
+  <div
+    [class.vh-100]="actualUrl==='/dashboard'"
+    [nzMd]="actualUrl==='/dashboard'?22:8"
+    [nzXl]="actualUrl==='/dashboard'?22:8"
+    [nzXs]="20"
+    nz-col>
     <router-outlet></router-outlet>
   </div>
 </div>

@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
+import {NavigationEnd, Router} from '@angular/router';
 import {UiStore} from './core/state/ui/ui.store';
 import {Subscription} from 'rxjs';
+import {UiQuery} from "./core/state/ui/ui.query";
 
 @Component({
   selector: 'app-root',
@@ -11,23 +12,26 @@ import {Subscription} from 'rxjs';
 export class AppComponent implements OnInit, OnDestroy {
   isCollapsed = false;
   event$: Subscription;
+  actualUrl = '';
+  mobile$ = this.uiQuery.isMobile$;
 
   constructor(
     private router: Router,
     private uiStore: UiStore,
+    private uiQuery: UiQuery,
   ) {
-    this.event$
-      = this.router.events
-      .subscribe(
-        (event) => {
-          if (event instanceof NavigationStart || event instanceof NavigationEnd || event instanceof NavigationError) {
-            this.uiStore.update({url: event.url});
-          }
-        });
+    this.router.events.subscribe(
+      (event) => {
+        if (event instanceof NavigationEnd)
+          this.uiStore.update({actualUrl: event.url});
+      });
   }
 
   // tslint:disable-next-line:typedef
   ngOnInit() {
+    this.uiQuery.actualUrl$.subscribe(
+      url => this.actualUrl = url
+    )
   }
 
   // tslint:disable-next-line:typedef
