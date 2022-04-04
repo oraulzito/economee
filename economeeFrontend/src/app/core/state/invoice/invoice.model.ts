@@ -3,8 +3,8 @@ import {Release} from "../release/release.model";
 
 export interface Invoice {
   id: number | string;
-  date_reference: Date;
-  total_value: Date;
+  date_reference: string;
+  total_value: string;
   is_paid: boolean;
   card_id: Card['id'];
 }

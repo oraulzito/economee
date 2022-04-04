@@ -6,6 +6,7 @@ import {UiState, UiStore} from './ui.store';
 export class UiQuery extends Query<UiState> {
   isLoading$ = this.selectLoading();
   hasErrors$ = this.selectError();
+  actualUrl$ = this.select(state => state.actualUrl);
   isMobile$ = this.select(state => state.mobile);
   initialDateBalance$ = this.select(state => state.initialDateBalance);
   finalDateBalance$ = this.select(state => state.finalDateBalance);

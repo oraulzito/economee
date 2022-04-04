@@ -17,14 +17,13 @@ export class InvoiceService {
 
   setActiveMonthInvoice(invoice_id?) {
     if (invoice_id === undefined) {
-      const todayMonthDateStr = this.formatDateForInvoice();
-      this.invoiceQuery.selectEntity(i => i.date_reference === todayMonthDateStr).subscribe(
+      const date_reference = this.formatDateForInvoice();
+      this.invoiceQuery.selectAll({
+        filterBy: i => i.date_reference === date_reference
+      }).subscribe(
         r => {
-          if (r) {
-            this.invoiceStore.setActive(r.id)
-          } else {
-            this.invoiceStore.setActive(null)
-          }
+          if (r)
+            this.invoiceStore.setActive(r[0].id)
         }
       );
     } else {

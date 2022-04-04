@@ -8,10 +8,10 @@ export interface Release {
   description: string;
   place: string;
   value: number;
-  date_creation: Date;
+  date_creation: string;
   type: RELEASE_TYPE;
-  category: ReleaseCategory;
-  date_release: Date;
+  category_id: number | string;
+  date_release: string;
   is_paid: Boolean;
   installment_times: number;
   installment_number: number;
@@ -23,6 +23,11 @@ export interface Release {
 export enum RELEASE_TYPE {
   EXPENSE = 0,
   INCOME = 1
+}
+
+export enum RELEASE_TYPE {
+  CARD = 1,
+  ACCOUNT = 2
 }
 
 export function createRelease(params: Partial<Release>) {

@@ -121,7 +121,7 @@ export class ReleaseService {
       type: form.type
     };
 
-    return this.http.patch('/api/release/' + id, body, this.uiService.httpHeaderOptions()).pipe(
+    return this.http.patch('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       tap(entities => {
         if (entities === 1) {
@@ -139,7 +139,7 @@ export class ReleaseService {
   // tslint:disable-next-line:typedef
   pay(id) {
     let release = this.releaseQuery.getEntity(id);
-    return this.http.patch('/api/release/pay/' + id + '/', null, this.uiService.httpHeaderOptions()).pipe(
+    return this.http.patch('/api/release/pay/release/' + id + '/', null, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       tap(entities => entities === 1 ? this.releaseStore.update(id, {is_paid: !release.is_paid}) : this.releaseStore.setError("Not updated")),
       catchError(error => throwError(error))

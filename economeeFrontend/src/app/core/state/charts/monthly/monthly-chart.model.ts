@@ -7,7 +7,7 @@ export interface MonthlyChart {
 
 interface chartsData {
   id: ID,
-  date_reference: Date,
+  date_reference: string,
   total: number
 }
 

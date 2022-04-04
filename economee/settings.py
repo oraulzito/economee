@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     # app
     'economeeApi',
-    # authentication
+    # user
     'rest_framework.authtoken',
     # rest_framework
     'rest_framework',
@@ -136,6 +136,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAdminUser'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
 }

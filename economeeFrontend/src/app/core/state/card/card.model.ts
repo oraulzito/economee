@@ -1,7 +1,7 @@
 export interface Card {
-  id: number | string;
+  id: number;
   name: string;
-  pay_date: Date;
+  pay_date: string;
   credit: number;
   credit_available: number;
 }

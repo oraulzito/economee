@@ -22,30 +22,30 @@ export class UserService {
   }
 
   // tslint:disable-next-line:typedef
-  signup(value) {
+  create(form) {
     this.userStore.setLoading(true);
 
     const body = {
-      email: value.email,
-      password: value.password,
-      repeat_password: value.repeat_password,
-      username: value.username,
-      first_name: value.first_name,
-      last_name: value.last_name,
-      dob: value.dob,
-      // photo: value.photo.item(0),
-      account_name: value.account_name,
-      currency_id: value.currency_id
+      email: form.email,
+      password: form.password,
+      repeat_password: form.repeat_password,
+      username: form.username,
+      first_name: form.first_name,
+      last_name: form.last_name,
+      dob: form.dob,
+      // photo: form.photo.item(0),
+      account_name: form.account_name,
+      currency_id: form.currency_id
     };
 
     return this.http.post<Session>('/api/user/', body).pipe(
       tap(key => {
           this.userStore.update({
-            email: value.email,
-            username: value.username,
-            first_name: value.first_name,
-            last_name: value.last_name,
-            dob: value.dob,
+            email: form.email,
+            username: form.username,
+            first_name: form.first_name,
+            last_name: form.last_name,
+            dob: form.dob,
           });
           this.sessionStore.update(key);
           this.userStore.setLoading(false);
@@ -58,7 +58,17 @@ export class UserService {
 
   // tslint:disable-next-line:typedef
   checkUsername(value) {
-    return this.http.get('/api/user/check_username?username=' + value);
+    return this.http.get('/api/user/check_username?username=' + value).pipe(
+      tap(
+        r => {
+          if (!r['available']) {
+            return {error: true};
+          } else {
+            return {confirm: false, error: false};
+          }
+        }
+      )
+    );
   }
 
   // tslint:disable-next-line:typedef

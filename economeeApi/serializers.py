@@ -68,7 +68,6 @@ class RecurringReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-    category = ReleaseCategorySerializer()
     recurring_release = RecurringReleaseSerializer()
 
     class Meta:
@@ -80,7 +79,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
             'place',
             'description',
             'date_creation',
-            'category',
+            'category_id',
             'recurring_release',
         ]
 
@@ -92,7 +91,7 @@ class ReleaseRRSerializer(serializers.HyperlinkedModelSerializer):
     place = serializers.StringRelatedField(source='release.place', read_only=True)
     description = serializers.StringRelatedField(source='release.description', read_only=True)
     date_creation = serializers.DateField(source='release.date_creation', read_only=True)
-    category = serializers.StringRelatedField(source='release.category', read_only=True)
+    category_id = serializers.StringRelatedField(source='release.category_id', read_only=True)
 
     class Meta:
         model = RecurringRelease
@@ -104,7 +103,7 @@ class ReleaseRRSerializer(serializers.HyperlinkedModelSerializer):
             'place',
             'description',
             'date_creation',
-            'category',
+            'category_id',
             'is_paid',
             'date_release',
             'installment_times',

@@ -62,6 +62,8 @@ export class BalanceService {
         date_balance = this.formatDateForBalance(date_balance);
       }
 
+      console.log(date_balance)
+
       this.balanceQuery.selectEntity(r => r.date_reference == date_balance).subscribe(
         r => {
           if (r)

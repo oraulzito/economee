@@ -6,7 +6,7 @@ import {BalanceState, BalanceStore} from './balance.store';
 export class BalanceQuery extends QueryEntity<BalanceState> {
   activeEntity$ = this.selectActive();
   dateReference$ = this.selectActive(({date_reference}) => {
-    return new Date(date_reference);
+    return date_reference;
   });
   totalExpenses$ = this.selectActive(({total_expenses}) => total_expenses);
   totalIncomes$ = this.selectActive(({total_incomes}) => total_incomes);

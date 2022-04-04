@@ -14,6 +14,7 @@ export class UiStore extends Store<UiState> {
     let date = new Date();
     super({
       id: 1,
+      actualrl:'',
       mobile: false,
       ui: '',
       screenWidth: window.innerWidth,

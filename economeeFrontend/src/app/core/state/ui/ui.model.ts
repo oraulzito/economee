@@ -2,12 +2,12 @@ export interface Ui {
   id: number | string;
   mobile: boolean;
   rangeDateBalance: RANGE_BALANCE;
-  initialDateBalance: Date;
-  finalDateBalance: Date;
+  initialDateBalance: string;
+  finalDateBalance: string;
   screenWidth: number;
   screenHeight: number;
   pageLocation: string;
-  url: string;
+  actualUrl: string;
 }
 
 export enum RANGE_BALANCE {
