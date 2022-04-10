@@ -1,23 +1,23 @@
-<div [nzGutter]="[24, 24]" class="max-vh-50" nz-row nzJustify="space-around">
-  <div [nzLg]="10" [nzMd]="8" [nzXXl]="12" [nzXl]="10" class="overflow-auto list" nz-col>
+<div [nzGutter]="[24, 24]" class='dashboard-desktop' nz-row nzJustify="space-around">
+  <div [nzLg]="10" [nzMd]="8" [nzXXl]="12" [nzXl]="10" class="overflow-auto " nz-col>
     <div [nzGutter]="[16, 16]" nz-row>
       <app-card [nzLg]="8" [nzMd]="12" nz-col>
-        <app-statistic-money-panel [id]="5"></app-statistic-money-panel>
+        <app-money-panel [id]="5"></app-money-panel>
       </app-card>
       <app-card [nzLg]="8" [nzMd]="12" [nzXs]="12" nz-col>
-        <app-statistic-money-panel [id]="1"></app-statistic-money-panel>
+        <app-money-panel [id]="1"></app-money-panel>
       </app-card>
       <app-card [nzLg]="8" [nzMd]="12" [nzXs]="12" nz-col>
-        <app-statistic-money-panel [id]="2"></app-statistic-money-panel>
+        <app-money-panel [id]="2"></app-money-panel>
       </app-card>
       <app-card [nzLg]="8" [nzMd]="12" [nzXs]="12" nz-col>
-        <app-statistic-money-panel [id]="6"></app-statistic-money-panel>
+        <app-money-panel [id]="6"></app-money-panel>
       </app-card>
       <app-card [nzLg]="8" [nzMd]="12" [nzXs]="12" nz-col>
-        <app-statistic-money-panel [id]="3"></app-statistic-money-panel>
+        <app-money-panel [id]="3"></app-money-panel>
       </app-card>
       <app-card [nzLg]="8" [nzMd]="12" [nzXs]="12" nz-col>
-        <app-statistic-money-panel [id]="4"></app-statistic-money-panel>
+        <app-money-panel [id]="4"></app-money-panel>
       </app-card>
     </div>
 
@@ -37,14 +37,14 @@
   </div>
 
   <div [nzLg]="7" [nzMd]="8" [nzXXl]="6" [nzXl]="7" nz-col>
-    <app-card class="list">
-      <app-release [releaseType]=1 class="max-w-90 max-h-100 p-2"></app-release>
+    <app-card>
+      <app-release [releaseType]=1 class="max-w-95 max-h-95 p-2"></app-release>
     </app-card>
   </div>
 
   <div [nzLg]="7" [nzMd]="8" [nzXXl]="6" [nzXl]="7" nz-col>
-    <app-card class="list">
-      <app-release [releaseType]=0 class="max-w-90 max-h-100 p-2"></app-release>
+    <app-card>
+      <app-release [releaseType]=0 class="max-w-95 max-h-95 p-2"></app-release>
     </app-card>
   </div>
 </div>

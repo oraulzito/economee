@@ -1,9 +1,15 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="editRelease()" [(nzVisible)]="isVisible">
+<nz-modal (nzOnCancel)="handleCancel()"
+          (nzOnOk)="editRelease()"
+          [(nzVisible)]="isVisible"
+          [nzOkText]="'Editar'"
+          [nzCancelText]="'Cancelar'"
+>
   <ng-container *nzModalContent>
     <app-form
       [formItems]="formItems"
       [formTitle]="'Editar lançamento'"
       [form]="releaseForm"
+      [showSaveButton]="false"
       [submitText]="'Salvar'"
     >
     </app-form>

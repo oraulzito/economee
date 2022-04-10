@@ -11,26 +11,29 @@ import {PizzaChartComponent} from "./pizza/pizza-chart.component";
 import {ProgressBarChartComponent} from "./progress-bar/progress-bar-chart.component";
 import {TimelineChartComponent} from "./timeline/timeline-chart.component";
 import {NgChartsModule} from "ng2-charts";
+import {MoneyPanelComponent} from "./money-panel/money-panel.component";
 
 
 @NgModule({
   declarations: [
     PizzaChartComponent,
     ProgressBarChartComponent,
-    TimelineChartComponent
+    TimelineChartComponent,
+    MoneyPanelComponent
   ],
-    imports: [
-        CommonModule,
-        NzProgressModule,
-        NzGridModule,
-        NzStatisticModule,
-        NzIconModule,
-        BarChartModule,
-        PieChartModule,
-        NgChartsModule,
-    ],
+  imports: [
+    CommonModule,
+    NzProgressModule,
+    NzGridModule,
+    NzStatisticModule,
+    NzIconModule,
+    BarChartModule,
+    PieChartModule,
+    NgChartsModule,
+  ],
   providers: [],
   exports: [
+    MoneyPanelComponent,
     PizzaChartComponent,
     ProgressBarChartComponent,
     TimelineChartComponent

@@ -13,7 +13,6 @@ export class AppComponent implements OnInit, OnDestroy {
   isCollapsed = false;
   event$: Subscription;
   actualUrl = '';
-  mobile$ = this.uiQuery.isMobile$;
 
   constructor(
     private router: Router,

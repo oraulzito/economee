@@ -42,7 +42,6 @@ export class ReleaseQuery extends QueryEntity<ReleaseState> {
 
   queryReleases(releaseType) {
     let query;
-    console.log(releaseType)
     switch (releaseType) {
       case 0:
         // card releases
@@ -73,7 +72,6 @@ export class ReleaseQuery extends QueryEntity<ReleaseState> {
         query = this.loadNonPaidIncomesReleases$;
         break;
     }
-    query.subscribe(r => console.log(r))
     return query;
   }
 }

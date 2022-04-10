@@ -13,6 +13,9 @@ import {BalanceService} from "../../../core/state/balance/balance.service";
 import {ReleaseCategoryService} from "../../../core/state/release/category/release-category.service";
 import {UiQuery} from "../../../core/state/ui/ui.query";
 import {format} from "date-fns";
+import {UiStore} from "../../../core/state/ui/ui.store";
+import {UserQuery} from "../../../core/state/user/user.query";
+import {UserState} from "../../../core/state/user/user.store";
 
 @Component({
   selector: 'app-header',
@@ -22,15 +25,19 @@ import {format} from "date-fns";
 export class HeaderComponent implements OnInit {
   isLogged$ = this.sessionQuery.isLoggedIn$;
   actualUrl$ = '/';
-  isLogged;
+
+  isLogged = false;
   accountName$ = this.accountQuery.activeAccountName$;
 
-  balanceDate;
+  balanceDate$ = this.balanceQuery.dateReference$;
   balance: Balance;
+  user: UserState;
 
   constructor(
     private router: Router,
     private uiQuery: UiQuery,
+    private uiStore: UiStore,
+    private userQuery: UserQuery,
     private sessionQuery: SessionQuery,
     private sessionService: SessionService,
     private balanceQuery: BalanceQuery,
@@ -43,6 +50,10 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.userQuery.select().subscribe(user => {
+      this.user = user;
+    });
+
     this.uiQuery.actualUrl$.subscribe(url => this.actualUrl$ = url);
 
     this.sessionQuery.isLoggedIn$.subscribe(
@@ -53,9 +64,6 @@ export class HeaderComponent implements OnInit {
       this.releaseCategoryService.get().subscribe();
       this.accountService.get().subscribe();
       this.accountService.getMainAccount().subscribe();
-      this.balanceQuery.dateReference$.subscribe(d => {
-        this.balanceDate = format(new Date(d), 'mm/yyyy');
-      });
     }
   }
 
@@ -72,5 +80,18 @@ export class HeaderComponent implements OnInit {
       () => this.router.navigate(['/'])
     );
   }
+
+  openCardsModal() {
+    this.uiStore.update({
+      cardsModalVisible: true
+    });
+  }
+
+  openCategoriesModal() {
+    this.uiStore.update({
+      categoriesModalVisible: true
+    });
+  }
+
 
 }

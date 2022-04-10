@@ -9,17 +9,17 @@
   <nz-page-header-extra *ngIf="isLogged$ | async">
     <button disabled nz-button>Financiamentos</button>
     <button disabled nz-button>Empréstimos</button>
-    <button nz-button>Cartões</button>
-    <button nz-button>Categorias</button>
+    <button (click)="openCardsModal()" nz-button>Cartões</button>
+    <button (click)="openCategoriesModal()" nz-button>Categorias</button>
     <button disabled nz-button>Contas</button>
 
-    <nz-date-picker (ngModelChange)="onMonthChange($event)"
-                    [(ngModel)]="balanceDate"
-                    nzMode="month">
-    </nz-date-picker>
+    <input (change)="onMonthChange($event)"
+           value="{{balanceDate$|async}}"
+           type="month">
 
     <nz-avatar [nzDropdownMenu]="dropdown" [nzPlacement]="'bottomCenter'" [nzSize]="32" nz-dropdown
-               nzIcon="user"></nz-avatar>
+               nzIcon="user">
+    </nz-avatar>
     <nz-dropdown-menu #dropdown="nzDropdownMenu">
       <ul nz-menu>
         <li nz-menu-item>
@@ -35,4 +35,5 @@
       </ul>
     </nz-dropdown-menu>
   </nz-page-header-extra>
+  <p>{{user.firstName}}</p>
 </nz-page-header>

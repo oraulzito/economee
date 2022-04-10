@@ -1,0 +1,57 @@
+<nz-modal (nzOnCancel)="closeCategoriesModal()"
+          [(nzVisible)]="isVisible"
+          [nzFooter]=null
+          nzTitle="Categorias">
+  <ng-container *nzModalContent>
+    <ul [nzDataSource]="categories" class="overflow-auto vh-50" nz-list nzBordered>
+      <!-- Header -->
+      <nz-list-header
+        (click)="add()"
+        *ngIf="!adding"
+        class="bg-primary">
+        <b class="text-white">Adicionar</b>
+      </nz-list-header>
+
+      <!-- Add category -->
+      <li *ngIf="adding" nz-list-item nzNoFlex>
+        <form [formGroup]="categoryForm" nz-form nzLayout="inline">
+          <input class="w-60"
+                 formControlName="name"
+                 nz-input
+                 placeholder="Nome da categoria"
+                 type="text">
+          <button (click)="saveCategory()" nz-button nzType="primary">Salvar</button>
+          <button (click)="cancelSave()" nz-button nzType="dashed">Cancelar</button>
+        </form>
+      </li>
+
+      <!-- List of categories -->
+      <li *ngFor="let item of categories" nz-list-item>
+        <ul *ngIf="item.owner_id == userId && !editing" nz-list-item-actions>
+          <nz-list-item-action>
+            <a (click)="deleteCategory(item.id)">Deletar</a>
+          </nz-list-item-action>
+          <nz-list-item-action>
+            <a (click)="editCategory()">Editar</a>
+          </nz-list-item-action>
+        </ul>
+        <ul *ngIf="item.owner_id == userId && editing" nz-list-item-actions>
+          <nz-list-item-action>
+            <a (click)="saveEditCategory(item.id)">Salvar</a>
+          </nz-list-item-action>
+          <nz-list-item-action>
+            <a (click)="cancelEdit()">Cancelar</a>
+          </nz-list-item-action>
+        </ul>
+        <p *ngIf="!editing">{{ item.name }}</p>
+        <form *ngIf="editing" [formGroup]="categoryForm">
+          <input
+            [(ngModel)]="item.name"
+            formControlName="name"
+            nz-input
+            type="text">
+        </form>
+      </li>
+    </ul>
+  </ng-container>
+</nz-modal>

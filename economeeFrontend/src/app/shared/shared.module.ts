@@ -1,66 +1,61 @@
 import {NgModule} from '@angular/core';
 
-import {NzLayoutModule} from 'ng-zorro-antd/layout';
-import {NzMenuModule} from 'ng-zorro-antd/menu';
-import {NzAvatarModule} from 'ng-zorro-antd/avatar';
-import {NzGridModule} from 'ng-zorro-antd/grid';
-import {NzIconModule} from 'ng-zorro-antd/icon';
-import {NzInputModule} from 'ng-zorro-antd/input';
-import {NzSelectModule} from 'ng-zorro-antd/select';
-import {NzFormModule} from 'ng-zorro-antd/form';
-import {NzDropDownModule} from 'ng-zorro-antd/dropdown';
-import {NzButtonModule} from 'ng-zorro-antd/button';
-import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
-
 import {HeaderComponent} from './components/header/header.component';
 import {FooterComponent} from './components/footer/footer.component';
-import {PanelComponent} from './components/panel/panel.component';
-import {RouterModule} from '@angular/router';
 import {CardComponent} from './components/card/card.component';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {NzTypographyModule} from "ng-zorro-antd/typography";
-import {ChartsModule} from "../features/charts/charts.module";
-import {NzPageHeaderModule} from "ng-zorro-antd/page-header";
 import {FormComponent} from './components/form/form.component';
-import {NzInputNumberModule} from "ng-zorro-antd/input-number";
+import {NotFoundComponent} from "./components/not-found/not-found.component";
+import {NoDataComponent} from "./components/no-data/no-data.component";
+import {CommonModule} from "@angular/common";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NzGridModule} from "ng-zorro-antd/grid";
+import {NzDropDownModule} from "ng-zorro-antd/dropdown";
+import {NzAvatarModule} from "ng-zorro-antd/avatar";
+import {NzDatePickerModule} from "ng-zorro-antd/date-picker";
+import {NzPageHeaderModule} from "ng-zorro-antd/page-header";
+import {NzIconModule} from "ng-zorro-antd/icon";
+import {NzButtonModule} from "ng-zorro-antd/button";
+import {NzFormModule} from "ng-zorro-antd/form";
+import {NzInputModule} from "ng-zorro-antd/input";
+import {NzSelectModule} from "ng-zorro-antd/select";
+import {NzTypographyModule} from "ng-zorro-antd/typography";
+import {NzResultModule} from "ng-zorro-antd/result";
+import {BrowserModule} from "@angular/platform-browser";
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
-    PanelComponent,
     CardComponent,
     FormComponent,
+    NotFoundComponent,
+    NoDataComponent,
   ],
   imports: [
-    RouterModule,
-    FormsModule,
+    BrowserModule,
     CommonModule,
-    ChartsModule,
-    NzLayoutModule,
-    NzMenuModule,
-    NzAvatarModule,
+    FormsModule,
     NzGridModule,
+    NzDropDownModule,
+    NzAvatarModule,
+    NzDatePickerModule,
+    NzPageHeaderModule,
     NzIconModule,
-    NzInputModule,
-    NzSelectModule,
+    NzButtonModule,
+    ReactiveFormsModule,
     NzFormModule,
     NzInputModule,
-    NzDropDownModule,
-    NzButtonModule,
-    NzDatePickerModule,
+    NzSelectModule,
     NzTypographyModule,
-    NzPageHeaderModule,
-    ReactiveFormsModule,
-    NzInputNumberModule,
+    NzResultModule,
   ],
   exports: [
     HeaderComponent,
     FooterComponent,
-    PanelComponent,
     CardComponent,
-    FormComponent
+    FormComponent,
+    NotFoundComponent,
+    NoDataComponent,
   ],
   providers: [],
   bootstrap: []

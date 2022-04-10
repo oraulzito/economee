@@ -20,6 +20,9 @@ export class FormComponent implements OnInit {
   @Input()
   submitText: string;
 
+  @Input()
+  showSaveButton = true;
+
   @Output() submit = new EventEmitter<FormGroup>();
 
   constructor() {

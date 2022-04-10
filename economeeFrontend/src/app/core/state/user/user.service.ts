@@ -78,9 +78,9 @@ export class UserService {
 
 // tslint:disable-next-line:typedef
   get() {
-    // return this.http.get<User>('/api/user/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
-    //   this.userStore.set(entities);
-    // }));
+    return this.http.get<User>('/api/user/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
+      this.userStore.update(entities[0]);
+    }));
   }
 
 // tslint:disable-next-line:typedef

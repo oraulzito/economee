@@ -14,7 +14,7 @@ export class UiStore extends Store<UiState> {
     let date = new Date();
     super({
       id: 1,
-      actualrl:'',
+      actualUrl: '',
       mobile: false,
       ui: '',
       screenWidth: window.innerWidth,
@@ -22,6 +22,8 @@ export class UiStore extends Store<UiState> {
       rangeDateBalance: RANGE_BALANCE.MONTH,
       initialDateBalance: new Date(date.getFullYear(), date.getMonth(), 1),
       finalDateBalance: new Date(date.getFullYear(), date.getMonth() + 1, 0),
+      categoriesModalVisible: false,
+      cardsModalVisible: false,
     });
   }
 

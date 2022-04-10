@@ -1,9 +1,9 @@
-<cdk-virtual-scroll-viewport class="demo-infinite-container" itemSize="80">
+<cdk-virtual-scroll-viewport class="demo-infinite-container" itemSize="38">
   <nz-list
     [nzLoading]="releasesLoading"
     [nzNoResult]="templateNoData"
     nzItemLayout="vertical">
-    <nz-list-item *ngFor="let release of releases| async" class="border-1 rounded-3 shadow mx-2 my-3 p-3">
+    <nz-list-item *ngFor="let release of releases| async" class="mx-1 my-2 shadow rounded-3 p-3">
       <div nz-row>
         <nz-list-item-meta [nzXs]="14" nz-col>
           <nz-list-item-meta-title>

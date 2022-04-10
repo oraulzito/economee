@@ -9,7 +9,7 @@
 
   <nz-page-header-footer>
     <div *ngIf="releaseType == 1 ">
-      <nz-tabset [nzSelectedIndex]="releaseType" nzCentered>
+      <nz-tabset [nzSelectedIndex]="releaseType" nzType="card">
         <nz-tab (nzClick)="changeActiveReleaseList(rl.id)" *ngFor="let rl of listOptions" nzTitle="{{rl.name}}">
           <ng-template nz-tab>
             <app-release-list
@@ -22,7 +22,7 @@
       </nz-tabset>
     </div>
     <div *ngIf="releaseType == 0">
-      <nz-tabset [nzSelectedIndex]="cardID">
+      <nz-tabset [nzSelectedIndex]="cardID$ | async" nzType="card">
         <nz-tab (nzClick)="changeActiveCard(c.id)" *ngFor="let c of cards" nzTitle="{{c.name}}">
           <ng-template nz-tab>
             <app-release-list

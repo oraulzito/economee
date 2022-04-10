@@ -7,6 +7,7 @@ export class CardQuery extends QueryEntity<CardState> {
   allCards$ = this.selectAll();
   activeCard$ = this.selectActive();
   activeCardName$ = this.selectActive(({name})=> name);
+  activeCardID$ = this.selectActive(({id})=> id);
 
   constructor(protected store: CardStore) {
     super(store);

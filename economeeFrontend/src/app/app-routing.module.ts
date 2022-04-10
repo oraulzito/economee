@@ -4,9 +4,9 @@ import {AuthenticationGuard} from './core/guards/authentication.guard';
 import {ProfileComponent} from './features/user/profile/profile.component';
 import {LoginComponent} from './features/user/login/login.component';
 import {SignInComponent} from './features/user/sign-in/sign-in.component';
-import {DashboardComponent} from './shared/dashboard/dashboard.component';
+import {DashboardComponent} from './core/components/dashboard/dashboard.component';
 import {NotFoundComponent} from './shared/components/not-found/not-found.component';
-import {WelcomeComponent} from "./shared/welcome/welcome.component";
+import {WelcomeComponent} from "./core/components/welcome/welcome.component";
 
 
 const routes: Routes = [

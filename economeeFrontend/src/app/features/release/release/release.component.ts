@@ -21,8 +21,7 @@ export class ReleaseComponent implements OnInit {
   releaseType: number;
 
   cards: getEntityType<CardState>[];
-  cardID: number;
-  cardName: string;
+  cardID$;
 
   releaseItems: Observable<getEntityType<ReleaseState>[]>;
   releaseEditItem: Release;
@@ -66,11 +65,7 @@ export class ReleaseComponent implements OnInit {
   ngOnInit(): void {
     if (this.releaseType === 0) {
       this.cardQuery.allCards$.subscribe(r => this.cards = r);
-
-      this.cardQuery.activeCard$.subscribe(r => {
-        this.cardName = r.name;
-        this.cardID = r.id;
-      });
+      this.cardID$ = this.cardQuery.activeCardID$;
     }
 
     this.loadReleases(this.releaseType);

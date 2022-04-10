@@ -8,6 +8,8 @@ export interface Ui {
   screenHeight: number;
   pageLocation: string;
   actualUrl: string;
+  cardsModalVisible: boolean;
+  categoriesModalVisible: boolean;
 }
 
 export enum RANGE_BALANCE {

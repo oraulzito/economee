@@ -1,13 +1,13 @@
 <h5>{{formTitle}}</h5>
-<form [formGroup]="form" [nzLayout]="'vertical'" class="p-lg-4 p-sm-1 overflow-auto max-vh-50" nz-form>
-  <div nz-row nzJustify="space-around">
+<form [formGroup]="form" [nzLayout]="'vertical'" class="p-lg-4 p-sm-1 overflow-auto h-inherit" nz-form>
+  <div nz-row nzJustify="space-around" nzGutter="8">
     <div *ngFor="let formItem of formItems" [nzMd]="formItem.size.md" [nzSm]="formItem.size.sm" nz-col>
       <nz-form-item>
         <h7>
           <nz-form-label>{{formItem.label}}</nz-form-label>
         </h7>
-        <nz-form-control [nzErrorTip]="errorTpl">
-          <nz-input-group [ngSwitch]=formItem.type [nzPrefixIcon]=formItem.icon>
+        <nz-form-control [ngSwitch]=formItem.type [nzErrorTip]="errorTpl">
+          <nz-input-group [nzPrefixIcon]=formItem.icon>
             <!-- Text -->
             <input *ngSwitchCase="'text'"
                    [formControlName]=formItem.name
@@ -32,26 +32,6 @@
                    [formControlName]=formItem.name
                    nz-input
                    type="{{formItem.type}}">
-            <!-- Date -->
-            <nz-date-picker *ngSwitchCase="'date'"
-                            [formControlName]=formItem.name
-            ></nz-date-picker>
-            <nz-week-picker *ngSwitchCase="'week'"
-                            [formControlName]=formItem.name
-            ></nz-week-picker>
-            <nz-month-picker *ngSwitchCase="'month'"
-                             [formControlName]=formItem.name
-            ></nz-month-picker>
-            <nz-year-picker *ngSwitchCase="'year'"
-                            [formControlName]=formItem.name
-            ></nz-year-picker>
-            <!-- Number -->
-            <nz-input-number *ngSwitchCase="'number'"
-                             [formControlName]=formItem.name
-                             [nzMax]="formItem.max?formItem.max :0"
-                             [nzMin]="formItem.min?formItem.min :0"
-                             class="border-0 w-100 h-100 m-0 p-0"
-                             type="{{formItem.type}}"></nz-input-number>
             <!-- Select -->
             <nz-select *ngSwitchCase="'dropdown'"
                        [formControlName]=formItem.name
@@ -62,6 +42,30 @@
                          nzValue="{{option.value}}">
               </nz-option>
             </nz-select>
+            <!-- Date -->
+            <input *ngSwitchCase="'date'"
+                   [formControlName]=formItem.name
+                   class="border-0 w-100 h-100 m-0 p-0"
+                   type="{{formItem.type}}">
+            <input *ngSwitchCase="'week'"
+                   [formControlName]=formItem.name
+                   class="border-0 w-100 h-100 m-0 p-0"
+                   type="{{formItem.type}}">
+            <input *ngSwitchCase="'month'"
+                   [formControlName]=formItem.name
+                   class="border-0 w-100 h-100 m-0 p-0"
+                   type="{{formItem.type}}">
+            <input *ngSwitchCase="'year'"
+                   [formControlName]=formItem.name
+                   class="border-0 w-100 h-100 m-0 p-0"
+                   type="{{formItem.type}}">
+            <!-- Number -->
+            <input *ngSwitchCase="'number'"
+                   [formControlName]=formItem.name
+                   [max]="formItem.max?formItem.max :0"
+                   [min]="formItem.min?formItem.min :0"
+                   class="border-0 w-100 h-100 m-0 p-0"
+                   type="{{formItem.type}}">
             <ng-template #errorTpl let-control>
               <ng-container *ngIf="control.hasError('required')">
                 {{formItem.errorTip.required}}
@@ -75,6 +79,7 @@
       </nz-form-item>
     </div>
   </div>
-  <button [nzType]="'primary'" class="login-form-button login-form-margin" nz-button nz-col>{{submitText}}</button>
+  <button *ngIf="showSaveButton" [nzType]="'primary'" class="fixed-bottom login-form-button login-form-margin" nz-button
+          nz-col>{{submitText}}</button>
   <ng-content></ng-content>
 </form>

@@ -4,11 +4,11 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 
 import {ReleaseService} from "../../../core/state/release/release.service";
 import {AccountQuery} from "../../../core/state/account/account.query";
-import {ReleaseCategory} from "../../../core/state/release/category/release-category.model";
 import {ReleaseCategoryQuery} from "../../../core/state/release/category/release-category.query";
-import {Observable} from "rxjs";
+import {async, Observable} from "rxjs";
 import {CardQuery} from "../../../core/state/card/card.query";
 import {ReleaseQuery} from "../../../core/state/release/release.query";
+import {Release} from "../../../core/state/release/release.model";
 
 
 @Component({
@@ -17,14 +17,134 @@ import {ReleaseQuery} from "../../../core/state/release/release.query";
   styleUrls: ['./release-create.component.less']
 })
 export class ReleaseCreateComponent implements OnInit {
-  @Input() isVisible: boolean;
   @Input() card: Card;
   @Input() releaseType: number;
+  @Input() isVisible: boolean;
+  @Input() release: Release;
 
   currency: Observable<string | undefined>;
   releaseForm: FormGroup;
   categoriesLoading: boolean;
-  categories: ReleaseCategory[];
+  categories = [];
+
+  formItems = [
+    {
+      name: 'value',
+      type: 'number',
+      label: 'Valor',
+      errorTip: {
+        required: 'O valor é obrigatório',
+        error: 'O valor deve ser maior que zero'
+      },
+      icon: 'dollar',
+      size: {
+        sm: 12
+      },
+    }, {
+      name: 'installment_times',
+      type: 'number',
+      label: 'Parcelas',
+      errorTip: {
+        required: 'O número de parcelas é obrigatório',
+        error: 'O número de parcelas deve ser maior que zero'
+      },
+      icon: 'retweet',
+      size: {
+        sm: 12
+      },
+    }, {
+      name: 'description',
+      type: 'text',
+      label: 'Descrição',
+      errorTip: {
+        required: 'A descrição é obrigatória',
+        error: 'A descrição deve ter no máximo 255 caracteres'
+      },
+      icon: 'info',
+      size: {
+        sm: 24
+      },
+    }, {
+      name: 'place',
+      type: 'text',
+      label: 'Local',
+      errorTip: {
+        required: 'O local é obrigatório',
+        error: 'O local deve ter no mínimo 3 caracteres',
+      },
+      icon: 'environment',
+      size: {
+        sm: 12
+      },
+    }, {
+      name: 'date_release',
+      type: 'date',
+      label: 'Data',
+      errorTip: {
+        required: 'A data é obrigatória',
+        error: 'Algo de errado ocorreu, verifique a data'
+      },
+      icon: 'calendar',
+      size: {
+        sm: 12
+      },
+    }, {
+      name: 'category_id',
+      type: 'dropdown',
+      label: 'Categoria',
+      errorTip: {
+        required: 'A categoria é obrigatória',
+        error: 'A categoria é obrigatória'
+      },
+      icon: '',
+      size: {
+        sm: 8
+      },
+      options: this.categories
+    }, {
+      name: 'type',
+      type: 'dropdown',
+      label: 'Tipo',
+      errorTip: {
+        required: 'A categoria é obrigatória',
+        error: 'A categoria deve ser escolhida'
+      },
+      icon: '',
+      size: {
+        sm: 8
+      },
+      options: [
+        {
+          label: 'Receita',
+          value: 1
+        }, {
+          label: 'Despesa',
+          value: 0
+        }
+      ]
+    }, {
+      name: 'is_paid',
+      type: 'dropdown',
+      label: 'Está pago?',
+      errorTip: {
+        required: 'A categoria é obrigatória',
+        error: 'A categoria deve ser escolhida'
+      },
+      icon: '',
+      size: {
+        sm: 8
+      },
+      options: [
+        {
+          label: 'Sim',
+          value: true
+        }, {
+          label: 'Não',
+          value: false
+        }
+      ]
+    },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -45,8 +165,17 @@ export class ReleaseCreateComponent implements OnInit {
 
     this.releaseCategoryQuery.selectLoading().subscribe(cl => {
       this.categoriesLoading = cl;
-      this.categories = this.releaseCategoryQuery.getAll();
     });
+
+    this.releaseCategoryQuery.selectAll().subscribe(
+      c => {
+        c.map(item => {
+          this.categories.push({
+            label: item.name,
+            value: item.id
+          })
+        });
+      });
 
     this.releaseForm = this.fb.group({
       installment_value: new FormControl(),
@@ -58,7 +187,7 @@ export class ReleaseCreateComponent implements OnInit {
       installment_times: new FormControl(),
       place: new FormControl(),
       type: new FormControl(),
-      card_id: new FormControl(this.releaseType == 1 ? this.cardQuery.getActiveId() : null)
+      card_id: new FormControl(this.releaseType == 0 ? this.cardQuery.getActiveId() : null)
     });
   }
 

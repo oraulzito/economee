@@ -6,7 +6,7 @@ import {ReleaseQuery} from "../../../core/state/release/release.query";
 import {InvoiceQuery} from "../../../core/state/invoice/invoice.query";
 
 @Component({
-  selector: 'app-statistic-money-panel',
+  selector: 'app-money-panel',
   templateUrl: './money-panel.component.html',
   styleUrls: ['./money-panel.component.less']
 })

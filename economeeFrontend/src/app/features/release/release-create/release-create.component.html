@@ -1,121 +1,16 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="saveRelease()" [(nzVisible)]="isVisible">
+<nz-modal (nzOnCancel)="handleCancel()"
+          (nzOnOk)="saveRelease()"
+          [(nzVisible)]="isVisible"
+          [nzCancelText]="'Cancelar'"
+          [nzOkText]="'Salvar'"
+>
   <ng-container *nzModalContent>
-    <form [formGroup]="releaseForm" class="p-4" nz-form>
-      <div nz-row>
-        <div nz-col nzSm="12">
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Valor</nz-form-label>
-            </h7>
-            <nz-input-number
-              [nzMin]="0"
-              [nzParser]="parserDollar"
-              formControlName="value"
-              type="number">
-            </nz-input-number>
-          </nz-form-item>
-        </div>
-        <div nz-col nzSm="1"></div>
-        <div [nzSm]="11" nz-col>
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Parcelas</nz-form-label>
-            </h7>
-            <nz-input-number
-              [nzMin]="1"
-              formControlName="installment_times"
-              type="number">
-            </nz-input-number>
-            <ng-template #prefixLocal>
-              <i nz-icon nzTheme="outline" nzType="environment"></i>
-            </ng-template>
-          </nz-form-item>
-        </div>
-      </div>
-      <div nz-row>
-        <div nz-col nzSm="24">
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Descrição</nz-form-label>
-            </h7>
-            <input
-              formControlName="description"
-              nz-input
-              type="text">
-          </nz-form-item>
-        </div>
-      </div>
-      <div nz-row>
-        <div [nzSm]="12" nz-col>
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Local</nz-form-label>
-            </h7>
-            <nz-input-group [nzPrefix]="prefixLocal">
-              <input
-                formControlName="place"
-                nz-input
-                type="text">
-            </nz-input-group>
-            <ng-template #prefixLocal>
-              <i nz-icon nzTheme="outline" nzType="environment"></i>
-            </ng-template>
-          </nz-form-item>
-        </div>
-        <div [nzSm]="1" nz-col></div>
-        <div nz-col [nzSm]="11">
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Data</nz-form-label>
-            </h7>
-            <nz-date-picker
-              formControlName="date_release"
-              type="date">
-            </nz-date-picker>
-          </nz-form-item>
-        </div>
-      </div>
-      <div nz-row nzAlign="middle" nzJustify="space-around">
-        <div [nzSm]="releaseType==1 ? 12 : 8" nz-col>
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Categoria</nz-form-label>
-            </h7>
-            <nz-select
-              [nzDropdownRender]="renderTemplate"
-              class="text-center category"
-              formControlName="category_id">
-              <nz-option *ngFor="let c of categories" [nzLabel]=c.name [nzValue]=c.id></nz-option>
-            </nz-select>
-            <ng-template #renderTemplate>
-              <nz-spin *ngIf="categoriesLoading"></nz-spin>
-            </ng-template>
-          </nz-form-item>
-        </div>
-        <div [nzSm]="releaseType==1 ? 12 : 8" nz-col>
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Tipo</nz-form-label>
-            </h7>
-            <nz-select class=" text-center type" formControlName="type">
-              <nz-option [nzLabel]="'Gasto'" [nzValue]="0"></nz-option>
-              <nz-option [nzLabel]="'Ganho'" [nzValue]="1"></nz-option>
-            </nz-select>
-          </nz-form-item>
-        </div>
-        <div *ngIf="releaseType!=1" nz-col nzSm="8">
-          <nz-form-item>
-            <h7>
-              <nz-form-label>Está Pago?</nz-form-label>
-            </h7>
-            <nz-select class="text-center paid"
-                       formControlName="is_paid">
-              <nz-option [nzLabel]="'Pago'" [nzValue]=true></nz-option>
-              <nz-option [nzLabel]="'Não Pago'" [nzValue]="false"></nz-option>
-            </nz-select>
-          </nz-form-item>
-        </div>
-      </div>
-    </form>
+    <app-form
+      [formItems]="formItems"
+      [formTitle]="'Criar lançamento'"
+      [form]="releaseForm"
+      [showSaveButton]="false"
+    >
+    </app-form>
   </ng-container>
 </nz-modal>

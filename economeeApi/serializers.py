@@ -7,7 +7,7 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'username', 'dob', 'first_name', 'last_name']
+        fields = ['id', 'email', 'username', 'dob', 'first_name', 'last_name']
 
 
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):
@@ -19,7 +19,7 @@ class CurrencySerializer(serializers.HyperlinkedModelSerializer):
 class ReleaseCategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ReleaseCategory
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'color', 'owner_id']
 
 
 class AccountSerializer(serializers.HyperlinkedModelSerializer):

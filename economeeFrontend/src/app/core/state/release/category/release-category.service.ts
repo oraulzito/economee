@@ -28,12 +28,7 @@ export class ReleaseCategoryService {
   }
 
   // tslint:disable-next-line:typedef
-  add(form) {
-    const body = {
-      name: form.name,
-      color: form.color,
-    };
-
+  add(body) {
     return this.http.post<ReleaseCategory>('/api/releaseCategory/', body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.releaseCategoryStore),
@@ -43,12 +38,7 @@ export class ReleaseCategoryService {
   }
 
   // tslint:disable-next-line:typedef
-  update(id, form) {
-    const body = {
-      name: form.name,
-      color: form.color,
-    };
-
+  update(id, body) {
     return this.http.patch<ReleaseCategory>('/api/releaseCategory/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.releaseCategoryStore),
@@ -62,7 +52,7 @@ export class ReleaseCategoryService {
     return this.http.delete<number>('/api/releaseCategory/' + id + '/', this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.releaseCategoryStore),
-      tap(entities => entities === 1 ? this.releaseCategoryStore.remove(id) : this.releaseCategoryStore.setError("Not removed")),
+      tap(entities => this.releaseCategoryStore.remove(id)),
       catchError(error => throwError(error)),
     );
   }

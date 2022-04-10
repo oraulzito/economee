@@ -1,12 +1,13 @@
 import {Component, HostListener, OnInit} from '@angular/core';
-import {UiService} from '../../core/state/ui/ui.service';
-import {UiQuery} from '../../core/state/ui/ui.query';
+import {UiService} from '../../state/ui/ui.service';
+import {UiQuery} from '../../state/ui/ui.query';
 import {Observable} from 'rxjs';
-import {UiState} from '../../core/state/ui/ui.store';
-import {ReleaseService} from '../../core/state/release/release.service';
-import {AccountService} from "../../core/state/account/account.service";
-import {AccountQuery} from "../../core/state/account/account.query";
-import {ReleaseQuery} from "../../core/state/release/release.query";
+import {UiState} from '../../state/ui/ui.store';
+import {ReleaseService} from '../../state/release/release.service';
+import {AccountService} from "../../state/account/account.service";
+import {AccountQuery} from "../../state/account/account.query";
+import {ReleaseQuery} from "../../state/release/release.query";
+import {UserService} from "../../state/user/user.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -18,8 +19,11 @@ export class DashboardComponent implements OnInit {
   totalAvailableValue: number;
   totalExpensesValue: number;
   totalIncomesValue: number;
+  categoriesModalVisible = false;
+  cardsModalVisible = false;
 
   constructor(
+    private userService: UserService,
     private accountQuery: AccountQuery,
     private accountService: AccountService,
     private releaseService: ReleaseService,
@@ -30,10 +34,16 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.userService.get().subscribe();
     this.mobile$ = this.uiQuery.isMobile$;
     this.onResize();
-    // this.accountService.getTotalExpenses();
-    // this.accountService.getTotalIncomes();
+    this.uiQuery.select().subscribe(
+      ui => {
+        console.log(ui);
+        this.cardsModalVisible = ui.cardsModalVisible;
+        this.categoriesModalVisible = ui.categoriesModalVisible;
+      }
+    );
   }
 
   @HostListener('window:resize')

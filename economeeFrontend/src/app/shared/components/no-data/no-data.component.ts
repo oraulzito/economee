@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 @Component({
   selector: 'app-no-data',
   templateUrl: './no-data.component.html',
-  styleUrls: ['./no-data.component.css']
+  styleUrls: ['./no-data.component.less']
 })
 export class NoDataComponent implements OnInit {
 
