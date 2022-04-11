@@ -1,11 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Card} from "../../../core/state/card/card.model";
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
 import {ReleaseService} from "../../../core/state/release/release.service";
 import {AccountQuery} from "../../../core/state/account/account.query";
 import {ReleaseCategoryQuery} from "../../../core/state/release/category/release-category.query";
-import {async, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {CardQuery} from "../../../core/state/card/card.query";
 import {ReleaseQuery} from "../../../core/state/release/release.query";
 import {Release} from "../../../core/state/release/release.model";
@@ -179,13 +179,13 @@ export class ReleaseCreateComponent implements OnInit {
 
     this.releaseForm = this.fb.group({
       installment_value: new FormControl(),
-      value: new FormControl(),
-      description: new FormControl(),
-      date_release: new FormControl(),
+      value: new FormControl(0, [Validators.required, Validators.min(0)]),
+      description: new FormControl('', [Validators.required, Validators.maxLength(255)]),
+      date_release: new FormControl(new Date(), [Validators.required]),
       is_paid: new FormControl(),
       category_id: new FormControl(),
-      installment_times: new FormControl(),
-      place: new FormControl(),
+      installment_times: new FormControl(1, [Validators.required, Validators.min(1)]),
+      place: new FormControl('', [Validators.required, Validators.minLength(3)]),
       type: new FormControl(),
       card_id: new FormControl(this.releaseType == 0 ? this.cardQuery.getActiveId() : null)
     });

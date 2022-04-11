@@ -9,13 +9,21 @@ import {NzGridModule} from "ng-zorro-antd/grid";
 import {RouterModule} from "@angular/router";
 import {ChartsModule} from "../../features/charts/charts.module";
 import {ReleaseModule} from "../../features/release/release.module";
+import {CreditCardComponent} from "../../features/credit-card/credit-card.component";
+import {NzModalModule} from "ng-zorro-antd/modal";
+import {NzListModule} from "ng-zorro-antd/list";
+import {ReactiveFormsModule} from "@angular/forms";
+import {NzWaveModule} from "ng-zorro-antd/core/wave";
+import {NzFormModule} from "ng-zorro-antd/form";
+import {NzButtonModule} from "ng-zorro-antd/button";
 
 @NgModule({
   declarations: [
     DashboardComponent,
     DashboardDesktopComponent,
     DashboardMobileComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    CreditCardComponent
   ],
   imports: [
     SharedModule,
@@ -24,6 +32,12 @@ import {ReleaseModule} from "../../features/release/release.module";
     RouterModule,
     ChartsModule,
     ReleaseModule,
+    NzModalModule,
+    NzListModule,
+    ReactiveFormsModule,
+    NzWaveModule,
+    NzFormModule,
+    NzButtonModule,
   ],
   exports: [
     DashboardComponent,

@@ -39,7 +39,6 @@ export class DashboardComponent implements OnInit {
     this.onResize();
     this.uiQuery.select().subscribe(
       ui => {
-        console.log(ui);
         this.cardsModalVisible = ui.cardsModalVisible;
         this.categoriesModalVisible = ui.categoriesModalVisible;
       }

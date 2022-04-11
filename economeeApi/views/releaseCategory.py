@@ -24,8 +24,8 @@ class ReleaseCategoryView(viewsets.ModelViewSet):
         return ReleaseCategory.objects.filter(Q(owner_id=self.request.user.id) | Q(owner_id=None))
 
     def create(self, request, *args, **kwargs):
-        release_category = ReleaseCategory.objects.create(name=self.request.data.get('name'),
-                                                          owner_id=self.request.user.id)
-        return HttpResponse(ReleaseCategorySerializer(release_category), content_type="application/json")
-
-    # FIXME make release category default read only
+        release_category = ReleaseCategory.objects.create(
+            name=self.request.data.get('name'),
+            owner_id=self.request.user.id). \
+            save()
+        return HttpResponse(self.get_serializer(release_category).data, content_type="application/json")

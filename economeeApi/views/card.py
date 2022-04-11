@@ -31,12 +31,14 @@ class CardView(viewsets.ModelViewSet):
         )
 
         # create an invoice for the card
-        Invoice.object.create(
-            card=card,
-            total_value=card.credit,
-            date_reference=card.pay_date,
+        Invoice.objects.create(
+            card_id=card.id,
+            total_value=0,
+            date_reference=self.request.data.get('pay_date'),
             is_paid=False
-        )
+        ).save()
+
+        card.save()
 
         return HttpResponse(card, content_type="application/json")
 

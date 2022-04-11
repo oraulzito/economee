@@ -10,6 +10,9 @@ import {CurrencyQuery} from "../../../core/state/currency/currency.query";
 import {AccountQuery} from "../../../core/state/account/account.query";
 import {getEntityType} from "@datorama/akita";
 import {CurrencyState} from "../../../core/state/currency/currency.store";
+import {actionType} from "../../../core/state/actionType";
+import {AccountService} from "../../../core/state/account/account.service";
+import {BalanceService} from "../../../core/state/balance/balance.service";
 
 @Component({
   selector: 'app-release-list',
@@ -33,6 +36,8 @@ export class ReleaseListComponent implements OnInit {
     private balanceQuery: BalanceQuery,
     private cardQuery: CardQuery,
     private invoiceQuery: InvoiceQuery,
+    private accountService: AccountService,
+    private balanceService: BalanceService,
     private releaseService: ReleaseService,
     private releaseQuery: ReleaseQuery,
     private categoryQuery: ReleaseCategoryQuery,
@@ -52,8 +57,15 @@ export class ReleaseListComponent implements OnInit {
     this.releaseEditEventEmitter.emit(this.releaseEdit);
   }
 
-  delete(id) {
-    this.releaseService.remove(id).subscribe();
+  delete(release_id, recurring_release_id) {
+    this.releaseQuery.selectEntity(state => state.release_id == release_id).subscribe(
+      release => {
+        this.accountService.updateAccountTotalAvailable(release, actionType.REMOVE);
+        this.balanceService.updateBalanceTotalValues(release, actionType.REMOVE);
+      }
+    );
+
+    this.releaseService.remove(release_id, recurring_release_id).subscribe();
     this.releaseQuery.queryReleases(this.listType);
   }
 

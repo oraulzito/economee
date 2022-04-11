@@ -133,43 +133,41 @@ class ReleaseView(viewsets.ModelViewSet):
             return HttpResponse("This account isn't yours", content_type="application/json")
 
     def destroy(self, request, *args, **kwargs):
-        try:
-            instance = kwargs.get('pk')
+        instance = kwargs.get('pk')
 
-            recurring_releases = RecurringRelease.objects.filter(
-                release_id=instance
-            ).all()
+        recurring_releases = RecurringRelease.objects.filter(
+            release_id=instance
+        ).all()
 
-            release = Release.objects.filter(
-                id=instance
+        release = Release.objects.filter(
+            id=instance
+        ).first()
+
+        account = Account.objects.filter(
+            owner_id=self.request.user.id
+        ).first()
+
+        self.update_account_total(account, 1 if release.type == 0 else 0, recurring_releases[0].installment_value)
+
+        for recurringRelease in recurring_releases:
+            balance = Balance.objects.filter(
+                id=recurringRelease.balance_id
             ).first()
 
-            account = Account.objects.filter(
-                owner_id=self.request.user.id
+            self.update_balance_total(balance, release.type, -recurringRelease.installment_value)
+
+            invoice = Invoice.objects.filter(
+                id=recurringRelease.invoice_id
             ).first()
 
-            self.update_account_total(account, 1 if release.type == 0 else 0, recurring_releases[0].installment_value)
-
-            for recurringRelease in recurring_releases:
-                balance = Balance.objects.filter(
-                    id=recurringRelease.balance_id
-                ).first()
-
-                self.update_balance_total(balance, release.type, -recurringRelease.installment_value)
-
-                invoice = Invoice.objects.filter(
-                    id=recurringRelease.invoice_id
-                ).first()
-
+            if invoice:
                 self.update_invoice_total(invoice, release.type, -recurringRelease.installment_value)
 
-                recurringRelease.delete()
+            recurringRelease.delete()
 
-            release.delete()
+        release.delete()
 
-            return JsonResponse({'success': 'release deleted'}, status=200)
-        except Exception:
-            return JsonResponse({'error': 'something bad:'}, status=400)
+        return JsonResponse({'success': 'release deleted'}, status=200)
 
     def update(self, request, **kwargs):
         # try:

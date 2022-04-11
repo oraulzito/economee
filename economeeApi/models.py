@@ -57,7 +57,7 @@ class Balance(models.Model):
 
 
 class Card(models.Model):
-    name = models.CharField(max_length=24)
+    name = models.CharField(max_length=48)
     credit = models.FloatField(default=0.0)
     pay_date = models.DateField()
     account = models.ForeignKey(Account, related_name='cards', on_delete=models.CASCADE)

@@ -115,6 +115,7 @@ export class ReleaseService {
   update(id, form) {
     const body = {
       value: form.value,
+      place: form.place,
       description: form.description,
       is_paid: form.is_paid,
       category_id: form.category_id,
@@ -124,13 +125,9 @@ export class ReleaseService {
     return this.http.patch('/api/release/' + id + '/', body, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       tap(entities => {
-        if (entities === 1) {
-          this.releaseStore.update(id, body)
-          this.accountService.updateAccountTotalAvailable(body, actionType.UPDATE);
-          this.balanceService.updateBalanceTotalValues(body, actionType.UPDATE);
-        } else {
-          this.releaseStore.setError("Not updated")
-        }
+        this.releaseStore.update(id, body)
+        this.accountService.updateAccountTotalAvailable(body, actionType.UPDATE);
+        this.balanceService.updateBalanceTotalValues(body, actionType.UPDATE);
       }),
       catchError(error => throwError(error))
     );
@@ -141,22 +138,16 @@ export class ReleaseService {
     let release = this.releaseQuery.getEntity(id);
     return this.http.patch('/api/release/pay/release/' + id + '/', null, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      tap(entities => entities === 1 ? this.releaseStore.update(id, {is_paid: !release.is_paid}) : this.releaseStore.setError("Not updated")),
+      tap(entities => this.releaseStore.update(id, {is_paid: !release.is_paid})),
       catchError(error => throwError(error))
     );
   }
 
   // tslint:disable-next-line:typedef
-  remove(id: ID) {
-    this.releaseQuery.selectEntity(state => state.release_id == id).subscribe(
-      release => {
-        this.accountService.updateAccountTotalAvailable(release, actionType.REMOVE);
-        this.balanceService.updateBalanceTotalValues(release, actionType.REMOVE);
-      }
-    );
-    return this.http.delete<number>('/api/release/' + id, this.uiService.httpHeaderOptions()).pipe(
+  remove(release_id: ID, id: ID) {
+    return this.http.delete<number>('/api/release/' + release_id, this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
-      tap(entities => entities === 1 ? this.releaseStore.remove(id) : this.releaseStore.setError("Not removed")),
+      tap(entities => this.releaseStore.remove(id)),
       catchError(error => throwError(error))
     );
   }

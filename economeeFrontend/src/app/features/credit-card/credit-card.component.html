@@ -1,5 +1,60 @@
-<app-form
-  [formItems]="formItems"
-  [formTitle]="'Novo cartão de crédito'"
-  [form]="creditCardForm"
-></app-form>
+<nz-modal (nzOnCancel)="closeCardsModal()"
+          [(nzVisible)]="isVisible"
+          [nzFooter]=null
+          nzTitle="Cartões">
+  <ng-container *nzModalContent>
+    <ul [nzDataSource]="cards" class="overflow-auto vh-50" nz-list nzBordered>
+      <!-- Header -->
+      <nz-list-header
+        (click)="add()"
+        *ngIf="!adding"
+        class="bg-primary">
+        <b class="text-white">Adicionar</b>
+      </nz-list-header>
+
+      <!-- Add card -->
+      <li *ngIf="adding" nz-list-item nzNoFlex>
+        <form [formGroup]="cardForm" nz-form nzLayout="inline">
+          <app-form
+            [formItems]="formItems"
+            [formTitle]="'Novo cartão'"
+            [form]="cardForm"
+            [showSaveButton]="false"
+          ></app-form>
+          <button (click)="saveCard()" nz-button nzType="primary">Salvar</button>
+          <button (click)="cancelSave()" nz-button nzType="dashed">Cancelar</button>
+        </form>
+      </li>
+
+      <!-- List of categories -->
+      <li *ngFor="let card of cards; let i = index" nz-list-item>
+        <ul *ngIf="!editing[i]" nz-list-item-actions>
+          <nz-list-item-action>
+            <a (click)="deleteCard(card.id)">Deletar</a>
+          </nz-list-item-action>
+          <nz-list-item-action>
+            <a (click)="editCard(i, card)">Editar</a>
+          </nz-list-item-action>
+        </ul>
+        <p *ngIf="!editing[i]">{{ card.name }}</p>
+        <app-form *ngIf="editing[i]"
+                  [formItems]="formItems"
+                  [formTitle]="'Editar cartão'"
+                  [form]="cardForm"
+                  [showSaveButton]="false"
+        >
+          <button (click)="saveEditCard(i, card.id)"
+                  nz-button
+                  nzType="primary">
+            Salvar
+          </button>
+          <button (click)="cancelEdit(i)"
+                  nz-button
+                  nzType="dashed">
+            Cancelar
+          </button>
+        </app-form>
+      </li>
+    </ul>
+  </ng-container>
+</nz-modal>

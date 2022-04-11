@@ -27,7 +27,6 @@ export class MonthlyChartService {
       setLoading(this.monthlyChartsStore),
       tap(entities => {
         this.monthlyChartsStore.set(entities);
-        console.log(entities);
       }),
       catchError(error => throwError(error))
     );
