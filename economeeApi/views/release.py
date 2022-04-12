@@ -32,7 +32,7 @@ class ReleaseView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         #  CHECK IF THE USER IT's THE ACCOUNT OWNER
         account_id = int(request.data.get('account_id'))
-        user_id = request.user.id
+        user_id = self.request.user.id
 
         account = Account.objects.filter(id=account_id, owner_id=user_id).first()
 
@@ -41,10 +41,11 @@ class ReleaseView(viewsets.ModelViewSet):
             balances = []
 
             release_value = float(request.data.get('value'))
-            release_type = request.data.get('type')
+            release_type = int(request.data.get('type'))
             release_date = Utils.date_to_database_format(request.data.get('date_release'))
             installment_times = int(request.data.get('installment_times'))
-            installment_value = float(request.data.get('value')) / installment_times
+            installment_value = release_value / installment_times
+            is_paid = bool(request.data.get('is_paid'))
 
             """CARD"""
             "Date parse - check if the release will be in actual or next month"
@@ -69,10 +70,10 @@ class ReleaseView(viewsets.ModelViewSet):
                         invoice = Invoice.objects.create(
                             date_reference=date_reference_invoice,
                             card_id=int(card_id),
-                            is_paid=False,
+                            is_paid=False
                         )
 
-                    self.update_invoice_total(invoice, release_type, installment_value)
+                    Utils.update_invoice_total(invoice, release_type, installment_value)
 
                     invoices.append(invoice)
 
@@ -94,7 +95,8 @@ class ReleaseView(viewsets.ModelViewSet):
                         account_id=account_id
                     )
 
-                self.update_balance_total(balance, release_type, installment_value)
+                if is_paid:
+                    Utils.update_balance_total(balance, release_type, installment_value)
 
                 balances.append(balance)
 
@@ -114,7 +116,7 @@ class ReleaseView(viewsets.ModelViewSet):
                 installment_value=installment_value,
                 installment_times=installment_times,
                 date_release=release_date + relativedelta(months=+i),
-                is_paid=bool(request.data.get('is_paid')) if not card_id else False,
+                is_paid=is_paid if not card_id else False,
                 release=release,
                 balance=balances[i],
                 invoice=invoices[i] if card_id else None,
@@ -122,7 +124,8 @@ class ReleaseView(viewsets.ModelViewSet):
 
             RecurringRelease.objects.bulk_create(recurring_releases)
 
-            self.update_account_total(account, release_type, installment_value)
+            if is_paid:
+                Utils.update_account_total(account, release_type, installment_value)
 
             rr = RecurringRelease.objects.filter(
                 release_id=release.id
@@ -147,23 +150,25 @@ class ReleaseView(viewsets.ModelViewSet):
             owner_id=self.request.user.id
         ).first()
 
-        self.update_account_total(account, 1 if release.type == 0 else 0, recurring_releases[0].installment_value)
+        for recurring_release in recurring_releases:
+            if recurring_release.is_paid:
+                Utils.update_account_total(account, 1 if release.type == 0 else 0,
+                                           recurring_release.installment_value)
 
-        for recurringRelease in recurring_releases:
             balance = Balance.objects.filter(
-                id=recurringRelease.balance_id
+                id=recurring_release.balance_id
             ).first()
-
-            self.update_balance_total(balance, release.type, -recurringRelease.installment_value)
+            if recurring_release.is_paid:
+                Utils.update_balance_total(balance, release.type, -recurring_release.installment_value)
 
             invoice = Invoice.objects.filter(
-                id=recurringRelease.invoice_id
+                id=recurring_release.invoice_id
             ).first()
 
-            if invoice:
-                self.update_invoice_total(invoice, release.type, -recurringRelease.installment_value)
+            if invoice and recurring_release.is_paid:
+                Utils.update_invoice_total(invoice, release.type, -recurring_release.installment_value)
 
-            recurringRelease.delete()
+            recurring_release.delete()
 
         release.delete()
 
@@ -180,11 +185,11 @@ class ReleaseView(viewsets.ModelViewSet):
         value = request.data.get('value')
 
         if release.value != value:
-            self.update_release_value(release_id, request.user.id, value, release.type)
+            Utils.update_release_value(release_id, request.user.id, value, release.type)
 
         # Make available the possibility for user mark all future recurring releases as paid
         # if request.data.get('is_paid') is not None:
-        #     self.update_recurring_releases_paid(release_id, request.data.get('is_paid'), release.type)
+        #     Utils.update_recurring_releases_paid(release_id, request.data.get('is_paid'), release.type)
 
         Release.objects.update(
             value=value,
@@ -273,14 +278,14 @@ class ReleaseView(viewsets.ModelViewSet):
         for recurring_release in recurring_releases:
             if recurring_release.date_release > datetime.now().date():
                 # Update the account total available
-                self.update_account_total(
+                Utils.update_account_total(
                     recurring_release.balance.account.id,
                     release_type,
                     recurring_release.installment_value,
                 )
 
                 # update the balance total values
-                self.update_balance_total(
+                Utils.update_balance_total(
                     recurring_release.balance.id,
                     release_type,
                     recurring_release.installment_value,
@@ -344,32 +349,6 @@ class ReleaseView(viewsets.ModelViewSet):
         return Release.objects.filter(
             recurring_release__balance__account__owner=self.request.user
         ).all().distinct()
-
-    """Class methods"""
-
-    @classmethod
-    def update_invoice_total(cls, invoice, release_type, value):
-        if release_type == 0:
-            invoice.total_value += value
-        elif release_type == 1:
-            invoice.total_value -= value
-        invoice.save()
-
-    @classmethod
-    def update_balance_total(cls, balance, release_type, value):
-        if release_type == 0:
-            balance.total_expenses += value
-        elif release_type == 1:
-            balance.total_incomes += value
-        balance.save()
-
-    @classmethod
-    def update_account_total(cls, account, release_type, value):
-        if release_type == 0:
-            account.total_available -= value
-        elif release_type == 1:
-            account.total_available += value
-        account.save()
 
     # Method to update the date_release of a recurring release, changing also the balance id and the invoice id,if necessary, this has to update the values of the balance and the account as well
     # @classmethod

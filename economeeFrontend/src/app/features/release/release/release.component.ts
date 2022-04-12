@@ -68,6 +68,10 @@ export class ReleaseComponent implements OnInit {
       this.cardID$ = this.cardQuery.activeCardID$;
     }
 
+    this.balanceQuery.selectActive().subscribe(
+      () => this.loadReleases(this.releaseType)
+    );
+
     this.loadReleases(this.releaseType);
   }
 

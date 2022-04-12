@@ -75,12 +75,10 @@ export class BalanceService {
 
   formatDateForBalance(date?) {
     let todayMonthDate = new Date();
-
+    todayMonthDate.setDate(1);
     if (date !== undefined) {
       todayMonthDate = new Date(date);
     }
-
-    todayMonthDate = new Date(todayMonthDate.getFullYear(), todayMonthDate.getMonth(), 1);
 
     return todayMonthDate.toISOString().split('T')[0];
   }

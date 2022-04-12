@@ -1,5 +1,5 @@
 <div [nzGutter]="[24, 24]" class='dashboard-desktop' nz-row nzJustify="space-around">
-  <div [nzLg]="10" [nzMd]="8" [nzXXl]="12" [nzXl]="10" class="overflow-auto " nz-col>
+  <div [nzLg]="10" [nzMd]="8" [nzXXl]="12" [nzXl]="10" class="charts-panel" nz-col>
     <div [nzGutter]="[16, 16]" nz-row>
       <app-card [nzLg]="8" [nzMd]="12" nz-col>
         <app-money-panel [id]="5"></app-money-panel>
@@ -38,13 +38,13 @@
 
   <div [nzLg]="7" [nzMd]="8" [nzXXl]="6" [nzXl]="7" nz-col>
     <app-card>
-      <app-release [releaseType]=1 class="max-w-95 max-h-95 p-2"></app-release>
+      <app-release [releaseType]=1 class="max-w-95 max-h-90 p-2"></app-release>
     </app-card>
   </div>
 
   <div [nzLg]="7" [nzMd]="8" [nzXXl]="6" [nzXl]="7" nz-col>
     <app-card>
-      <app-release [releaseType]=0 class="max-w-95 max-h-95 p-2"></app-release>
+      <app-release [releaseType]=0 class="max-w-95 max-h-90 p-2"></app-release>
     </app-card>
   </div>
 </div>

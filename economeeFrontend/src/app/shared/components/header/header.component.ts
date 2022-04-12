@@ -12,7 +12,6 @@ import {ReleaseService} from "../../../core/state/release/release.service";
 import {BalanceService} from "../../../core/state/balance/balance.service";
 import {ReleaseCategoryService} from "../../../core/state/release/category/release-category.service";
 import {UiQuery} from "../../../core/state/ui/ui.query";
-import {format} from "date-fns";
 import {UiStore} from "../../../core/state/ui/ui.store";
 import {UserQuery} from "../../../core/state/user/user.query";
 import {UserState} from "../../../core/state/user/user.store";
@@ -68,7 +67,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onMonthChange(result): void {
-    let date_balance = this.balanceService.formatDateForBalance(result);
+    let date_balance = this.balanceService.formatDateForBalance(result.target.value);
     this.balanceService.setActiveMonthBalance(undefined, date_balance);
   }
 

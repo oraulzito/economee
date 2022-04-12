@@ -6,6 +6,12 @@
   height: 70vh;
 }
 
+@media screen and (max-height: 680px) {
+  ::ng-deep .ant-tabs-content {
+    height: calc(100vh - 35vh);
+  }
+}
+
 ::ng-deep .ant-tabs-content {
   padding: 16px 8px;
 }

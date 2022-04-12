@@ -19,7 +19,7 @@ export class InvoiceService {
     if (invoice_id === undefined) {
       const date_reference = this.formatDateForInvoice();
       this.invoiceQuery.selectAll({
-        filterBy: i => i.date_reference === date_reference
+        filterBy: i => i.date_reference === date_reference && i.card_id === this.cardQuery.getActiveId()
       }).subscribe(
         r => {
           if (r)

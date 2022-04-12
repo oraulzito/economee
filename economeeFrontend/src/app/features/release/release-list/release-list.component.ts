@@ -60,8 +60,10 @@ export class ReleaseListComponent implements OnInit {
   delete(release_id, recurring_release_id) {
     this.releaseQuery.selectEntity(state => state.release_id == release_id).subscribe(
       release => {
-        this.accountService.updateAccountTotalAvailable(release, actionType.REMOVE);
-        this.balanceService.updateBalanceTotalValues(release, actionType.REMOVE);
+        if (release.is_paid) {
+          this.accountService.updateAccountTotalAvailable(release, actionType.REMOVE);
+          this.balanceService.updateBalanceTotalValues(release, actionType.REMOVE);
+        }
       }
     );
 
