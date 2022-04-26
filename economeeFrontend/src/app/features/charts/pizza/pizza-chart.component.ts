@@ -49,6 +49,8 @@ export class PizzaChartComponent implements OnInit {
     this.categoryChartsQuery.selectAll().subscribe(
       (values) => {
         if (values) {
+          this.pieChartLabels = [];
+          this.values = [];
           values.forEach(value => {
             this.pieChartLabels.push(value.name);
             this.values.push(value.total)

@@ -124,7 +124,8 @@ class ReleaseView(viewsets.ModelViewSet):
 
             RecurringRelease.objects.bulk_create(recurring_releases)
 
-            if is_paid:
+            # If release is paid and release year and month is the same as the actual year and month
+            if is_paid and release_date.year == datetime.now().year and release_date.month == datetime.now().month:
                 Utils.update_account_total(account, release_type, installment_value)
 
             rr = RecurringRelease.objects.filter(

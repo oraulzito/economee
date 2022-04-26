@@ -59,6 +59,9 @@ export class TimelineChartComponent implements OnInit {
     }).subscribe(
       (values) => {
         if (values) {
+          this.valueIncomes = [];
+          this.valueExpenses = [];
+          this.labels = [];
           values.forEach(value => {
             this.labels.push(new Date(value.date_reference).toLocaleString('PT-br', {month: 'short'}) + '/' + new Date(value.date_reference).getFullYear());
             this.valueIncomes.push(value.total_incomes);

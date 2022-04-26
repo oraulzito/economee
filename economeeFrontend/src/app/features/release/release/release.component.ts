@@ -66,24 +66,13 @@ export class ReleaseComponent implements OnInit {
     if (this.releaseType === 0) {
       this.cardQuery.allCards$.subscribe(r => this.cards = r);
       this.cardID$ = this.cardQuery.activeCardID$;
-    }
-
-    this.balanceQuery.selectActive().subscribe(
-      () => this.loadReleases(this.releaseType)
-    );
-
-    this.loadReleases(this.releaseType);
-  }
-
-  loadReleases(id) {
-    if (id === 0) {
       this.invoiceQuery.selectActiveId().subscribe(
-        (invoice) => {
-          if (invoice)
-            this.releaseItems = this.releaseQuery.queryReleases(0);
-        });
+        () => this.releaseItems = this.releaseQuery.queryReleases(0)
+      );
     } else {
-      this.releaseItems = this.releaseQuery.queryReleases(id);
+      this.balanceQuery.selectActive().subscribe(
+        () => this.releaseItems = this.releaseQuery.queryReleases(this.releaseType)
+      );
     }
   }
 
@@ -98,7 +87,7 @@ export class ReleaseComponent implements OnInit {
 
   changeActiveCard(id) {
     this.cardService.setActiveCard(id);
-    this.releaseItems = this.releaseQuery.queryReleases(4);
+    this.releaseItems = this.releaseQuery.queryReleases(0);
   }
 
   changeActiveReleaseList(id) {

@@ -11,7 +11,7 @@ export class ReleaseQuery extends QueryEntity<ReleaseState> {
     filterBy: r => r.invoice_id === null
   });
   loadInvoiceReleases$ = this.selectAll({
-    filterBy: r => r.invoice_id !== null && r.invoice_id === this.invoiceQuery.getActiveId()
+    filterBy: r => r.invoice_id === this.invoiceQuery.getActiveId()
   });
   loadPaidExpensesReleases$ = this.selectAll({
     filterBy: r => r.type === 0 && r.invoice_id == null && r.is_paid == true
