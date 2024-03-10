@@ -41,8 +41,8 @@ export class BalanceService {
     this.uiQuery.rangeDateBalance$.subscribe(r => this.rangeDateBalance = r);
   }
 
-  getFullBalanceMonth(date_reference) {
-    return this.http.get<Balance>('/api/balance/full_balance?date_reference=' + date_reference,
+  getFullBalanceMonth(reference_date) {
+    return this.http.get<Balance>('/api/balance/full_balance?reference_date=' + reference_date,
       this.uiService.httpHeaderOptions()).pipe(
       shareReplay(1),
       setLoading(this.accountStore),
@@ -62,7 +62,7 @@ export class BalanceService {
         date_balance = this.formatDateForBalance(date_balance);
       }
 
-      this.balanceQuery.selectEntity(r => r.date_reference == date_balance).subscribe(
+      this.balanceQuery.selectEntity(r => r.reference_date == date_balance).subscribe(
         r => {
           if (r)
             this.setActiveAndGetData(r.id)
@@ -85,7 +85,7 @@ export class BalanceService {
 
   setActiveAndGetData(id) {
     this.balanceStore.setActive(id);
-    this.getFullBalanceMonth(this.balanceQuery.getActive().date_reference).subscribe();
+    this.getFullBalanceMonth(this.balanceQuery.getActive().reference_date).subscribe();
   }
 
   calculateExpenses() {

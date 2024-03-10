@@ -7,11 +7,9 @@
 
   <!--  </nz-page-header-content>-->
   <nz-page-header-extra *ngIf="isLogged$ | async">
-    <button disabled nz-button>Financiamentos</button>
-    <button disabled nz-button>Empréstimos</button>
     <button (click)="openCardsModal()" nz-button>Cartões</button>
     <button (click)="openCategoriesModal()" nz-button>Categorias</button>
-    <button disabled nz-button>Contas</button>
+    <button (click)="openAccountsModal()"  nz-button>Contas</button>
 
     <input (change)="onMonthChange($event)"
            value="{{balanceDate$|async}}"

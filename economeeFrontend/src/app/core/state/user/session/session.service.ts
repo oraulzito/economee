@@ -1,9 +1,11 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {shareReplay, tap} from 'rxjs/operators';
+import {catchError, shareReplay, tap} from 'rxjs/operators';
 import {SessionStore} from './session.store';
 import {UiService} from '../../ui/ui.service';
 import {resetStores} from '@datorama/akita';
+import {Router} from "@angular/router";
+import {finalize} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
 export class SessionService {
@@ -11,38 +13,53 @@ export class SessionService {
   constructor(
     private uiService: UiService,
     private sessionStore: SessionStore,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {
   }
 
-
-  // tslint:disable-next-line:typedef
-  login(body) {
+  login(body: any) {
     this.sessionStore.setLoading(true);
     return this.http.post('/auth/login/', body).pipe(
-      tap(
-        key => {
-          this.sessionStore.update(key);
-        },
-        error => {
-          this.sessionStore.setError(error);
-          this.sessionStore.setLoading(false);
-        },
-        () => {
-          this.sessionStore.setLoading(false);
-        }),
-      shareReplay(1));
+      catchError(error => {
+        this.handleLoginError(error);
+        throw error; // Re-throwing the error to propagate it down the observable chain
+      }),
+      finalize(() => {
+        this.sessionStore.setLoading(false);
+      })
+    ).subscribe(
+      key => {
+        this.handleLoginSuccess(key);
+      }
+    );
   }
 
-  // tslint:disable-next-line:typedef
+  private handleLoginSuccess(key: any): void {
+    this.sessionStore.update(key);
+    this.router.navigate(['/dashboard']);
+  }
+
+  private handleLoginError(error: any): void {
+    this.sessionStore.setError(error);
+  }
+
   logout() {
     this.sessionStore.setLoading(true);
-    return this.http.post('/auth/logout/', this.uiService.httpHeaderOptions()).pipe(tap(key => {
-        this.sessionStore.update({key: ''});
-        this.sessionStore.setLoading(false);
-        localStorage.clear();
-        resetStores();
+    return this.http.post('/auth/logout/', this.uiService.httpHeaderOptions()).pipe(
+      catchError(error => {
+        throw error;
       }),
-      shareReplay(1));
+      finalize(() => {
+        this.sessionStore.setLoading(false);
+        this.handleLogoutFinalization();
+      })
+    ).subscribe();
+  }
+
+  private handleLogoutFinalization(): void {
+    this.sessionStore.update({key: ''});
+    localStorage.clear();
+    resetStores(); // Assuming this is a function you've defined somewhere else
   }
 }

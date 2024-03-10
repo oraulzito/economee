@@ -72,7 +72,7 @@ export class LoginComponent implements OnInit {
   submitForm(): void {
     // if the form is valid, then call the login function in the session service, then redirect to the dashboard
     if (this.loginForm.valid) {
-      this.sessionService.login(this.loginForm.value).subscribe();  // call the login function in the session service
+      this.sessionService.login(this.loginForm.value);  // call the login function in the session service
     }
   }
 

@@ -21,7 +21,6 @@ export class UserService {
   ) {
   }
 
-  // tslint:disable-next-line:typedef
   create(form) {
     this.userStore.setLoading(true);
 
@@ -56,7 +55,6 @@ export class UserService {
     );
   }
 
-  // tslint:disable-next-line:typedef
   checkUsername(value) {
     return this.http.get('/api/user/check_username?username=' + value).pipe(
       tap(
@@ -71,30 +69,20 @@ export class UserService {
     );
   }
 
-  // tslint:disable-next-line:typedef
   checkEmail(value) {
     return this.http.get('/api/user/check_email?email=' + value);
   }
 
-// tslint:disable-next-line:typedef
   get() {
     return this.http.get<User>('/api/user/', this.uiService.httpHeaderOptions()).pipe(tap(entities => {
       this.userStore.update(entities[0]);
     }));
   }
 
-// tslint:disable-next-line:typedef
-  update(id, user
-    :
-    Partial<User>
-  ) {
+  update(id, user: Partial<User>) {
     // this.userStore.update(id, user);
   }
 
-// tslint:disable-next-line:typedef
-  remove(id
-           :
-           ID
-  ) {
+  remove(id: ID) {
   }
 }

@@ -3,7 +3,7 @@ import {Account} from "../account/account.model";
 
 export interface Balance {
   id: number | string;
-  date_reference: string;
+  reference_date: string;
   account_id: Account['id'];
 
   total_incomes: number;

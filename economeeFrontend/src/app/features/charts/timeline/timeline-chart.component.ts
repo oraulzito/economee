@@ -55,7 +55,7 @@ export class TimelineChartComponent implements OnInit {
 
   constructChartData() {
     this.timelineQuery.selectAll({
-      sortBy: 'date_reference',
+      sortBy: 'reference_date',
     }).subscribe(
       (values) => {
         if (values) {
@@ -63,7 +63,7 @@ export class TimelineChartComponent implements OnInit {
           this.valueExpenses = [];
           this.labels = [];
           values.forEach(value => {
-            this.labels.push(new Date(value.date_reference).toLocaleString('PT-br', {month: 'short'}) + '/' + new Date(value.date_reference).getFullYear());
+            this.labels.push(new Date(value.reference_date).toLocaleString('PT-br', {month: 'short'}) + '/' + new Date(value.reference_date).getFullYear());
             this.valueIncomes.push(value.total_incomes);
             this.valueExpenses.push(value.total_expenses);
           });

@@ -1,5 +1,5 @@
 export interface TimelineChart {
-  date_reference: string;
+  reference_date: string;
   total_expenses: number;
   total_incomes: number;
 }

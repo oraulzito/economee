@@ -17,9 +17,9 @@ export class InvoiceService {
 
   setActiveMonthInvoice(invoice_id?) {
     if (invoice_id === undefined) {
-      const date_reference = this.formatDateForInvoice();
+      const reference_date = this.formatDateForInvoice();
       this.invoiceQuery.selectAll({
-        filterBy: i => i.date_reference === date_reference && i.card_id === this.cardQuery.getActiveId()
+        filterBy: i => i.reference_date === reference_date && i.card_id === this.cardQuery.getActiveId()
       }).subscribe(
         r => {
           if (r)

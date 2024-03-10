@@ -20,6 +20,7 @@ export class DashboardComponent implements OnInit {
   totalExpensesValue: number;
   totalIncomesValue: number;
   categoriesModalVisible = false;
+  accountsModalVisible = false;
   cardsModalVisible = false;
 
   constructor(
@@ -34,15 +35,17 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userService.get().subscribe();
+    this.userService.get().subscribe(u=> console.log(u));
     this.mobile$ = this.uiQuery.isMobile$;
     this.onResize();
     this.uiQuery.select().subscribe(
       ui => {
         this.cardsModalVisible = ui.cardsModalVisible;
         this.categoriesModalVisible = ui.categoriesModalVisible;
+        this.accountsModalVisible = ui.accountsModalVisible;
       }
     );
+
   }
 
   @HostListener('window:resize')

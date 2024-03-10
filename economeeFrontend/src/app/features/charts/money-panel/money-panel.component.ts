@@ -17,8 +17,17 @@ export class MoneyPanelComponent implements OnInit {
   @Input()
   value?: number;
 
-  data: { value?: Observable<number> | number; color: string; icon: string; title: string; suffix: string; prefix?: 'R$' };
+  data: {
+    value?: Observable<number> | number;
+    color: string;
+    icon: string;
+    title: string;
+    suffix: string;
+    prefix?: 'R$'
+  };
   currency: string;
+  incomes: number;
+  expenses: number;
 
   constructor(
     private accountQuery: AccountQuery,
@@ -30,6 +39,7 @@ export class MoneyPanelComponent implements OnInit {
 
   ngOnInit(): void {
     this.accountQuery.currencySymbol$.subscribe(c => this.currency = c);
+
     let balance_total = 0;
     switch (this.id) {
       case 1:
@@ -37,20 +47,22 @@ export class MoneyPanelComponent implements OnInit {
           title: 'Receitas',
           icon: '',
           color: '#3F8600',
-          value: this.value,
           suffix: '',
         };
-        this.balanceQuery.totalIncomes$.subscribe(r => this.data.value = r);
+         this.balanceQuery.selectActive().subscribe(
+          b => b ? this.data.value = b.total_incomes : 0
+        );
         break;
       case 2:
         this.data = {
           title: 'Despesas',
           icon: '',
           color: '#CF1322',
-          value: this.value,
           suffix: '',
         };
-        this.balanceQuery.totalExpenses$.subscribe(r => this.data.value = r);
+        this.balanceQuery.selectActive().subscribe(
+          b => b ? this.data.value = b.total_expenses : 0
+        );
         break;
       case 3:
         this.data = {
@@ -61,7 +73,7 @@ export class MoneyPanelComponent implements OnInit {
           suffix: '',
         };
         this.balanceQuery.selectActive().subscribe(
-          b => b ? balance_total = b.total_incomes : ""
+          b => b ? balance_total = b.total_incomes : 0
         );
 
         this.releaseQuery.selectAll({

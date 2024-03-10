@@ -73,11 +73,7 @@ export class HeaderComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   logout() {
-    this.sessionService.logout().subscribe(
-      () => console.log("Loggin out"),
-      (err) => alert(err),
-      () => this.router.navigate(['/'])
-    );
+    this.sessionService.logout();
   }
 
   openCardsModal() {
@@ -89,6 +85,12 @@ export class HeaderComponent implements OnInit {
   openCategoriesModal() {
     this.uiStore.update({
       categoriesModalVisible: true
+    });
+  }
+
+  openAccountsModal() {
+    this.uiStore.update({
+      accountsModalVisible: true
     });
   }
 

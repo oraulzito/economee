@@ -72,7 +72,7 @@ export class ReleaseService {
   // TODO use this as a filter for releases between date and/or periods
   // tslint:disable-next-line:typedef
   // getMonthReleases(balance) {
-  //   return this.http.get<Release[]>('/api/release?date_reference=' + balance.date_reference,
+  //   return this.http.get<Release[]>('/api/release?reference_date=' + balance.reference_date,
   //     this.uiService.httpHeaderOptions()).pipe(
   //     shareReplay(1),
   //     setLoading(this.releaseStore),

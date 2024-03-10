@@ -6,8 +6,8 @@ import {format} from "date-fns";
 @Injectable({providedIn: 'root'})
 export class BalanceQuery extends QueryEntity<BalanceState> {
   activeEntity$ = this.selectActive();
-  dateReference$ = this.selectActive(({date_reference}) => {
-    let d = new Date(date_reference);
+  dateReference$ = this.selectActive(({reference_date}) => {
+    let d = new Date(reference_date);
     d.setDate(d.getDate() + 1);
     return format(d, 'yyyy-MM');
   });

@@ -23,6 +23,7 @@ export class UiStore extends Store<UiState> {
       initialDateBalance: new Date(date.getFullYear(), date.getMonth(), 1),
       finalDateBalance: new Date(date.getFullYear(), date.getMonth() + 1, 0),
       categoriesModalVisible: false,
+      accountsModalVisible: false,
       cardsModalVisible: false,
     });
   }

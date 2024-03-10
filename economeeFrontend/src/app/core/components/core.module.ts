@@ -16,6 +16,8 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NzWaveModule} from "ng-zorro-antd/core/wave";
 import {NzFormModule} from "ng-zorro-antd/form";
 import {NzButtonModule} from "ng-zorro-antd/button";
+import {AccountComponent} from "../../features/account/account.component";
+import {NzInputModule} from "ng-zorro-antd/input";
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import {NzButtonModule} from "ng-zorro-antd/button";
     DashboardDesktopComponent,
     DashboardMobileComponent,
     WelcomeComponent,
-    CreditCardComponent
+    CreditCardComponent,
+    AccountComponent
   ],
   imports: [
     SharedModule,
@@ -38,6 +41,7 @@ import {NzButtonModule} from "ng-zorro-antd/button";
     NzWaveModule,
     NzFormModule,
     NzButtonModule,
+    NzInputModule,
   ],
   exports: [
     DashboardComponent,

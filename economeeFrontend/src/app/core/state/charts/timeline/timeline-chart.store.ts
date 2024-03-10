@@ -6,7 +6,7 @@ export interface TimelineChartState extends EntityState<TimelineChart> {
 }
 
 @Injectable({providedIn: 'root'})
-@StoreConfig({name: 'timeline', idKey: 'date_reference'})
+@StoreConfig({name: 'timeline', idKey: 'reference_date'})
 export class TimelineChartStore extends EntityStore<TimelineChartState> {
 
   constructor() {
