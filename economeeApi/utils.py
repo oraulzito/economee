@@ -5,19 +5,19 @@ from django.utils.datetime_safe import datetime
 class Utils:
 
     @classmethod
-    def date_replace_and_add_month(cls, date_reference, day, n):
-        date_reference_invoice = date_reference.replace(day=day)
-        return date_reference_invoice + relativedelta(months=+n)
+    def date_replace_and_add_month(cls, reference_date, day, n):
+        reference_date_invoice = reference_date.replace(day=day)
+        return reference_date_invoice + relativedelta(months=+n)
 
     @classmethod
-    def month_replace_and_add_month(cls, date_reference, day, n):
-        date_reference_invoice = date_reference.replace(day=day)
-        return date_reference_invoice + relativedelta(months=+n)
+    def month_replace_and_add_month(cls, reference_date, day, n):
+        reference_date_invoice = reference_date.replace(day=day)
+        return reference_date_invoice + relativedelta(months=+n)
 
     @classmethod
-    def year_replace_and_add_month(cls, date_reference, day, n):
-        date_reference_invoice = date_reference.replace(day=day)
-        return date_reference_invoice + relativedelta(months=+n)
+    def year_replace_and_add_month(cls, reference_date, day, n):
+        reference_date_invoice = reference_date.replace(day=day)
+        return reference_date_invoice + relativedelta(months=+n)
 
     @classmethod
     def date_to_database_format(cls, from_date):
