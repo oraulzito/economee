@@ -1,0 +1,36 @@
+<nz-modal (nzOnCancel)="closeAccountsModal()"
+          [(nzVisible)]="isVisible"
+          [nzFooter]=null
+          nzTitle="Conta">
+  <ng-container *nzModalContent>
+    <app-form *ngIf="adding"
+              [formItems]="formItems"
+              [formTitle]="'Conta'"
+              [form]="accountForm"
+              [showSaveButton]="true"
+    ></app-form>
+
+    <ul [nzDataSource]="accounts" class="overflow-auto vh-50" nz-list nzBordered *ngIf="!adding">
+      <!-- Header -->
+      <nz-list-header
+        (click)="add()"
+        *ngIf="!adding"
+        class="bg-primary">
+        <b class="text-white">Adicionar</b>
+      </nz-list-header>
+
+      <!-- List of accounts -->
+      <li *ngFor="let item of accounts" nz-list-item>
+        <ul *ngIf="item.owner_id == userId" nz-list-item-actions>
+          <nz-list-item-action>
+            <a (click)="deleteAccount(item.id)">Deletar</a>
+          </nz-list-item-action>
+          <nz-list-item-action>
+            <a (click)="editAccount()">Editar</a>
+          </nz-list-item-action>
+        </ul>
+        <p *ngIf="!editing">{{ item.name }}</p>
+      </li>
+    </ul>
+  </ng-container>
+</nz-modal>
