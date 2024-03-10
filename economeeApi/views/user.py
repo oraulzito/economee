@@ -1,5 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
+from django.utils.datetime_safe import datetime
 from django_rest.permissions import IsAuthenticated, AllowAny
 from rest_framework import viewsets, authentication
 from rest_framework.authtoken.models import Token
@@ -37,8 +38,7 @@ class UserView(viewsets.ModelViewSet):
                 username=request.data.get('username'),
                 first_name=request.data.get('first_name'),
                 last_name=request.data.get('last_name'),
-                dob=Utils.date_to_database_format(request.data.get('dob')),
-                photo=None
+                dob=Utils.date_to_database_format(request.data.get('dob'))
             )
 
             account = AccountView.create_account(
@@ -47,7 +47,7 @@ class UserView(viewsets.ModelViewSet):
                 owner=user
             )
 
-            BalanceView.create_balance(account)
+            BalanceView.create_balance(account, datetime.now())
 
             return JsonResponse({'key': str(Token.objects.get_or_create(user=user)[0])})
         # except Exception:

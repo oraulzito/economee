@@ -25,7 +25,7 @@ class ChartsView(viewsets.ReadOnlyModelViewSet):
         result_expenses = []
         expenses = Balance.objects.raw("""
                                 select bal.id,
-                                       bal.date_reference,
+                                       bal.reference_date,
                                        sum(rr.installment_value) as total
                                 from "economeeApi_release" as rel
                                          left join "economeeApi_recurringrelease" as rr
@@ -35,16 +35,16 @@ class ChartsView(viewsets.ReadOnlyModelViewSet):
                                 where rel.type = 0
                                   and bal.account_id = %s
                                 group by bal.id
-                                order by bal.date_reference;
+                                order by bal.reference_date;
                                            """, [self.request.query_params.get('account_id')])
         # TODO check if it`s necessary add the user id on this query
         for expense in expenses:
             result_expenses.append(
-                {'id': expense.id, 'date_reference': str(expense.date_reference), 'total': expense.total})
+                {'id': expense.id, 'reference_date': str(expense.reference_date), 'total': expense.total})
 
         incomes = Balance.objects.raw("""
                         select bal.id,
-                               bal.date_reference,
+                               bal.reference_date,
                                sum(rr.installment_value) as total
                         from "economeeApi_release" as rel
                                  left join "economeeApi_recurringrelease" as rr
@@ -55,7 +55,7 @@ class ChartsView(viewsets.ReadOnlyModelViewSet):
                           and bal.account_id = %s
                           and a.owner_id = %s
                         group by bal.id
-                        order by bal.date_reference;
+                        order by bal.reference_date;
                         """,
                                       [
                                           self.request.query_params.get('account_id'),
@@ -64,7 +64,7 @@ class ChartsView(viewsets.ReadOnlyModelViewSet):
         # TODO check if it`s necessary add the user id on this query
         for income in incomes:
             result_incomes.append(
-                {'id': income.id, 'date_reference': str(income.date_reference), 'total': income.total})
+                {'id': income.id, 'reference_date': str(income.reference_date), 'total': income.total})
 
         return JsonResponse({'incomes': result_incomes, 'expenses': result_expenses})
 
@@ -98,14 +98,14 @@ class ChartsView(viewsets.ReadOnlyModelViewSet):
     def timeline(self, request):
         result = []
         results = Balance.objects.raw("""
-                                select b.id, b.date_reference, b.total_expenses, b.total_incomes
+                                select b.id, b.reference_date, b.total_expenses, b.total_incomes
                                     from "economeeApi_balance" b
                                              INNER JOIN "economeeApi_account" a on a.id = b.account_id
                                 where a.owner_id = %s
                                   and a.id = %s
-                                  and b.date_reference BETWEEN (current_date - interval '5 months')
+                                  and b.reference_date BETWEEN (current_date - interval '5 months')
                                   and (current_date + interval '6 months')
-                                group by b.id, b.date_reference, b.total_expenses, b.total_incomes
+                                group by b.id, b.reference_date, b.total_expenses, b.total_incomes
                                            """,
                                       [
                                           self.request.user.id,
@@ -114,7 +114,7 @@ class ChartsView(viewsets.ReadOnlyModelViewSet):
 
         for r in results:
             result.append({
-                "date_reference": str(r.date_reference),
+                "reference_date": str(r.reference_date),
                 "total_expenses": r.total_expenses,
                 "total_incomes": r.total_incomes
             })

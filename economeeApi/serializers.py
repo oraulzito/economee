@@ -31,11 +31,11 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class BalanceSerializer(serializers.HyperlinkedModelSerializer):
-    date_reference = serializers.DateField()
+    reference_date = serializers.DateField()
 
     class Meta:
         model = Balance
-        fields = ['id', 'date_reference', 'total_expenses', 'total_incomes', 'account_id']
+        fields = ['id', 'reference_date', 'total_expenses', 'total_incomes', 'account_id']
 
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
@@ -47,7 +47,7 @@ class CardSerializer(serializers.HyperlinkedModelSerializer):
 class InvoiceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Invoice
-        fields = ['id', 'date_reference', 'total_value', 'card_id', 'is_paid']
+        fields = ['id', 'reference_date', 'total_value', 'card_id', 'is_paid']
 
 
 class RecurringReleaseSerializer(serializers.HyperlinkedModelSerializer):
@@ -115,31 +115,31 @@ class ReleaseRRSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class BalanceReleasesSerializer(serializers.HyperlinkedModelSerializer):
-    date_reference = serializers.DateField()
+    reference_date = serializers.DateField()
     releases = ReleaseSerializer(many=True)
 
     class Meta:
         model = Balance
-        fields = ['id', 'date_reference', 'total_expenses', 'total_incomes', 'releases']
+        fields = ['id', 'reference_date', 'total_expenses', 'total_incomes', 'releases']
 
 
 class InvoiceReleasesSerializer(serializers.HyperlinkedModelSerializer):
-    date_reference = serializers.DateField()
+    reference_date = serializers.DateField()
     releases = RecurringReleaseSerializer(many=True)
 
     class Meta:
         model = Invoice
-        fields = ['id', 'date_reference', 'is_paid', 'card_id', 'releases']
+        fields = ['id', 'reference_date', 'is_paid', 'card_id', 'releases']
 
 
 class FullBalanceSerializer(serializers.HyperlinkedModelSerializer):
-    date_reference = serializers.DateField()
+    reference_date = serializers.DateField()
     releases = ReleaseSerializer(many=True)
     invoices = InvoiceReleasesSerializer(many=True)
 
     class Meta:
         model = Balance
-        fields = ['id', 'date_reference', 'total_expenses', 'total_incomes', 'releases', 'invoices']
+        fields = ['id', 'reference_date', 'total_expenses', 'total_incomes', 'releases', 'invoices']
 
 
 class FullAccountSerializer(serializers.HyperlinkedModelSerializer):

@@ -12,8 +12,9 @@ RELEASE_CHOICES = [
 
 # Create your models here.
 class User(AbstractUser):
-    dob = models.DateField(default=now)
-    photo = models.ImageField(upload_to='uploads', blank=True, null=True)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    dob = models.DateField()
 
     REQUIRED_FIELDS = ['email', 'password', 'first_name']
 
@@ -45,15 +46,15 @@ class Account(models.Model):
 
 
 class Balance(models.Model):
-    date_reference = models.DateField()
+    reference_date = models.DateField()
     total_expenses = models.FloatField(default=0.0)
     total_incomes = models.FloatField(default=0.0)
     account = models.ForeignKey(Account, related_name='balances', on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['date_reference', 'account']
+    REQUIRED_FIELDS = ['reference_date', 'account']
 
     def __str__(self):
-        return '{}'.format(self.date_reference)
+        return '{}'.format(self.reference_date)
 
 
 class Card(models.Model):
@@ -82,22 +83,22 @@ class ReleaseCategory(models.Model):
 
 # TODO send a notification in the pay_date of the card, confirming if it's paid
 class Invoice(models.Model):
-    date_reference = models.DateField()
+    reference_date = models.DateField()
     is_paid = models.BooleanField(default=False)
     total_value = models.FloatField(default=0.0)
     card = models.ForeignKey(Card, related_name='invoices', on_delete=models.CASCADE)
 
-    REQUIRED_FIELDS = ['date_reference', 'card']
+    REQUIRED_FIELDS = ['reference_date', 'card']
 
     def __str__(self):
-        return '{}'.format(self.date_reference)
+        return '{}'.format(self.reference_date)
 
 
 class Release(models.Model):
     value = models.FloatField(default=0.0)
     description = models.CharField(max_length=280)
     place = models.CharField(max_length=280, default='')
-    date_creation = models.DateField(auto_now_add=True)
+    creation_date = models.DateField(auto_now_add=True)
 
     category = models.ForeignKey(ReleaseCategory, related_name='releases', on_delete=models.DO_NOTHING)
 
@@ -106,14 +107,14 @@ class Release(models.Model):
         verbose_name="Release Type",
     )
 
-    REQUIRED_FIELDS = ['description', 'value', 'type', 'date_release', 'is_paid', 'place', 'category']
+    REQUIRED_FIELDS = ['description', 'value', 'type', 'release_date', 'is_paid', 'place', 'category']
 
     def __str__(self):
         return self
 
 
 class RecurringRelease(models.Model):
-    date_release = models.DateField()
+    release_date = models.DateField()
     is_paid = models.BooleanField(default=False)
     installment_number = models.IntegerField(default=1)
     installment_times = models.IntegerField(default=1)

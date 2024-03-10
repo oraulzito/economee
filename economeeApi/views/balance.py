@@ -27,23 +27,23 @@ class BalanceView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     @classmethod
-    def create_balance(cls, account, date_reference=None):
-        if date_reference is None:
-            date_reference = str(date.today())
-            date_reference = datetime.strptime(date_reference, '%Y-%m-%d').date()
-            date_reference = date_reference.replace(day=1)
+    def create_balance(cls, account, reference_date=None):
+        if reference_date is None:
+            reference_date = str(date.today())
+            reference_date = datetime.strptime(reference_date, '%Y-%m-%d').date()
+            reference_date = reference_date.replace(day=1)
 
         return Balance.objects.create(
-            date_reference=date_reference,
+            reference_date=reference_date,
             account=account
         ).save()
 
     @action(detail=False, methods=['GET'])
     def full_balance(self, request):
-        date_reference = self.request.query_params.get('date_reference')
+        reference_date = self.request.query_params.get('reference_date')
         balance = Balance.objects.filter(
             account__owner=self.request.user,
-            date_reference=date_reference
+            reference_date=reference_date
         ).first()
 
         releases = RecurringRelease.objects.filter(
@@ -57,7 +57,7 @@ class BalanceView(viewsets.ModelViewSet):
 
         return JsonResponse({
             'id': balance.id,
-            'date_reference': balance.date_reference,
+            'reference_date': balance.reference_date,
             'total_expenses': balance.total_expenses,
             'total_incomes': balance.total_incomes,
             'releases': ReleaseRRSerializer(releases, many=True).data,

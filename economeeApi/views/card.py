@@ -34,7 +34,7 @@ class CardView(viewsets.ModelViewSet):
         Invoice.objects.create(
             card_id=card.id,
             total_value=0,
-            date_reference=self.request.data.get('pay_date'),
+            reference_date=self.request.data.get('pay_date'),
             is_paid=False
         ).save()
 
