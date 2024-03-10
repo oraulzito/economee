@@ -12,6 +12,9 @@ To use this project, follow these steps:
    2.1 Windows: Via CMD, type:<br> 
    `env folder/Scripts/activate`<br>
    \***(env name)** will appear before the path way in CMD. <br> <br>
+   2.2 MAC: Via Terminal, type:<br> 
+   `source folder/bin/activate`<br>
+   \***(env name)** will appear before the path way in CMD. <br> <br>
 
 3. (Ignore this step if everything work without errors) If you are running the project on Windows, some exceptions probably will appear on your enviroment, open the Windows PowerShell as an Administrator and run: <br>
    `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine` <br><br>
@@ -19,7 +22,7 @@ To use this project, follow these steps:
 4. Install requirements.txt by going to the project root and typing:<br> 
    `python3 -m pip install -r requirements.txt`<br> <br>
    
-5. Create the `economee` database in PostgresSQL.<br> <br>
+5. Create the `economee` database in PostgresSQL.<br> <br>jrI#Y36@
    
 6. With the database created, import the migrations to the database by typing:<br>
    `python3 manage.py migrate`<br> <br>

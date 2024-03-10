@@ -1,13 +1,12 @@
 -- Insert currency records
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Alimentação');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Saúde');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Transporte');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Vestuário');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Tecnologia');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Lazer');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Casa');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Educação');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Contas');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Streaming');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Trabalho');
-INSERT INTO  "economeeApi_releasecategory" (name) VALUES ('Vendas');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Alimentação', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Saúde', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Transporte', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Tecnologia', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Lazer', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Casa', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Educação', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Contas', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Streaming', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Trabalho', '000');
+INSERT INTO  "economeeApi_releasecategory" (name, color) VALUES ('Vendas', '000');
