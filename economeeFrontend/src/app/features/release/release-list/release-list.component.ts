@@ -10,7 +10,7 @@ import {CurrencyQuery} from "../../../core/state/currency/currency.query";
 import {AccountQuery} from "../../../core/state/account/account.query";
 import {getEntityType} from "@datorama/akita";
 import {CurrencyState} from "../../../core/state/currency/currency.store";
-import {actionType} from "../../../core/state/actionType";
+import {actionType} from "../../../core/state/state/actionType";
 import {AccountService} from "../../../core/state/account/account.service";
 import {BalanceService} from "../../../core/state/balance/balance.service";
 

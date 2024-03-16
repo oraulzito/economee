@@ -18,7 +18,7 @@ import {UiQuery} from "../ui/ui.query";
 import {BalanceStore} from "../balance/balance.store";
 import {BalanceService} from "../balance/balance.service";
 import {InvoiceService} from "../invoice/invoice.service";
-import {actionType} from "../actionType";
+import {actionType} from "../state/actionType";
 
 @Injectable({providedIn: 'root'})
 export class AccountService {

@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {SessionService} from '../../../core/state/user/session/session.service';
 import {SessionQuery} from '../../../core/state/user/session/session.query';
 import {Router} from '@angular/router';
+import {AuthenticationRepository} from "../../../core/state/state/authentication.repository";
 
 @Component({
   selector: 'app-login',
@@ -44,6 +45,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private authentication: AuthenticationRepository,
     private sessionService: SessionService,
     private sessionQuery: SessionQuery,
     private router: Router,
@@ -69,10 +71,10 @@ export class LoginComponent implements OnInit {
     this.router.navigateByUrl('signin').then();
   }
 
-  submitForm(): void {
+  login(): void {
     // if the form is valid, then call the login function in the session service, then redirect to the dashboard
     if (this.loginForm.valid) {
-      this.sessionService.login(this.loginForm.value);  // call the login function in the session service
+      this.authentication.login(this.loginForm.value);  // call the login function in the session service
     }
   }
 

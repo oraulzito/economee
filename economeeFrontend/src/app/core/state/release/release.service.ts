@@ -14,7 +14,7 @@ import {throwError} from "rxjs";
 import {Invoice} from "../invoice/invoice.model";
 import {AccountStore} from "../account/account.store";
 import {BalanceStore} from "../balance/balance.store";
-import {actionType} from "../actionType";
+import {actionType} from "../state/actionType";
 import {AccountService} from "../account/account.service";
 import {BalanceService} from "../balance/balance.service";
 

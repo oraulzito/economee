@@ -1,8 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": false,
-    "defaultCollection": "@datorama/akita"
+    "analytics": false
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -96,14 +95,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "economee:build"
+            "buildTarget": "economee:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "economee:build:production"
+              "buildTarget": "economee:build:production"
             },
             "development": {
-              "browserTarget": "economee:build:development"
+              "buildTarget": "economee:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -111,7 +110,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "economee:build"
+            "buildTarget": "economee:build"
           }
         },
         "test": {
@@ -153,6 +152,5 @@
     "@schematics/angular:component": {
       "style": "less"
     }
-  },
-  "defaultProject": "economee"
+  }
 }

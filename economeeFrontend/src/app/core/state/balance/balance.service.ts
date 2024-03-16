@@ -15,7 +15,7 @@ import {Balance} from "./balance.model";
 import {ReleaseStore} from "../release/release.store";
 import {InvoiceStore} from "../invoice/invoice.store";
 import {UiService} from "../ui/ui.service";
-import {actionType} from "../actionType";
+import {actionType} from "../state/actionType";
 
 @Injectable({providedIn: 'root'})
 export class BalanceService {

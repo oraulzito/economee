@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {SessionQuery} from "../../../core/state/user/session/session.query";
-import {FormItem} from "../../../core/state/formItens";
+import {FormItem} from "../../../core/state/state/formItens";
 import {CurrencyQuery} from "../../../core/state/currency/currency.query";
 import {UserService} from "../../../core/state/user/user.service";
 import {CurrencyService} from "../../../core/state/currency/currency.service";
