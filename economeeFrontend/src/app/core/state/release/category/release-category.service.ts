@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {ID, setLoading} from '@datorama/akita';
 import {UiService} from '../../ui/ui.service';

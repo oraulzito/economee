@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {InvoiceStore} from './invoice.store';
 import {InvoiceQuery} from "./invoice.query";

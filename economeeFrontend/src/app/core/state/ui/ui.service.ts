@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {UiStore} from './ui.store';
 import isMobile from 'ismobilejs';

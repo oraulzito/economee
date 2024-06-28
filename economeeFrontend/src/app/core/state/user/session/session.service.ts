@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {catchError, shareReplay, tap} from 'rxjs/operators';
 import {SessionStore} from './session.store';

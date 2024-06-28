@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {setLoading} from '@datorama/akita';
 import {catchError, shareReplay, tap} from 'rxjs/operators';
